@@ -1,6 +1,6 @@
 // HTML Tutorial page styled like Tailwind docs
 import React from 'react';
-import LiveHtmlEditor from '../components/LiveHtmlEditor';
+import LiveHtmlEditor from '../../components/LiveHtmlEditor';
 
 // Custom component for navigation list item
 function NavLi({ href, children }) {
@@ -161,17 +161,88 @@ export default function HtmlTutorial() {
           {/* Links */}
           <section id="links" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Links</h2>
-            <p className="text-slate-200 mb-4">Links are created with the <code className="bg-slate-700 px-1 rounded">&lt;a&gt;</code> tag.</p>
+            <p className="text-slate-200 mb-4">Links are created with the <code className="bg-slate-700 px-1 rounded">&lt;a&gt;</code> tag and are used to navigate between pages or to specific parts of a page.</p>
+            <LiveHtmlEditor initialCode={`<a href="https://www.example.com" target="_blank">Visit Example.com</a>
+<br />
+<a href="#section1">Jump to Section 1</a>
+<br />
+<a href="mailto:example@email.com">Send email</a>
+<br />
+<a href="tel:+1234567890">Call us</a>`} />
+            <ul className="list-disc pl-6 text-slate-200 mb-2">
+              <li>The <code className="bg-slate-700 px-1 rounded">href</code> attribute specifies the destination</li>
+              <li>Use <code className="bg-slate-700 px-1 rounded">target="_blank"</code> to open in a new tab</li>
+              <li>Links can point to external sites, internal pages, or page sections</li>
+              <li>Special protocols like mailto: and tel: create email and phone links</li>
+            </ul>
           </section>
           {/* Images */}
           <section id="images" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Images</h2>
-            <p className="text-slate-200 mb-4">Images are displayed with the <code className="bg-slate-700 px-1 rounded">&lt;img&gt;</code> tag.</p>
+            <p className="text-slate-200 mb-4">Images are displayed with the <code className="bg-slate-700 px-1 rounded">&lt;img&gt;</code> tag. The src attribute specifies the image source, and alt provides alternative text for accessibility.</p>
+            <LiveHtmlEditor initialCode={`<!-- Basic image -->
+<img src="https://placehold.co/300x200/8b5cf6/fff?text=Sample+Image" 
+     alt="Sample placeholder image" />
+
+<!-- Image with width and height -->
+<img src="https://placehold.co/150x150/8b5cf6/fff?text=Square" 
+     alt="Square image"
+     width="150" 
+     height="150" />
+
+<!-- Image with title -->
+<img src="https://placehold.co/200x100/8b5cf6/fff?text=With+Title" 
+     alt="Image with title"
+     title="This tooltip appears on hover" />`} />
+            <ul className="list-disc pl-6 text-slate-200 mb-2">
+              <li>The <code className="bg-slate-700 px-1 rounded">src</code> attribute is required and specifies the image path</li>
+              <li>The <code className="bg-slate-700 px-1 rounded">alt</code> attribute provides text for screen readers and displays if the image fails to load</li>
+              <li>Use <code className="bg-slate-700 px-1 rounded">width</code> and <code className="bg-slate-700 px-1 rounded">height</code> to set image dimensions</li>
+              <li>The <code className="bg-slate-700 px-1 rounded">title</code> attribute shows a tooltip on hover</li>
+            </ul>
+            <p className="text-slate-200 mt-4">Common image formats: JPG (photos), PNG (transparent backgrounds), SVG (scalable graphics), GIF (animations)</p>
           </section>
           {/* Tables */}
           <section id="tables" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Tables</h2>
-            <p className="text-slate-200 mb-4">Tables are created with <code className="bg-slate-700 px-1 rounded">&lt;table&gt;</code>, <code className="bg-slate-700 px-1 rounded">&lt;tr&gt;</code>, <code className="bg-slate-700 px-1 rounded">&lt;td&gt;</code>, and <code className="bg-slate-700 px-1 rounded">&lt;th&gt;</code> tags.</p>
+            <p className="text-slate-200 mb-4">Tables are used to display data in rows and columns. They are created using <code className="bg-slate-700 px-1 rounded">&lt;table&gt;</code>, <code className="bg-slate-700 px-1 rounded">&lt;tr&gt;</code> (table row), <code className="bg-slate-700 px-1 rounded">&lt;td&gt;</code> (table data), and <code className="bg-slate-700 px-1 rounded">&lt;th&gt;</code> (table header) tags.</p>
+            <LiveHtmlEditor initialCode={`<table style="border-collapse: collapse; width: 100%;">
+  <!-- Table Header -->
+  <thead>
+    <tr>
+      <th style="border: 1px solid #ddd; padding: 8px; background: #8b5cf6; color: white;">Name</th>
+      <th style="border: 1px solid #ddd; padding: 8px; background: #8b5cf6; color: white;">Age</th>
+      <th style="border: 1px solid #ddd; padding: 8px; background: #8b5cf6; color: white;">City</th>
+    </tr>
+  </thead>
+  <!-- Table Body -->
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #ddd; padding: 8px;">John Doe</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">25</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">New York</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ddd; padding: 8px;">Jane Smith</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">30</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">London</td>
+    </tr>
+  </tbody>
+  <!-- Table Footer -->
+  <tfoot>
+    <tr>
+      <td colspan="3" style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+        Total Entries: 2
+      </td>
+    </tr>
+  </tfoot>
+</table>`} />
+            <ul className="list-disc pl-6 text-slate-200 mb-2">
+              <li><code className="bg-slate-700 px-1 rounded">&lt;thead&gt;</code>, <code className="bg-slate-700 px-1 rounded">&lt;tbody&gt;</code>, and <code className="bg-slate-700 px-1 rounded">&lt;tfoot&gt;</code> organize table sections</li>
+              <li><code className="bg-slate-700 px-1 rounded">&lt;th&gt;</code> defines header cells (usually bold and centered)</li>
+              <li><code className="bg-slate-700 px-1 rounded">&lt;td&gt;</code> defines regular data cells</li>
+              <li><code className="bg-slate-700 px-1 rounded">colspan</code> and <code className="bg-slate-700 px-1 rounded">rowspan</code> attributes merge cells</li>
+            </ul>
           </section>
           {/* Lists */}
           <section id="lists" className="mb-10">
@@ -181,7 +252,85 @@ export default function HtmlTutorial() {
           {/* Forms */}
           <section id="forms" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Forms</h2>
-            <p className="text-slate-200 mb-4">Forms are created with the <code className="bg-slate-700 px-1 rounded">&lt;form&gt;</code> tag and various input elements.</p>
+            <p className="text-slate-200 mb-4">Forms are used to collect user input. They are created with the <code className="bg-slate-700 px-1 rounded">&lt;form&gt;</code> tag and can contain various input elements.</p>
+            <LiveHtmlEditor initialCode={`<form style="max-width: 400px; margin: 0 auto;">
+  <!-- Text input -->
+  <div style="margin-bottom: 1rem;">
+    <label for="name" style="display: block; margin-bottom: 0.5rem;">Name:</label>
+    <input type="text" id="name" name="name" required
+           style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" />
+  </div>
+
+  <!-- Email input -->
+  <div style="margin-bottom: 1rem;">
+    <label for="email" style="display: block; margin-bottom: 0.5rem;">Email:</label>
+    <input type="email" id="email" name="email" required
+           style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" />
+  </div>
+
+  <!-- Select dropdown -->
+  <div style="margin-bottom: 1rem;">
+    <label for="country" style="display: block; margin-bottom: 0.5rem;">Country:</label>
+    <select id="country" name="country"
+            style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+      <option value="">Select a country</option>
+      <option value="us">United States</option>
+      <option value="uk">United Kingdom</option>
+      <option value="ca">Canada</option>
+    </select>
+  </div>
+
+  <!-- Radio buttons -->
+  <div style="margin-bottom: 1rem;">
+    <p style="margin-bottom: 0.5rem;">Gender:</p>
+    <label style="margin-right: 1rem;">
+      <input type="radio" name="gender" value="male" /> Male
+    </label>
+    <label style="margin-right: 1rem;">
+      <input type="radio" name="gender" value="female" /> Female
+    </label>
+    <label>
+      <input type="radio" name="gender" value="other" /> Other
+    </label>
+  </div>
+
+  <!-- Checkbox -->
+  <div style="margin-bottom: 1rem;">
+    <label>
+      <input type="checkbox" name="subscribe" />
+      Subscribe to newsletter
+    </label>
+  </div>
+
+  <!-- Textarea -->
+  <div style="margin-bottom: 1rem;">
+    <label for="message" style="display: block; margin-bottom: 0.5rem;">Message:</label>
+    <textarea id="message" name="message" rows="4"
+              style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+  </div>
+
+  <!-- Submit button -->
+  <button type="submit" 
+          style="background: #8b5cf6; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">
+    Submit
+  </button>
+</form>`} />
+            <ul className="list-disc pl-6 text-slate-200 mb-2">
+              <li>Common form elements include:
+                <ul className="list-disc pl-6 mt-2">
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;input type="text"&gt;</code> - text input</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;input type="email"&gt;</code> - email input</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;input type="password"&gt;</code> - password input</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;input type="radio"&gt;</code> - radio buttons</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;input type="checkbox"&gt;</code> - checkboxes</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;select&gt;</code> - dropdown lists</li>
+                  <li><code className="bg-slate-700 px-1 rounded">&lt;textarea&gt;</code> - multiline text input</li>
+                </ul>
+              </li>
+              <li>The <code className="bg-slate-700 px-1 rounded">required</code> attribute makes a field mandatory</li>
+              <li>Use <code className="bg-slate-700 px-1 rounded">&lt;label&gt;</code> tags to improve accessibility</li>
+              <li>The <code className="bg-slate-700 px-1 rounded">name</code> attribute is used to reference form data</li>
+            </ul>
           </section>
           {/* Block & Inline */}
           <section id="block-inline" className="mb-10">

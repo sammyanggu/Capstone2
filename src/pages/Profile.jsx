@@ -5,17 +5,14 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 
 const sections = [
-	{ key: "dashboard", label: "Dashboard" },
 	{ key: "progress", label: "Progress" },
 	{ key: "achievements", label: "Achievements" },
 	{ key: "badges", label: "Badges" },
-	{ key: "notifications", label: "Notifications" },
 	{ key: "edit", label: "Edit Profile" },
-	{ key: "settings", label: "Settings" },
 ];
 
 function Profile() {
-	const [active, setActive] = useState("dashboard");
+	const [active, setActive] = useState("progress");
 	const [user, setUser] = useState(null);
 	const [achievements, setAchievements] = useState([]);
 	const [badges, setBadges] = useState([]);
@@ -101,25 +98,38 @@ function Profile() {
 			</aside>
 			{/* Main Content */}
 			<main className="flex-1 p-6">
-				{active === "dashboard" && (
-					<div>
-						<h2 className="text-2xl font-bold text-fuchsia-400 mb-4">
-							User Dashboard
-						</h2>
-						<p>
-							Welcome, {user.displayName || "User"}! Here you can see your
-							overall stats and quick links.
-						</p>
-					</div>
-				)}
+
 				{active === "progress" && (
 					<div>
-						<h2 className="text-2xl font-bold text-fuchsia-400 mb-4">
-							Progress
+						<h2 className="text-2xl font-bold text-fuchsia-400 mb-6">
+							Learning Progress
 						</h2>
-						<p>
-							Your learning progress and achievements will show here.
-						</p>
+						
+						{/* Current Badge */}
+						{equippedBadge && (
+							<div className="mb-8">
+								<h3 className="text-xl font-semibold text-fuchsia-300 mb-4">Current Badge</h3>
+								<div className="bg-slate-800 p-6 rounded-lg inline-block">
+									<div className="flex items-center gap-4">
+										<div className="relative">
+											<img 
+												src={equippedBadge.icon} 
+												alt={equippedBadge.name} 
+												className="w-16 h-16"
+											/>
+											<div className="absolute -top-1 -right-1 px-2 py-0.5 text-xs rounded" 
+												style={{ backgroundColor: equippedBadge.tierColor }}>
+												{equippedBadge.tier.toUpperCase()}
+											</div>
+										</div>
+										<div>
+											<h4 className="font-semibold text-fuchsia-300">{equippedBadge.name}</h4>
+											<p className="text-sm text-gray-400">{equippedBadge.description}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 				)}
 				{active === "edit" && (
@@ -132,33 +142,51 @@ function Profile() {
 				)}
 				{active === "achievements" && (
 					<div>
-						<div className="flex justify-between items-center mb-6">
-							<h2 className="text-2xl font-bold text-fuchsia-400">
-								Achievements
-							</h2>
-							<div className="flex items-center gap-4">
-								<div className="text-fuchsia-300">
-									<span className="font-bold">Total Points:</span> {totalPoints}
+						<div className="flex flex-col gap-6">
+							<div className="flex justify-between items-center">
+								<h2 className="text-2xl font-bold text-fuchsia-400">
+									Achievements
+								</h2>
+								<div className="flex items-center gap-4">
+									<div className="text-fuchsia-300">
+										<span className="font-bold">Total Points:</span> {totalPoints}
+									</div>
+									<select 
+										className="bg-slate-700 text-fuchsia-300 rounded px-3 py-1"
+										value={selectedCategory}
+										onChange={(e) => setSelectedCategory(e.target.value)}
+									>
+										<option value="all">All Categories</option>
+										<option value="html">HTML</option>
+										<option value="css">CSS</option>
+										<option value="javascript">JavaScript</option>
+									</select>
+									<label className="flex items-center gap-2 text-fuchsia-300">
+										<input
+											type="checkbox"
+											checked={showUnearned}
+											onChange={(e) => setShowUnearned(e.target.checked)}
+											className="form-checkbox text-fuchsia-500"
+										/>
+										Show Unearned
+									</label>
 								</div>
-								<select 
-									className="bg-slate-700 text-fuchsia-300 rounded px-3 py-1"
-									value={selectedCategory}
-									onChange={(e) => setSelectedCategory(e.target.value)}
-								>
-									<option value="all">All Categories</option>
-									<option value="html">HTML</option>
-									<option value="css">CSS</option>
-									<option value="javascript">JavaScript</option>
-								</select>
-								<label className="flex items-center gap-2 text-fuchsia-300">
-									<input
-										type="checkbox"
-										checked={showUnearned}
-										onChange={(e) => setShowUnearned(e.target.checked)}
-										className="form-checkbox text-fuchsia-500"
-									/>
-									Show Unearned
-								</label>
+							</div>
+
+							{/* Stats Overview */}
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div className="bg-slate-800 p-6 rounded-lg">
+									<h3 className="text-lg font-semibold text-fuchsia-300 mb-2">Achievements Progress</h3>
+									<p className="text-3xl font-bold text-fuchsia-400">
+										{achievements.filter(a => a.isEarned).length} / {achievements.length}
+									</p>
+								</div>
+								<div className="bg-slate-800 p-6 rounded-lg">
+									<h3 className="text-lg font-semibold text-fuchsia-300 mb-2">Badges Progress</h3>
+									<p className="text-3xl font-bold text-fuchsia-400">
+										{badges.filter(b => b.isEarned).length} / {badges.length}
+									</p>
+								</div>
 							</div>
 						</div>
 						
@@ -366,78 +394,8 @@ function Profile() {
 						))}
 					</div>
 				)}
-				{active === "notifications" && (
-					<div>
-						<h2 className="text-2xl font-bold text-fuchsia-400 mb-4">
-							Notifications
-						</h2>
-						{notifications.length > 0 ? (
-							<div className="space-y-4">
-								{notifications.map((notification) => (
-									<div 
-										key={notification.id}
-										className={`p-4 rounded-lg ${
-											notification.is_read 
-												? 'bg-slate-800 opacity-75' 
-												: 'bg-slate-800 border-2 border-fuchsia-500'
-										}`}
-									>
-										<div className="flex items-center gap-4">
-											<div className={`text-2xl ${
-												notification.type === 'achievement' 
-													? 'text-yellow-500' 
-													: 'text-fuchsia-500'
-											}`}>
-												{notification.type === 'achievement' ? '🏆' : '🎖️'}
-											</div>
-											<div className="flex-1">
-												<p className="text-fuchsia-300 font-semibold">
-													{notification.message}
-												</p>
-												<p className="text-sm text-gray-400">
-													{new Date(notification.created_at).toLocaleString()}
-												</p>
-											</div>
-											{!notification.is_read && (
-												<button
-													onClick={() => {
-														axios.post(`http://localhost/capstone-backend/api/notifications.php`, {
-															notificationId: notification.id,
-															action: 'mark_read'
-														})
-														.then(() => {
-															setNotifications(notifications.map(n => 
-																n.id === notification.id 
-																	? { ...n, is_read: true }
-																	: n
-															));
-														})
-														.catch(error => console.error("Error marking notification as read:", error));
-													}}
-													className="text-sm text-fuchsia-400 hover:text-fuchsia-300"
-												>
-													Mark as read
-												</button>
-											)}
-										</div>
-									</div>
-								))}
-							</div>
-						) : (
-							<p className="text-gray-400">No notifications</p>
-						)}
-					</div>
-				)}
-				{active === "settings" && (
-					<div>
-						<h2 className="text-2xl font-bold text-fuchsia-400 mb-4">
-							Settings
-						</h2>
-						<p>
-							Account and notification settings go here.
-						</p>
-					</div>
-				)}
+
+
 			</main>
 		</div>
 	);

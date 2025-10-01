@@ -15,12 +15,21 @@ import Home from './pages/Home'
 import Tutorials from './pages/Tutorials'
 import Exercises from './pages/Exercises'
 import SignIn from './pages/SignIn'
-import HtmlTutorial from './pages/HtmlTutorial'
-import CssTutorial from './pages/CssTutorial'
-import JavascriptTutorial from './pages/JavascriptTutorial'
-import ExercisesLeetCode from './pages/ExercisesLeetCode'
+import HtmlTutorial from './pages/tutorials/HtmlTutorial'
+import CssTutorial from './pages/tutorials/CssTutorial'
+import JavascriptTutorial from './pages/tutorials/JavascriptTutorial'
+import PhpTutorial from './pages/tutorials/PhpTutorial'
+import BootstrapTutorial from './pages/tutorials/BootstrapTutorial'
+import TailwindTutorial from './pages/tutorials/TailwindTutorial'
+
+import HtmlBeginner from './pages/exercises/html/HtmlBeginner'
+import HtmlIntermediate from './pages/exercises/html/HtmlIntermediate'
+import HtmlAdvanced from './pages/exercises/html/HtmlAdvanced'
+import CssExercise from './pages/exercises/CssExercise'
+
+
 import Profile from './pages/Profile'
-import Lessons from './pages/Lessons'; // <-- Add this import
+import Lessons from './pages/Lessons'
 // Import React hooks
 import { useEffect, useState } from 'react'
 // Import Firebase authentication helpers
@@ -88,16 +97,48 @@ function App() {
             <JavascriptTutorial />
           </PrivateRoute>
         } />
-        {/* Exercises route, protected */}
+        {/* PHP Tutorial route, protected */}
+        <Route path="/tutorials/php" element={
+          <PrivateRoute user={user}>
+            <PhpTutorial />
+          </PrivateRoute>
+        } />
+        {/* Bootstrap Tutorial route, protected */}
+        <Route path="/tutorials/bootstrap" element={
+          <PrivateRoute user={user}>
+            <BootstrapTutorial />
+          </PrivateRoute>
+        } />
+        {/* Tailwind Tutorial route, protected */}
+        <Route path="/tutorials/tailwind" element={
+          <PrivateRoute user={user}>
+            <TailwindTutorial />
+          </PrivateRoute>
+        } />
+        {/* Exercises routes, protected */}
         <Route path="/exercises" element={
           <PrivateRoute user={user}>
             <Exercises />
           </PrivateRoute>
         } />
-        {/* LeetCode-style exercises, protected */}
-        <Route path="/exercisesleetcode" element={
+        <Route path="/exercises/html/beginner" element={
           <PrivateRoute user={user}>
-            <ExercisesLeetCode />
+            <HtmlBeginner />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/html/intermediate" element={
+          <PrivateRoute user={user}>
+            <HtmlIntermediate />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/html/advanced" element={
+          <PrivateRoute user={user}>
+            <HtmlAdvanced />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/css/:level" element={
+          <PrivateRoute user={user}>
+            <CssExercise />
           </PrivateRoute>
         } />
         {/* Profile page, protected */}

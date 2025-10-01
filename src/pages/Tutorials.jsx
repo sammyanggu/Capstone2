@@ -47,7 +47,7 @@ function Tutorials() {
                     <img src="/assets/php.svg" alt="PHP Logo" className="tutorial-logo" />
                     <h3 className="tutorial-card-title">PHP for Beginners</h3>
                     <p className="tutorial-card-desc">Get started with server-side scripting using PHP.</p>
-                    <Link to="#">
+                    <Link to="/tutorials/php">
                       <button className="tutorial-card-btn">Learn More <span className="text-lg">→</span></button>
                     </Link>
                 </div>
@@ -56,7 +56,7 @@ function Tutorials() {
                     <img src="/assets/bootstrap.svg" alt="Bootstrap Logo" className="tutorial-logo" />
                     <h3 className="tutorial-card-title">Bootstrap Framework</h3>
                     <p className="tutorial-card-desc">Quickly design responsive sites with Bootstrap.</p>
-                    <Link to="#">
+                    <Link to="/tutorials/bootstrap">
                       <button className="tutorial-card-btn">Learn More <span className="text-lg">→</span></button>
                     </Link>
                 </div>
@@ -65,7 +65,7 @@ function Tutorials() {
                     <img src="/assets/tailwindcss.svg" alt="Tailwind CSS Logo" className="tutorial-logo" />
                     <h3 className="tutorial-card-title">Tailwind CSS</h3>
                     <p className="tutorial-card-desc">Build modern UIs efficiently with Tailwind CSS.</p>
-                    <Link to="#">
+                    <Link to="/tutorials/tailwind">
                       <button className="tutorial-card-btn">Learn More <span className="text-lg">→</span></button>
                     </Link>
                 </div>

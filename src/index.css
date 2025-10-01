@@ -18,6 +18,31 @@ html, body {
   @apply font-semibold underline underline-offset-4 decoration-fuchsia-400 decoration-2 transition-all duration-300 ease-in-out lg:no-underline lg:after:content-[''] lg:after:absolute lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:bottom-0 lg:after:h-0.5 lg:after:w-0 lg:after:bg-fuchsia-600 lg:after:transition-all lg:after:duration-300 lg:group-hover:after:w-full lg:after:origin-center hover:text-fuchsia-600 cursor-pointer;
 }
 
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
 /* Custom hover button style */
 @layer components {
   .btn1h {
