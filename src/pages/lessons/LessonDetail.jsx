@@ -118,17 +118,17 @@ const lessonData = {
       },
       {
         id: "php2",
-        title: "PHP & MySQL Tutorial",
-        videoId: "PGnVoNP4NVA",
+        title: "PHP & MySQL Registration Form",
+        videoId: "2MpZwFoBPjQ",
         duration: "21:10",
-        description: "Database operations with PHP and MySQL."
+        description: "Learn to create a registration system with PHP and MySQL."
       },
       {
         id: "php3",
-        title: "Build PHP REST API From Scratch",
-        videoId: "Qqx_zgWpwxM",
+        title: "Build PHP REST API",
+        videoId: "X51KOJKrofU",
         duration: "25:30",
-        description: "Create a RESTful API using PHP."
+        description: "Create a RESTful API using PHP from scratch."
       }
     ]
   },
