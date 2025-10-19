@@ -74,21 +74,24 @@ function Profile() {
 	}
 
 	return (
-		<div className="PMainC">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-slate-900 px-4 pb-4 pt-20 gap-4">
 			{/* Sidebar */}
-			<aside className="PSidebar">
+			<aside className="lg:w-64 bg-slate-800 rounded-lg p-6 flex flex-col items-center lg:sticky lg:top-20 lg:h-fit">
 				<img
 					src={user.photoURL || "/assets/react.svg"}
 					alt="Profile"
-					className="PPic"
+					className="w-24 h-24 rounded-full mb-4 border-4 border-fuchsia-500"
 				/>
-				<div className="PName mb-4">{user.displayName || "User"}</div>
-				<nav className="flex flex-col gap-2 w-full">
+				<div className="text-xl font-bold text-fuchsia-400 mb-6">{user.displayName || "User"}</div>
+				<nav className="flex flex-row lg:flex-col gap-2 w-full overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
 					{sections.map((s) => (
 						<button
 							key={s.key}
-							className={`btn1h w-full text-left ${active === s.key ? "bg-fuchsia-600 text-slate-900" : ""
-								}`}
+							className={`whitespace-nowrap px-4 py-2 rounded-lg transition-colors ${
+								active === s.key 
+								? "bg-fuchsia-600 text-white" 
+								: "hover:bg-slate-700 text-fuchsia-300"
+							}`}
 							onClick={() => setActive(s.key)}
 						>
 							{s.label}
@@ -97,7 +100,7 @@ function Profile() {
 				</nav>
 			</aside>
 			{/* Main Content */}
-			<main className="flex-1 p-6">
+			<main className="flex-1 bg-slate-800/50 rounded-lg p-4 lg:p-6">
 
 				{active === "progress" && (
 					<div>
@@ -143,16 +146,16 @@ function Profile() {
 				{active === "achievements" && (
 					<div>
 						<div className="flex flex-col gap-6">
-							<div className="flex justify-between items-center">
+							<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
 								<h2 className="text-2xl font-bold text-fuchsia-400">
 									Achievements
 								</h2>
-								<div className="flex items-center gap-4">
-									<div className="text-fuchsia-300">
+								<div className="flex flex-wrap items-center gap-4">
+									<div className="text-fuchsia-300 whitespace-nowrap">
 										<span className="font-bold">Total Points:</span> {totalPoints}
 									</div>
 									<select 
-										className="bg-slate-700 text-fuchsia-300 rounded px-3 py-1"
+										className="bg-slate-700 text-fuchsia-300 rounded px-3 py-1.5 text-sm"
 										value={selectedCategory}
 										onChange={(e) => setSelectedCategory(e.target.value)}
 									>
@@ -161,7 +164,7 @@ function Profile() {
 										<option value="css">CSS</option>
 										<option value="javascript">JavaScript</option>
 									</select>
-									<label className="flex items-center gap-2 text-fuchsia-300">
+									<label className="flex items-center gap-2 text-fuchsia-300 whitespace-nowrap">
 										<input
 											type="checkbox"
 											checked={showUnearned}
@@ -174,30 +177,52 @@ function Profile() {
 							</div>
 
 							{/* Stats Overview */}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div className="bg-slate-800 p-6 rounded-lg">
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="bg-slate-800 p-6 rounded-lg transform hover:scale-102 transition-transform">
 									<h3 className="text-lg font-semibold text-fuchsia-300 mb-2">Achievements Progress</h3>
-									<p className="text-3xl font-bold text-fuchsia-400">
-										{achievements.filter(a => a.isEarned).length} / {achievements.length}
-									</p>
+									<div className="flex items-baseline gap-2">
+										<p className="text-3xl font-bold text-fuchsia-400">
+											{achievements.filter(a => a.isEarned).length}
+										</p>
+										<p className="text-lg text-fuchsia-300">/ {achievements.length}</p>
+									</div>
+									<div className="mt-2 h-2 bg-slate-700 rounded overflow-hidden">
+										<div 
+											className="h-full bg-fuchsia-500 transition-all duration-500"
+											style={{ 
+												width: `${(achievements.filter(a => a.isEarned).length / achievements.length) * 100}%` 
+											}}
+										/>
+									</div>
 								</div>
-								<div className="bg-slate-800 p-6 rounded-lg">
+								<div className="bg-slate-800 p-6 rounded-lg transform hover:scale-102 transition-transform">
 									<h3 className="text-lg font-semibold text-fuchsia-300 mb-2">Badges Progress</h3>
-									<p className="text-3xl font-bold text-fuchsia-400">
-										{badges.filter(b => b.isEarned).length} / {badges.length}
-									</p>
+									<div className="flex items-baseline gap-2">
+										<p className="text-3xl font-bold text-fuchsia-400">
+											{badges.filter(b => b.isEarned).length}
+										</p>
+										<p className="text-lg text-fuchsia-300">/ {badges.length}</p>
+									</div>
+									<div className="mt-2 h-2 bg-slate-700 rounded overflow-hidden">
+										<div 
+											className="h-full bg-fuchsia-500 transition-all duration-500"
+											style={{ 
+												width: `${(badges.filter(b => b.isEarned).length / badges.length) * 100}%` 
+											}}
+										/>
+									</div>
 								</div>
 							</div>
 						</div>
 						
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 							{achievements
 								.filter(a => selectedCategory === 'all' || (a.type || '').toLowerCase() === selectedCategory)
 								.filter(a => showUnearned || a.isEarned)
 								.map((achievement) => (
 								<div 
 									key={achievement.id} 
-									className={`bg-slate-800 p-4 rounded-lg relative ${
+									className={`bg-slate-800 p-4 rounded-lg relative transform hover:scale-102 transition-transform ${
 										achievement.isEarned ? 'border-2 border-fuchsia-500' : 'opacity-75'
 									}`}
 								>
@@ -311,11 +336,11 @@ function Profile() {
 								<h3 className="text-lg font-semibold text-fuchsia-300 mb-4 capitalize">
 									{type} Badges
 								</h3>
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+								<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 									{typeBadges.map((badge) => (
 										<div 
 											key={badge.id} 
-											className={`bg-slate-800 p-4 rounded-lg relative ${
+											className={`bg-slate-800 p-4 rounded-lg relative transform hover:scale-102 transition-transform ${
 												badge.isEarned ? '' : 'opacity-75'
 											}`}
 										>

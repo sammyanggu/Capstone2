@@ -26,8 +26,7 @@ import HtmlBeginner from './pages/exercises/html/HtmlBeginner'
 import HtmlIntermediate from './pages/exercises/html/HtmlIntermediate'
 import HtmlAdvanced from './pages/exercises/html/HtmlAdvanced'
 import CssExercise from './pages/exercises/CssExercise'
-
-
+import JavascriptExercise from './pages/exercises/JavascriptExercise'
 import Profile from './pages/Profile'
 import Lessons from './pages/Lessons'
 // Import React hooks
@@ -139,6 +138,11 @@ function App() {
         <Route path="/exercises/css/:level" element={
           <PrivateRoute user={user}>
             <CssExercise />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/javascript/:level" element={
+          <PrivateRoute user={user}>
+            <JavascriptExercise />
           </PrivateRoute>
         } />
         {/* Profile page, protected */}
