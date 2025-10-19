@@ -1,7 +1,15 @@
-// Export all icons
-export { default as htmlIcon } from './html.svg';
-export { default as cssIcon } from './css.svg';
-export { default as jsIcon } from './javascript.svg';
-export { default as phpIcon } from './php.svg';
-export { default as bootstrapIcon } from './bootstrap.svg';
-export { default as tailwindIcon } from './tailwindcss.svg';
+// Import all icons
+import html from './html.svg';
+import css from './css.svg';
+import js from './javascript.svg';
+import php from './php.svg';
+import bootstrap from './bootstrap.svg';
+import tailwind from './tailwindcss.svg';
+
+// Export icons
+export const htmlIcon = html;
+export const cssIcon = css;
+export const jsIcon = js;
+export const phpIcon = php;
+export const bootstrapIcon = bootstrap;
+export const tailwindIcon = tailwind;

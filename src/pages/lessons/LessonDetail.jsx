@@ -9,7 +9,7 @@ import {
   phpIcon, 
   bootstrapIcon, 
   tailwindIcon 
-} from '../../assets/icons';
+} from '../../assets/icons/index.js';
 
 const lessonData = {
   html: {
