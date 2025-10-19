@@ -21,23 +21,23 @@ const lessonData = {
     videos: [
       {
         id: "html1",
-        title: "HTML Fundamentals - Structure and Basic Tags",
-        videoId: "qz0aGYrrlhU",
-        duration: "15:30",
+        title: "HTML Tutorial for Beginners",
+        videoId: "kUMe1FH4CHE",
+        duration: "20:30",
         description: "Learn the basic structure of HTML documents and commonly used tags."
       },
       {
         id: "html2",
-        title: "Working with Forms and Input Elements",
+        title: "HTML Forms Tutorial",
         videoId: "fNcJuPIZ2WE",
-        duration: "19:45",
+        duration: "15:45",
         description: "Create interactive forms and understand different input types."
       },
       {
         id: "html3",
         title: "HTML5 Semantic Elements",
-        videoId: "dD2EISBDjWM",
-        duration: "22:10",
+        videoId: "kGW8Al_cga4",
+        duration: "9:30",
         description: "Use semantic elements to improve page structure and accessibility."
       }
     ]
@@ -51,23 +51,23 @@ const lessonData = {
     videos: [
       {
         id: "css1",
-        title: "CSS Fundamentals - Selectors and Properties",
-        videoId: "1PnVor36_40",
-        duration: "18:20",
-        description: "Learn CSS selectors and basic styling properties."
+        title: "CSS Crash Course For Absolute Beginners",
+        videoId: "yfoY53QXEnI",
+        duration: "25:30",
+        description: "Learn CSS fundamentals from scratch."
       },
       {
         id: "css2",
-        title: "Flexbox Complete Guide",
-        videoId: "JJSoEo8JSnc",
-        duration: "25:15",
+        title: "CSS Flexbox Crash Course",
+        videoId: "tXIhdp5R7sc",
+        duration: "19:55",
         description: "Master Flexbox for modern responsive layouts."
       },
       {
         id: "css3",
-        title: "CSS Grid Layout System",
-        videoId: "jV8B24rSN5o",
-        duration: "20:30",
+        title: "CSS Grid Made Simple",
+        videoId: "9zBsdzdE4sM",
+        duration: "22:45",
         description: "Create complex layouts with CSS Grid."
       }
     ]
@@ -81,23 +81,23 @@ const lessonData = {
     videos: [
       {
         id: "js1",
-        title: "JavaScript Fundamentals",
-        videoId: "W6NZfCO5SIk",
-        duration: "16:45",
+        title: "JavaScript Crash Course For Beginners",
+        videoId: "hdI2bqOjy3c",
+        duration: "27:35",
         description: "Learn the basics of JavaScript programming."
       },
       {
         id: "js2",
-        title: "DOM Manipulation",
+        title: "JavaScript DOM Manipulation",
         videoId: "5fb2aPlgoys",
-        duration: "21:30",
+        duration: "16:20",
         description: "Work with the Document Object Model (DOM)."
       },
       {
         id: "js3",
-        title: "Async JavaScript - Promises & Async/Await",
-        videoId: "_8gHHBlbDUA",
-        duration: "23:15",
+        title: "JavaScript Async JavaScript Tutorial",
+        videoId: "ZYb_ZU8LNxs",
+        duration: "18:45",
         description: "Handle asynchronous operations in JavaScript."
       }
     ]
@@ -111,23 +111,23 @@ const lessonData = {
     videos: [
       {
         id: "php1",
-        title: "PHP Fundamentals",
-        videoId: "2eebptXfEvw",
-        duration: "20:10",
+        title: "PHP For Beginners",
+        videoId: "BUCiSSyIGGU",
+        duration: "23:15",
         description: "Learn the basics of PHP programming."
       },
       {
         id: "php2",
-        title: "Working with MySQL and PHP",
-        videoId: "KQk5spX-4JY",
-        duration: "24:30",
+        title: "PHP & MySQL Tutorial",
+        videoId: "PGnVoNP4NVA",
+        duration: "21:10",
         description: "Database operations with PHP and MySQL."
       },
       {
         id: "php3",
-        title: "Building a PHP REST API",
-        videoId: "OEWXbCUQ7Tc",
-        duration: "19:45",
+        title: "Build PHP REST API From Scratch",
+        videoId: "Qqx_zgWpwxM",
+        duration: "25:30",
         description: "Create a RESTful API using PHP."
       }
     ]
@@ -141,23 +141,23 @@ const lessonData = {
     videos: [
       {
         id: "bootstrap1",
-        title: "Bootstrap 5 Crash Course",
-        videoId: "4sosXZsdy-s",
-        duration: "17:20",
+        title: "Bootstrap 5 Tutorial for Beginners",
+        videoId: "Jyvffr3aCp0",
+        duration: "24:15",
         description: "Quick introduction to Bootstrap 5."
       },
       {
         id: "bootstrap2",
-        title: "Bootstrap Grid System",
-        videoId: "Wqu-d_b3K-0",
-        duration: "22:45",
+        title: "Bootstrap 5 Grid System Tutorial",
+        videoId: "irfbn103AzE",
+        duration: "15:30",
         description: "Master the Bootstrap grid system."
       },
       {
         id: "bootstrap3",
-        title: "Bootstrap Components",
-        videoId: "rQryOSyfXmI",
-        duration: "19:30",
+        title: "Bootstrap 5 Components Tutorial",
+        videoId: "1nxSE0R27Gg",
+        duration: "21:45",
         description: "Work with Bootstrap UI components."
       }
     ]
@@ -171,23 +171,23 @@ const lessonData = {
     videos: [
       {
         id: "tailwind1",
-        title: "Tailwind CSS Basics",
-        videoId: "UBOj6rqRUME",
-        duration: "18:15",
+        title: "Tailwind CSS Tutorial for Beginners",
+        videoId: "bxmDnn7lrnk",
+        duration: "22:35",
         description: "Learn the basics of Tailwind CSS."
       },
       {
         id: "tailwind2",
-        title: "Building Responsive Layouts",
-        videoId: "VYFxhdrAgXM",
-        duration: "23:40",
+        title: "Tailwind CSS Responsive Design",
+        videoId: "h9Zun41-Ozc",
+        duration: "19:40",
         description: "Create responsive designs with Tailwind."
       },
       {
         id: "tailwind3",
-        title: "Tailwind CSS Components",
-        videoId: "pfaSUYaSgRo",
-        duration: "20:55",
+        title: "Build Components with Tailwind CSS",
+        videoId: "cZc4Jn5nK3k",
+        duration: "25:15",
         description: "Build reusable components with Tailwind."
       }
     ]
