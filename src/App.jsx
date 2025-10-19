@@ -12,15 +12,15 @@ import 'react-toastify/dist/ReactToastify.css'
 import Nav from './Nav'
 // Import page components
 import Home from './pages/Home'
-import Tutorials from './pages/Tutorials'
+import Docs from './pages/Docs'
 import Exercises from './pages/Exercises'
 import SignIn from './pages/SignIn'
-import HtmlTutorial from './pages/tutorials/HtmlTutorial'
-import CssTutorial from './pages/tutorials/CssTutorial'
-import JavascriptTutorial from './pages/tutorials/JavascriptTutorial'
-import PhpTutorial from './pages/tutorials/PhpTutorial'
-import BootstrapTutorial from './pages/tutorials/BootstrapTutorial'
-import TailwindTutorial from './pages/tutorials/TailwindTutorial'
+import HtmlTutorial from './pages/docs/HtmlTutorial'
+import CssTutorial from './pages/docs/CssTutorial'
+import JavascriptTutorial from './pages/docs/JavascriptTutorial'
+import PhpTutorial from './pages/docs/PhpTutorial'
+import BootstrapTutorial from './pages/docs/BootstrapTutorial'
+import TailwindTutorial from './pages/docs/TailwindTutorial'
 
 import HtmlBeginner from './pages/exercises/html/HtmlBeginner'
 import HtmlIntermediate from './pages/exercises/html/HtmlIntermediate'
@@ -79,44 +79,44 @@ function App() {
             <LessonDetail />
           </PrivateRoute>
         } />
-        {/* Tutorials route, protected */}
-        <Route path="/tutorials" element={
+        {/* Documentation route, protected */}
+        <Route path="/docs" element={
           <PrivateRoute user={user}>
-            <Tutorials />
+            <Docs />
           </PrivateRoute>
         } />
-        {/* HTML Tutorial route, protected */}
-        <Route path="/tutorials/html" element={
+        {/* HTML Documentation route, protected */}
+        <Route path="/docs/html" element={
           <PrivateRoute user={user}>
             <HtmlTutorial />
           </PrivateRoute>
         } />
-        {/* CSS Tutorial route, protected */}
-        <Route path="/tutorials/css" element={
+        {/* CSS Documentation route, protected */}
+        <Route path="/docs/css" element={
           <PrivateRoute user={user}>
             <CssTutorial />
           </PrivateRoute>
         } />
-        {/* JavaScript Tutorial route, protected */}
-        <Route path="/tutorials/javascript" element={
+        {/* JavaScript Documentation route, protected */}
+        <Route path="/docs/javascript" element={
           <PrivateRoute user={user}>
             <JavascriptTutorial />
           </PrivateRoute>
         } />
-        {/* PHP Tutorial route, protected */}
-        <Route path="/tutorials/php" element={
+        {/* PHP Documentation route, protected */}
+        <Route path="/docs/php" element={
           <PrivateRoute user={user}>
             <PhpTutorial />
           </PrivateRoute>
         } />
-        {/* Bootstrap Tutorial route, protected */}
-        <Route path="/tutorials/bootstrap" element={
+        {/* Bootstrap Documentation route, protected */}
+        <Route path="/docs/bootstrap" element={
           <PrivateRoute user={user}>
             <BootstrapTutorial />
           </PrivateRoute>
         } />
-        {/* Tailwind Tutorial route, protected */}
-        <Route path="/tutorials/tailwind" element={
+        {/* Tailwind Documentation route, protected */}
+        <Route path="/docs/tailwind" element={
           <PrivateRoute user={user}>
             <TailwindTutorial />
           </PrivateRoute>

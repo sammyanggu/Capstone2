@@ -39,7 +39,7 @@ function Nav({ user, onSignOut }) {
 
                     <div className="hidden sm:flex items-center gap-4 md:gap-5 lg:gap-6">
                         <Link to="/" className="nav-underline">Home</Link>
-                        {user && <Link to="/tutorials" className="nav-underline">Tutorials</Link>}
+                        {user && <Link to="/docs" className="nav-underline">Documentation</Link>}
                         {user && <Link to="/exercises" className="nav-underline">Exercises</Link>}
                         {user && <Link to="/lessons" className="nav-underline">Lessons</Link>}
 
@@ -116,8 +116,8 @@ function Nav({ user, onSignOut }) {
                         </Link>
                         {user && (
                             <>
-                                <Link to="/tutorials" className="text-slate-200 hover:text-fuchsia-400 px-2 py-1" onClick={() => setOpen(false)}>
-                                    Tutorials
+                                <Link to="/docs" className="text-slate-200 hover:text-fuchsia-400 px-2 py-1" onClick={() => setOpen(false)}>
+                                    Documentation
                                 </Link>
                                 <Link to="/exercises" className="text-slate-200 hover:text-fuchsia-400 px-2 py-1" onClick={() => setOpen(false)}>
                                     Exercises

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LevelModal from "../components/LevelModal";
+import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../assets/icons/index.js';
 
 function Exercises() {
 	// States to show/hide modals
@@ -32,7 +33,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/html.svg"
+						src={htmlIcon}
 						alt="HTML Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-orange-600 transition-shadow ease-in-out duration-300 cursor-pointer"
 					/>
@@ -51,7 +52,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/css.svg"
+						src={cssIcon}
 						alt="CSS Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-blue-600 transition-shadow ease-in-out duration-300 cursor-pointer"
 					/>
@@ -70,7 +71,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/javascript.svg"
+						src={jsIcon}
 						alt="JavaScript Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-yellow-600 transition-shadow duration-300 ease-in-out cursor-pointer"
 					/>
@@ -87,7 +88,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/php.svg"
+						src={phpIcon}
 						alt="PHP Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-purple-600 transition-shadow duration-300 ease-in-out cursor-pointer"
 					/>
@@ -139,7 +140,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/bootstrap.svg"
+						src={bootstrapIcon}
 						alt="Bootstrap Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-purple-600 transition-shadow duration-300 ease-in-out cursor-pointer"
 					/>
@@ -156,7 +157,7 @@ function Exercises() {
 					}}
 				>
 					<img
-						src="/assets/tailwindcss.svg"
+						src={tailwindIcon}
 						alt="Tailwind CSS Logo"
 						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-cyan-600 transition-shadow duration-300 ease-in-out"
 					/>
@@ -171,7 +172,7 @@ function Exercises() {
 					{levelhtml && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/html.svg" alt="HTML" className="w-16 h-16 drop-shadow-lg" />
+								<img src={htmlIcon} alt="HTML" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 
@@ -206,7 +207,7 @@ function Exercises() {
 					{levelcss && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/css.svg" alt="CSS" className="w-16 h-16 drop-shadow-lg" />
+								<img src={cssIcon} alt="CSS" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 
@@ -241,7 +242,7 @@ function Exercises() {
 					{leveljavascript && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/javascript.svg" alt="JavaScript" className="w-16 h-16 drop-shadow-lg" />
+								<img src={jsIcon} alt="JavaScript" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 
@@ -276,7 +277,7 @@ function Exercises() {
 					{levelphp && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/php.svg" alt="PHP" className="w-16 h-16 drop-shadow-lg" />
+								<img src={phpIcon} alt="PHP" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 
@@ -311,7 +312,7 @@ function Exercises() {
 					{levelbootstrap && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/bootstrap.svg" alt="Bootstrap" className="w-16 h-16 drop-shadow-lg" />
+								<img src={bootstrapIcon} alt="Bootstrap" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 
@@ -346,7 +347,7 @@ function Exercises() {
 					{leveltailwind && (
 						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
 							<div className="flex justify-center mb-6">
-								<img src="/assets/tailwindcss.svg" alt="Tailwind" className="w-16 h-16 drop-shadow-lg" />
+								<img src={tailwindIcon} alt="Tailwind" className="w-16 h-16 drop-shadow-lg" />
 							</div>
 							<div className="flex flex-col gap-3 items-center">
 								<button 

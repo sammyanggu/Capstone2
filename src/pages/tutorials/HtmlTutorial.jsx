@@ -77,12 +77,6 @@ export default function HtmlTutorial() {
           {/* Basic */}
           <section id="basic" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Basic</h2>
-            {/* Video Tutorial */}
-            <VideoTutorial
-              videoId="qz0aGYrrlhU"
-              title="HTML Basics Tutorial"
-              description="Learn the fundamentals of HTML structure and how to create your first web page."
-            />
             {/* Interactive Code Editor */}
             <h3 className="text-xl font-semibold text-fuchsia-300 mb-2">Try it yourself:</h3>
             <LiveHtmlEditor initialCode={`<!DOCTYPE html>\n<html>\n  <head>\n    <title>My First Page</title>\n  </head>\n  <body>\n    <h1>Hello, world!</h1>\n    <p>This is my first HTML page.</p>\n  </body>\n</html>`} />
@@ -91,12 +85,6 @@ export default function HtmlTutorial() {
           {/* Elements */}
           <section id="elements" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Elements</h2>
-            {/* Video Tutorial */}
-            <VideoTutorial
-              videoId="UB1O30fR-EE"
-              title="HTML Elements and Tags"
-              description="Learn about different HTML elements, their purposes, and how to use them effectively."
-            />
             <p className="text-slate-200 mb-4">HTML elements are the building blocks of web pages. An element usually consists of an opening tag, content, and a closing tag. For example, <code className="bg-slate-700 px-1 rounded">&lt;p&gt;This is a paragraph.&lt;/p&gt;</code> creates a paragraph element. Elements can also be nested inside each other.</p>
             <h3 className="text-xl font-semibold text-fuchsia-300 mb-2">Try it yourself:</h3>
             <LiveHtmlEditor initialCode={`<h1>This is a heading</h1>\n<p>This is a paragraph.</p>\n<a href='https://www.example.com'>This is a link</a>`} />
@@ -220,12 +208,6 @@ export default function HtmlTutorial() {
           {/* Tables */}
           <section id="tables" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Tables</h2>
-            {/* Video Tutorial */}
-            <VideoTutorial
-              videoId="dK27jWKtJxs"
-              title="HTML Tables Tutorial"
-              description="Learn how to create and structure tables in HTML for organizing data effectively."
-            />
             <p className="text-slate-200 mb-4">Tables are used to display data in rows and columns. They are created using <code className="bg-slate-700 px-1 rounded">&lt;table&gt;</code>, <code className="bg-slate-700 px-1 rounded">&lt;tr&gt;</code> (table row), <code className="bg-slate-700 px-1 rounded">&lt;td&gt;</code> (table data), and <code className="bg-slate-700 px-1 rounded">&lt;th&gt;</code> (table header) tags.</p>
             <h3 className="text-xl font-semibold text-fuchsia-300 mb-2">Try it yourself:</h3>
             <LiveHtmlEditor initialCode={`<table style="border-collapse: collapse; width: 100%;">
@@ -274,12 +256,6 @@ export default function HtmlTutorial() {
           {/* Forms */}
           <section id="forms" className="mb-10">
             <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">HTML Forms</h2>
-            {/* Video Tutorial */}
-            <VideoTutorial
-              videoId="fNcJuPIZ2WE"
-              title="HTML Forms Tutorial"
-              description="Learn how to create interactive forms in HTML, including text fields, checkboxes, radio buttons, and more."
-            />
             <p className="text-slate-200 mb-4">Forms are used to collect user input. They are created with the <code className="bg-slate-700 px-1 rounded">&lt;form&gt;</code> tag and can contain various input elements.</p>
             <h3 className="text-xl font-semibold text-fuchsia-300 mb-2">Try it yourself:</h3>
             <LiveHtmlEditor initialCode={`<form style="max-width: 400px; margin: 0 auto;">
