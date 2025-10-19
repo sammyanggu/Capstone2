@@ -4,7 +4,7 @@
 // Import global styles
 import './index.css'
 // Import routing components from React Router
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, HashRouter } from 'react-router-dom'
 // Import Toast notifications
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
