@@ -42,6 +42,7 @@ function Nav({ user, onSignOut }) {
                         {user && <Link to="/tutorials" className="nav-underline">Tutorials</Link>}
                         {user && <Link to="/exercises" className="nav-underline">Exercises</Link>}
                         {user && <Link to="/lessons" className="nav-underline">Lessons</Link>}
+
                         
                         {!user ? (
                             <Link to="/signin" className="btn1h lg:p-2">Sign In</Link>
@@ -124,6 +125,7 @@ function Nav({ user, onSignOut }) {
                                 <Link to="/lessons" className="text-slate-200 hover:text-fuchsia-400 px-2 py-1" onClick={() => setOpen(false)}>
                                     Lessons
                                 </Link>
+
                                 <Link to="/profile" className="text-slate-200 hover:text-fuchsia-400 px-2 py-1" onClick={() => setOpen(false)}>
                                     Profile
                                 </Link>

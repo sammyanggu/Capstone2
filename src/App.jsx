@@ -28,7 +28,8 @@ import HtmlAdvanced from './pages/exercises/html/HtmlAdvanced'
 import CssExercise from './pages/exercises/CssExercise'
 import JavascriptExercise from './pages/exercises/JavascriptExercise'
 import Profile from './pages/Profile'
-import Lessons from './pages/Lessons'
+import Lessons from './pages/lessons'
+import LessonDetail from './pages/lessons/LessonDetail'
 // Import React hooks
 import { useEffect, useState } from 'react'
 // Import Firebase authentication helpers
@@ -70,6 +71,12 @@ function App() {
         <Route path="/lessons" element={
           <PrivateRoute user={user}>
             <Lessons />
+          </PrivateRoute>
+        } />
+        {/* Lesson Detail route, protected */}
+        <Route path="/lessons/:category" element={
+          <PrivateRoute user={user}>
+            <LessonDetail />
           </PrivateRoute>
         } />
         {/* Tutorials route, protected */}
@@ -145,6 +152,7 @@ function App() {
             <JavascriptExercise />
           </PrivateRoute>
         } />
+
         {/* Profile page, protected */}
         <Route path="/profile" element={
           <PrivateRoute user={user}>
