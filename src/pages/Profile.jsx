@@ -74,23 +74,33 @@ function Profile() {
 	}
 
 	return (
-		<div className="flex flex-col lg:flex-row min-h-screen bg-slate-900 px-4 pb-4 pt-20 gap-4">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-slate-900 px-4 pb-8 pt-24 gap-6 max-w-7xl mx-auto">
 			{/* Sidebar */}
-			<aside className="lg:w-64 bg-slate-800 rounded-lg p-6 flex flex-col items-center lg:sticky lg:top-20 lg:h-fit">
-				<img
-					src={user.photoURL || "/assets/react.svg"}
-					alt="Profile"
-					className="w-24 h-24 rounded-full mb-4 border-4 border-fuchsia-500"
-				/>
-				<div className="text-xl font-bold text-fuchsia-400 mb-6">{user.displayName || "User"}</div>
-				<nav className="flex flex-row lg:flex-col gap-2 w-full overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+			<aside className="lg:w-80 bg-slate-800 rounded-xl p-8 flex flex-col items-center lg:sticky lg:top-24 lg:h-fit">
+				<div className="relative mb-6">
+					<img
+						src={user.photoURL || "/assets/react.svg"}
+						alt="Profile"
+						className="w-28 h-28 rounded-full border-4 border-fuchsia-500 shadow-lg"
+					/>
+					{equippedBadge && (
+						<img
+							src={equippedBadge.icon}
+							alt="Equipped Badge"
+							className="absolute -bottom-2 -right-2 w-10 h-10"
+						/>
+					)}
+				</div>
+				<div className="text-2xl font-bold text-fuchsia-400 mb-2">{user.displayName || "User"}</div>
+				<div className="text-sm text-slate-400 mb-8">{user.email}</div>
+				<nav className="flex flex-row lg:flex-col gap-3 w-full overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
 					{sections.map((s) => (
 						<button
 							key={s.key}
-							className={`whitespace-nowrap px-4 py-2 rounded-lg transition-colors ${
+							className={`whitespace-nowrap px-6 py-2.5 rounded-lg transition-all duration-200 font-medium text-base ${
 								active === s.key 
-								? "bg-fuchsia-600 text-white" 
-								: "hover:bg-slate-700 text-fuchsia-300"
+								? "bg-fuchsia-600 text-white shadow-md" 
+								: "hover:bg-slate-700/50 text-fuchsia-300"
 							}`}
 							onClick={() => setActive(s.key)}
 						>
@@ -100,11 +110,10 @@ function Profile() {
 				</nav>
 			</aside>
 			{/* Main Content */}
-			<main className="flex-1 bg-slate-800/50 rounded-lg p-4 lg:p-6">
-
+			<main className="flex-1 bg-slate-800/50 rounded-xl p-6 lg:p-8">
 				{active === "progress" && (
 					<div>
-						<h2 className="text-2xl font-bold text-fuchsia-400 mb-6">
+						<h2 className="text-3xl font-bold text-fuchsia-400 mb-8">
 							Learning Progress
 						</h2>
 						

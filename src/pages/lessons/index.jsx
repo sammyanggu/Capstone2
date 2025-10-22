@@ -224,40 +224,40 @@ function Lessons() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-20 px-4 pb-8">
+    <div className="min-h-screen bg-slate-900 pt-16 px-4 pb-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-fuchsia-400 mb-8">
+        <h1 className="text-4xl font-bold text-white mb-10">
           Start Learning
         </h1>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(categories).map(([key, category]) => (
             <Link
               key={key}
               to={`/lessons/${key}`}
-              className={`block p-6 rounded-lg border ${category.borderColor} bg-slate-800/50 ${category.hoverBg} transition-all duration-300 transform hover:scale-102`}
+              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-slate-900 ${category.hoverBg} transition-all duration-300 transform hover:scale-[1.02]`}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-5">
                 <img 
                   src={category.icon} 
                   alt={category.title} 
-                  className="w-12 h-12"
+                  className="w-14 h-14"
                 />
-                <div>
-                  <h2 className={`text-xl font-bold ${category.color} mb-2`}>
+                <div className="flex-1">
+                  <h2 className={`text-2xl font-bold ${category.color}`}>
                     {category.title}
                   </h2>
-                  <p className="text-slate-300 text-sm">
+                  <p className="text-slate-300 text-sm mt-1.5">
                     {category.description}
                   </p>
                   
                   {/* Progress indicators can be added here when connected to backend */}
-                  <div className="mt-4 flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="flex-1 h-2.5 bg-slate-800 rounded-full overflow-hidden">
                       <div className={`h-full ${category.color.replace('text', 'bg')}`} style={{ width: '0%' }}></div>
                     </div>
-                    <span className="text-xs text-slate-400">0%</span>
+                    <span className="text-sm text-slate-400 font-medium">0%</span>
                   </div>
                 </div>
               </div>

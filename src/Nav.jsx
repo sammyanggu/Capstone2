@@ -32,32 +32,32 @@ function Nav({ user, onSignOut }) {
     return (
         <nav className="bg-slate-800 fixed top-0 left-0 right-0 shadow-lg z-50">
             <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-14">
-                    {/* Back button for small screens and logo for large screens */}
-                    <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo and back button */}
+                    <div className="flex items-center">
                         {location.pathname !== '/' && (
                             <button 
                                 onClick={() => window.history.back()}
-                                className="sm:hidden p-2 -ml-2 text-slate-200 hover:text-fuchsia-400 focus:outline-none transition-colors"
+                                className="sm:hidden p-2 text-slate-200 hover:text-fuchsia-400 focus:outline-none transition-colors"
                                 aria-label="Go back"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </button>
                         )}
-                        <Link to="/" className="hidden sm:block font-bold text-xl text-fuchsia-500 hover:text-fuchsia-400 transition-colors tracking-wide">
-                            LearnDev
+                        <Link to="/" className="font-bold text-sm text-fuchsia-500 hover:text-fuchsia-400 transition-colors tracking-wide mr-2">
+                            LDev
                         </Link>
                     </div>
 
                     {/* Navigation for medium and large screens */}
-                    <div className="hidden sm:flex items-center gap-6">
+                    <div className="hidden sm:flex items-center space-x-8">
                         {user && (
                             <>
-                                <Link to="/docs" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Docs</Link>
-                                <Link to="/exercises" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Exercises</Link>
-                                <Link to="/lessons" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Lessons</Link>
+                                <Link to="/docs" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Docs</Link>
+                                <Link to="/exercises" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Exercises</Link>
+                                <Link to="/lessons" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Lessons</Link>
                             </>
                         )}
 
@@ -105,25 +105,32 @@ function Nav({ user, onSignOut }) {
                                         />
                                     </button>
                                     {dropdown && (
-                                        <div className="dd">
-                                            <button
-                                                onClick={() => { setDropdown(false); navigate('/profile'); }}
-                                                className="ddbtn"
-                                            >
-                                                My Profile
-                                            </button>
-                                            <button
-                                                onClick={() => { setDropdown(false); navigate('/profile/settings'); }}
-                                                className="ddbtn"
-                                            >
-                                                Settings
-                                            </button>
-                                            <button
-                                                onClick={handleSignOutClick}
-                                                className="ddbtn"
-                                            >
-                                                Sign Out
-                                            </button>
+                                        <div className="absolute right-0 mt-2 w-44 bg-slate-800 rounded-lg shadow-xl py-2 z-50">
+                                            <div className="px-4 py-2 border-b border-slate-700">
+                                                <p className="text-sm font-medium text-fuchsia-400">{user.displayName || 'User'}</p>
+                                            </div>
+                                            <div className="py-1">
+                                                <button
+                                                    onClick={() => { setDropdown(false); navigate('/profile'); }}
+                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                >
+                                                    My Profile
+                                                </button>
+                                                <button
+                                                    onClick={() => { setDropdown(false); navigate('/profile/settings'); }}
+                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                >
+                                                    Settings
+                                                </button>
+                                            </div>
+                                            <div className="border-t border-slate-700 pt-1">
+                                                <button
+                                                    onClick={handleSignOutClick}
+                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                >
+                                                    Sign Out
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -132,61 +139,44 @@ function Nav({ user, onSignOut }) {
                     </div>
 
                     {/* Mobile navigation */}
-                    <div className="sm:hidden flex items-center gap-4">
+                    <div className="sm:hidden flex items-center">
                         {user && (
                             <>
-                                <div className="flex items-center gap-4">
-                                    <Link to="/docs" className="text-slate-200 hover:text-fuchsia-400">Docs</Link>
-                                    <Link to="/exercises" className="text-slate-200 hover:text-fuchsia-400">Exercises</Link>
-                                    <Link to="/lessons" className="text-slate-200 hover:text-fuchsia-400">Lessons</Link>
+                                <div className="flex items-center space-x-4 mr-4">
+                                    <Link to="/docs" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Docs</Link>
+                                    <Link to="/exercises" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Exercises</Link>
+                                    <Link to="/lessons" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Lessons</Link>
                                 </div>
                                 <div className="relative">
                                     <button onClick={handleProfileClick} className="flex items-center focus:outline-none cursor-pointer">
                                         <img
                                             src={user.photoURL || '/src/assets/react.svg'}
                                             alt="Profile"
-                                            className="w-8 h-8 rounded-full border-2 border-fuchsia-400 shadow"
+                                            className="w-7 h-7 rounded-full border-2 border-fuchsia-400 shadow"
                                         />
                                     </button>
                                     {dropdown && (
                                         <div className="dd absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 focus:outline-none z-50">
-                                            <div className="p-3 border-b border-slate-700">
-                                                <p className="text-slate-200 font-medium">{user.displayName || 'User'}</p>
-                                            </div>
                                             <div className="py-1">
                                                 <Link 
                                                     to="/profile" 
-                                                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700" 
+                                                    className="block px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700" 
                                                     onClick={() => setDropdown(false)}
                                                 >
-                                                    Progress
+                                                    My Profile
                                                 </Link>
                                                 <Link 
-                                                    to="/profile/achievements" 
-                                                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700" 
+                                                    to="/profile/settings" 
+                                                    className="block px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700" 
                                                     onClick={() => setDropdown(false)}
                                                 >
-                                                    Achievements
-                                                </Link>
-                                                <Link 
-                                                    to="/profile/badges" 
-                                                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700" 
-                                                    onClick={() => setDropdown(false)}
-                                                >
-                                                    Badges
-                                                </Link>
-                                                <Link 
-                                                    to="/exercises" 
-                                                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700" 
-                                                    onClick={() => setDropdown(false)}
-                                                >
-                                                    Exercises
+                                                    Settings
                                                 </Link>
                                             </div>
                                             <div className="py-1 border-t border-slate-700">
                                                 <button 
                                                     onClick={handleSignOutClick}
-                                                    className="block w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
+                                                    className="block w-full text-left px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700"
                                                 >
                                                     Sign Out
                                                 </button>
