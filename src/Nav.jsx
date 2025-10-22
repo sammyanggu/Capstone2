@@ -56,6 +56,7 @@ function Nav({ user, onSignOut }) {
                         {user && (
                             <>
                                 <Link to="/docs" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Docs</Link>
+                                <Link to="/exercises" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Exercises</Link>
                                 <Link to="/lessons" className="text-slate-200 hover:text-fuchsia-400 transition-colors">Lessons</Link>
                             </>
                         )}
@@ -136,6 +137,7 @@ function Nav({ user, onSignOut }) {
                             <>
                                 <div className="flex items-center gap-4">
                                     <Link to="/docs" className="text-slate-200 hover:text-fuchsia-400">Docs</Link>
+                                    <Link to="/exercises" className="text-slate-200 hover:text-fuchsia-400">Exercises</Link>
                                     <Link to="/lessons" className="text-slate-200 hover:text-fuchsia-400">Lessons</Link>
                                 </div>
                                 <div className="relative">

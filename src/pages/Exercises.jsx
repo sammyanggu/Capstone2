@@ -6,7 +6,12 @@ import LevelModal from "../components/LevelModal";
 import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../assets/icons/index.js';
 
 function Exercises() {
-	// States to show/hide modals
+	// Mock progress data - replace with actual progress from backend
+	const defaultProgress = {
+		beginner: true,
+		intermediate: false,
+		advanced: false
+	};
 	const [levelhtml, setlevelhtml] = useState(false);
 	const [levelcss, setlevelcss] = useState(false);
 	const [leveljavascript, setleveljavascript] = useState(false);
