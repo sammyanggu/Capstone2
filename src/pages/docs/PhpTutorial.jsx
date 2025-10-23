@@ -1,10 +1,18 @@
 import React from 'react';
-import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import DocumentationEditor from '../../components/DocumentationEditor';
 
 export default function PhpTutorial() {
   return (
-    <div className="min-h-screen bg-slate-900 flex pt-28">
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+    <div className="min-h-screen bg-slate-900 flex flex-col md:flex-row pt-20">
+      {/* Mobile menu button */}
+      <button className="md:hidden fixed top-20 right-4 z-30 bg-slate-800 p-2 rounded-lg text-fuchsia-400 hover:bg-slate-700" onClick={() => document.querySelector('#sidebar').classList.toggle('hidden')}>
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
+
+      {/* Sidebar */}
+      <aside id="sidebar" className="hidden md:block w-full md:w-64 pr-8 md:fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
         <nav className="pt-12">
           <ul className="flex flex-col gap-2 text-fuchsia-200 text-base">
             <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Home</a></li>
@@ -20,11 +28,18 @@ export default function PhpTutorial() {
           </ul>
         </nav>
       </aside>
+
+      {/* Main content */}
       <div className="w-full flex justify-center">
-        <div className="max-w-4xl flex-1 pt-28 px-4 sm:px-8 md:ml-64">
+        <div className="max-w-4xl w-full pt-8 px-4 sm:px-8 md:ml-64">
           <header className="mb-10 border-b border-fuchsia-600 pb-6" id="home">
-            <h1 className="text-4xl font-bold text-fuchsia-400 mb-2">PHP Fundamentals</h1>
-            <p className="text-lg text-fuchsia-200">Master PHP programming with practical examples!</p>
+            <div className="flex items-center gap-4 mb-4">
+              <img src="/src/assets/icons/php.svg" alt="PHP Logo" className="w-16 h-16" />
+              <div>
+                <h1 className="text-4xl font-bold text-fuchsia-400">PHP Fundamentals</h1>
+                <p className="text-lg text-fuchsia-200">Master PHP programming with practical examples!</p>
+              </div>
+            </div>
           </header>
 
           <section id="intro" className="mb-10">
@@ -69,9 +84,8 @@ export default function PhpTutorial() {
             </div>
 
             <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Type Checking</h3>
-            <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
-{`<?php
+            <DocumentationEditor 
+              code={`<?php
 // gettype() - returns the type
 $value = "Hello";
 echo gettype($value);  // string
@@ -86,8 +100,7 @@ echo is_string($number);   // false
 echo is_array([1, 2, 3]);  // true
 echo is_null(null);        // true
 ?>`}
-              </pre>
-            </div>
+            />
 
             <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Type Casting</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
