@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import logo from './assets/logo.png';
 
 function Nav({ user, onSignOut }) {
     const location = useLocation();
@@ -31,7 +32,7 @@ function Nav({ user, onSignOut }) {
 
     return (
         <nav className="bg-slate-800 fixed top-0 left-0 right-0 shadow-lg z-50">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 py-2">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo and back button */}
                     <div className="flex items-center">
@@ -46,8 +47,8 @@ function Nav({ user, onSignOut }) {
                                 </svg>
                             </button>
                         )}
-                        <Link to="/" className="font-bold text-sm text-fuchsia-500 hover:text-fuchsia-400 transition-colors tracking-wide mr-2">
-                            LDev
+                        <Link to="/" className="mr-8 font-bold text-xs sm:text-sm md:text-base text-fuchsia-500 hover:text-fuchsia-400 transition-colors tracking-wide">
+                            LearnDev
                         </Link>
                     </div>
 
@@ -152,7 +153,7 @@ function Nav({ user, onSignOut }) {
                                         <img
                                             src={user.photoURL || '/src/assets/react.svg'}
                                             alt="Profile"
-                                            className="w-7 h-7 rounded-full border-2 border-fuchsia-400 shadow"
+                                            className="w-9 h-9 rounded-full border-2 border-fuchsia-400 shadow"
                                         />
                                     </button>
                                     {dropdown && (

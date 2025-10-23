@@ -1,13 +1,8 @@
-// Live HTML editor component for interactive code editing and preview
 import React, { useState } from 'react';
 
-export default function LiveHtmlEditor({ initialCode, onChange }) {
-  // State to hold the current code in the editor
-  const [code, setCode] = useState(initialCode);
-
-  // Call the onChange prop whenever code changes
-  const handleCodeChange = (newCode) => {
-    setCode(newCode);
+export default function LiveHtmlEditor({ code, onChange }) {
+  const handleCodeChange = (event) => {
+    const newCode = event.target.value;
     if (onChange) {
       onChange(newCode);
     }
@@ -15,50 +10,60 @@ export default function LiveHtmlEditor({ initialCode, onChange }) {
 
   return (
     <div className="mb-6">
-      {/* Label for the editor */}
-      <label className="block text-fuchsia-300 font-semibold mb-2">Try it yourself:</label>
-      {/* Code editor container */}
-      <div className="space-y-4">
-        {/* Textarea for code input */}
-        <textarea
-          className="w-full bg-slate-800 text-fuchsia-200 rounded p-3 font-mono text-sm border border-slate-700 focus:outline-none focus:border-fuchsia-400"
-          style={{
-            height: 'auto',
-            minHeight: '400px',
-            maxHeight: '600px',
-            resize: 'vertical',
-            overflowY: 'auto'
-          }}
-          value={code}
-          onChange={e => handleCodeChange(e.target.value)}
-          spellCheck={false}
-        />
-        {/* Live preview iframe */}
-        <iframe
-          className="bg-white rounded p-4 shadow-inner w-full mt-4"
-          style={{ 
-            height: '400px',
-            border: '1px solid #e2e8f0',
-            color: '#111',
-            overflowY: 'auto'
-          }}
-          srcDoc={`
-            <head>
-              <style>
-                body { color: #111; }
-                /* Ensure black text on white backgrounds */
-                [style*="background: white"], [style*="background-color: white"],
-                [style*="background:#fff"], [style*="background-color:#fff"],
-                [style*="background:#ffffff"], [style*="background-color:#ffffff"] {
-                  color: #000 !important;
-                }
-              </style>
-            </head>
-            <body>${code}</body>
-          `}
-          sandbox="allow-scripts allow-same-origin"
-          title="Live HTML Preview"
-        />
+      <div className="grid grid-cols-2 gap-4">
+        {/* Code editor */}
+        <div className="min-h-[400px]">
+          <div className="bg-slate-800 rounded-t px-4 py-2 text-slate-300 text-sm border-b border-slate-700">
+            Code Editor
+          </div>
+          <textarea
+            className="w-full h-[400px] bg-slate-800 text-fuchsia-200 rounded-b p-3 font-mono text-sm border-x border-b border-slate-700 focus:outline-none focus:border-fuchsia-400"
+            style={{
+              resize: 'none',
+              overflowY: 'auto'
+            }}
+            value={code}
+            onChange={handleCodeChange}
+            spellCheck={false}
+          />
+        </div>
+
+        {/* Output preview */}
+        <div className="min-h-[400px]">
+          <div className="bg-slate-800 rounded-t px-4 py-2 text-slate-300 text-sm border-b border-slate-700">
+            Output
+          </div>
+          <iframe
+            className="w-full h-[400px] bg-white rounded-b"
+            style={{ 
+              border: '1px solid #334155',
+              borderTop: 'none'
+            }}
+            srcDoc={`
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <style>
+                    body {
+                      color: #111;
+                      margin: 0;
+                      padding: 16px;
+                      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+                    }
+                    pre {
+                      white-space: pre-wrap;
+                      word-wrap: break-word;
+                      margin: 0;
+                    }
+                  </style>
+                </head>
+                <body><pre>${code}</pre></body>
+              </html>
+            `}
+            sandbox="allow-scripts allow-same-origin"
+            title="Live Preview"
+          />
+        </div>
       </div>
     </div>
   );

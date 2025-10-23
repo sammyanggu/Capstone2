@@ -27,6 +27,7 @@ import HtmlIntermediate from './pages/exercises/html/HtmlIntermediate'
 import HtmlAdvanced from './pages/exercises/html/HtmlAdvanced'
 import CssExercise from './pages/exercises/CssExercise'
 import JavascriptExercise from './pages/exercises/JavascriptExercise'
+import PhpExercise from './pages/exercises/PhpExercise'
 import Profile from './pages/Profile'
 import Lessons from './pages/lessons'
 import LessonDetail from './pages/lessons/LessonDetail'
@@ -150,6 +151,11 @@ function App() {
         <Route path="/exercises/javascript/:level" element={
           <PrivateRoute user={user}>
             <JavascriptExercise />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/php/:level" element={
+          <PrivateRoute user={user}>
+            <PhpExercise />
           </PrivateRoute>
         } />
 
