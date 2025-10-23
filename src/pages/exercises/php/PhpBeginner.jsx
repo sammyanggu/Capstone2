@@ -1,14 +1,11 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import '../../exercises/exercises.css';
 
 export default function PhpBeginner() {
   const [currentExercise, setCurrentExercise] = React.useState(0);
   const [exerciseStatus, setExerciseStatus] = React.useState({
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-    4: false
+    0: false, 1: false, 2: false, 3: false, 4: false
   });
   const [userCode, setUserCode] = React.useState('');
   const [showHints, setShowHints] = React.useState(false);
@@ -168,61 +165,79 @@ for ($i = 1; $i <= 5; $i++) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 p-8">
-      <h1 className="text-3xl font-bold text-fuchsia-500 mb-6">PHP Beginner Exercises</h1>
-      
-      <div className="flex space-x-2 mb-8">
-        {exercises.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (index === 0 || exerciseStatus[index - 1]) {
-                setCurrentExercise(index);
-                setUserCode(exercises[index].starterCode);
-                setShowHints(false);
-                setShowCongrats(false);
-                setShowError(false);
-              }
-            }}
-            className={`px-4 py-2 rounded cursor-pointer ${
-              currentExercise === index
-                ? 'bg-fuchsia-600 text-white'
-                : index === 0 || exerciseStatus[index - 1]
-                ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-            } ${exerciseStatus[index] ? 'ring-2 ring-green-500' : ''}`}
-          >
-            Exercise {index + 1}
-          </button>
-        ))}
+    <div className="min-h-screen bg-slate-900">
+      {/* Exercise navigation */}
+      <div className="sticky top-16 bg-slate-900/95 backdrop-blur z-10 border-b border-slate-800 pb-3">
+        <h1 className="text-2xl font-bold text-fuchsia-400 px-4 pt-4 pb-3">
+          PHP Beginner Exercises
+        </h1>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-2 px-4">
+          {exercises.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (index === 0 || exerciseStatus[index - 1]) {
+                  setCurrentExercise(index);
+                  setUserCode(exercises[index].starterCode);
+                  setShowHints(false);
+                  setShowCongrats(false);
+                  setShowError(false);
+                }
+              }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                currentExercise === index
+                  ? 'bg-fuchsia-600 text-white shadow-md'
+                  : index === 0 || exerciseStatus[index - 1]
+                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  : 'bg-slate-800/50 text-slate-500 cursor-not-allowed'
+              } ${exerciseStatus[index] ? 'ring-1 ring-green-500/50' : ''}`}
+            >
+              Exercise {index + 1}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div>
-        <h2 className="text-xl font-semibold text-fuchsia-400 mb-2">
-          {exercises[currentExercise].title}
-        </h2>
-        <p className="text-slate-300 mb-6">{exercises[currentExercise].description}</p>
+      {/* Main content */}
+      <div className="p-4">
+        {/* Exercise Title and Instructions */}
+        <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
+          <h2 className="text-xl font-bold text-fuchsia-400 mb-2">
+            {exercises[currentExercise].title}
+          </h2>
+          <div className="bg-slate-900/50 rounded p-3 border border-slate-700">
+            <h3 className="text-white font-medium mb-2">Instructions:</h3>
+            <p className="text-slate-300 text-base leading-relaxed">
+              {exercises[currentExercise].description}
+            </p>
+          </div>
 
-        <button
-          onClick={toggleHints}
-          className="text-fuchsia-400 hover:text-fuchsia-300 mb-4 flex items-center cursor-pointer"
-        >
-          <span className="mr-2">👉</span> Show Hints
+          <button
+            onClick={toggleHints}
+            className="mt-3 text-fuchsia-400 hover:text-fuchsia-300 flex items-center cursor-pointer text-sm bg-slate-900/50 px-3 py-2 rounded-md hover:bg-slate-900 transition-colors"
+          >
+            <span className="mr-1.5">💡</span> {showHints ? 'Hide Hints' : 'Show Hints'}
         </button>
 
         {showHints && (
-          <div className="bg-slate-800 rounded p-4 mb-6">
-            <ul className="list-disc list-inside text-slate-300 space-y-2">
+          <div className="mt-2 bg-slate-900/50 rounded p-3 border border-fuchsia-500/20">
+            <h4 className="text-fuchsia-400 font-medium mb-2">Helpful Hints:</h4>
+            <ul className="list-disc list-inside text-slate-300 space-y-2 text-sm">
               {exercises[currentExercise].hints.map((hint, index) => (
                 <li key={index}>{hint}</li>
               ))}
             </ul>
           </div>
         )}
-        
-        <p className="text-slate-300 mb-2">Try it yourself:</p>
-        <div className="mb-4">
-          <LiveHtmlEditor
+        </div>
+
+        <div className="bg-slate-800/50 rounded-lg p-4">
+          <h3 className="text-white font-medium mb-3 flex items-center">
+            <span className="text-lg mr-2">⌨️</span>
+            Code Editor
+          </h3>
+          <div className="mb-4">
+            <LiveHtmlEditor
             initialCode={userCode || exercises[currentExercise].starterCode}
             onChange={setUserCode}
             language="php"
@@ -232,29 +247,28 @@ for ($i = 1; $i <= 5; $i++) {
         <div className="flex items-center justify-between">
           <button
             onClick={handleSubmitCode}
-            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors cursor-pointer"
+            className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
           >
-            Submit Code
+            Submit
           </button>
           {exerciseStatus[currentExercise] && (
-            <span className="text-green-500">✓ Completed</span>
+            <span className="text-green-500 text-sm">✓ Completed</span>
           )}
         </div>
 
         {showError && (
-          <div className="mt-4 p-4 bg-red-900/50 text-red-200 rounded-lg">
+          <div className="mt-2 p-2 bg-red-900/50 text-red-200 rounded text-sm">
             Not quite right. Try again!
           </div>
         )}
         {showCongrats && (
-          <div className="mt-4 p-4 bg-green-900/50 text-green-200 rounded-lg">
-            🎉 Congratulations! You've completed this exercise. 
+          <div className="mt-2 p-2 bg-green-900/50 text-green-200 rounded text-sm">
+            🎉 Good job! Exercise complete. 
             {currentExercise < exercises.length - 1 && (
-              <span> Click on Exercise {currentExercise + 2} to continue!</span>
+              <span> Try Exercise {currentExercise + 2} next!</span>
             )}
           </div>
         )}
       </div>
     </div>
-  );
-}
+  </div>)};

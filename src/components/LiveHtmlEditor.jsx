@@ -52,7 +52,7 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
             Output
           </div>
           <iframe
-            className="w-full h-[400px] bg-white rounded-b"
+            className="w-full h-[400px] bg-slate-800 rounded-b"
             style={{ 
               border: '1px solid #334155',
               borderTop: 'none'
@@ -63,7 +63,8 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
                 <head>
                   <style>
                     body {
-                      color: #111;
+                      background: #1e293b;
+                      color: #e2e8f0;
                       margin: 0;
                       padding: 16px;
                       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -72,6 +73,8 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
                       white-space: pre-wrap;
                       word-wrap: break-word;
                       margin: 0;
+                      font-family: ui-monospace, monospace;
+                      font-size: 14px;
                     }
                   </style>
                 </head>
