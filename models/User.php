@@ -1,16 +1,28 @@
 <?php
-// User model for handling user data
 
 class User {
     public $id;
-    public $username;
+    public $name;
     public $email;
-    public $xp;
+    public $password;
+    public $points;
+    public $created_at;
 
-    public function __construct($id, $username, $email, $xp = 0) {
+    public function __construct($id, $name, $email, $points = 0, $created_at = null) {
         $this->id = $id;
-        $this->username = $username;
+        $this->name = $name;
         $this->email = $email;
-        $this->xp = $xp;
+        $this->points = $points;
+        $this->created_at = $created_at ?? date('Y-m-d H:i:s');
+    }
+
+    public function toArray() {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'points' => $this->points,
+            'created_at' => $this->created_at
+        ];
     }
 }

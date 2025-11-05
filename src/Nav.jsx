@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import logo from './assets/logo.png';
+import brainLogo from './assets/brain_icon.svg';
 
 function Nav({ user, onSignOut }) {
-    const location = useLocation();
+    const navigate = useNavigate();
     const [dropdown, setDropdown] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
@@ -20,7 +19,15 @@ function Nav({ user, onSignOut }) {
         }
     }, [user]);
 
-    const handleProfileClick = () => setDropdown(!dropdown);
+    const handleProfileClick = () => {
+        setShowNotifications(false);
+        setDropdown(!dropdown);
+    };
+
+    const handleNotificationsClick = () => {
+        setDropdown(false);
+        setShowNotifications(!showNotifications);
+    };
 
     const handleSignOutClick = async () => {
         setDropdown(false);
@@ -31,45 +38,39 @@ function Nav({ user, onSignOut }) {
     const unreadNotifications = notifications.filter(n => !n.is_read).length;
 
     return (
-        <nav className="bg-slate-800 fixed top-0 left-0 right-0 shadow-lg z-50">
-            <div className="container mx-auto px-4 py-2">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo and back button */}
-                    <div className="flex items-center">
-                        {location.pathname !== '/' && (
-                            <button 
-                                onClick={() => window.history.back()}
-                                className="sm:hidden p-2 text-slate-200 hover:text-fuchsia-400 focus:outline-none transition-colors"
-                                aria-label="Go back"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                        )}
-                        <Link to="/" className="mr-8 font-bold text-xs sm:text-sm md:text-base text-fuchsia-500 hover:text-fuchsia-400 transition-colors tracking-wide">
-                            LearnDev
+        <nav className="bg-slate-800 fixed top-0 left-0 right-0 shadow-lg z-[100]">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
+                <div className="flex items-center justify-between h-14 sm:h-16">
+                    {/* Logo */}
+                    <div className="flex-1 flex items-center justify-start">
+                        <Link to="/" className="flex items-center gap-2 sm:gap-3 mr-4 sm:mr-6 lg:mr-8">
+                            <img src={brainLogo} alt="LearnDev Brain Logo" className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9" />
+                            <span className="text-lg sm:text-xl lg:text-2xl font-bold tracking-wide bg-gradient-to-r from-blue-700 to-sky-500 bg-clip-text text-transparent">
+                                Learn<span className="text-sky-500">Dev</span>
+                                <span className="text-sky-500 ml-0.5">&gt;</span>
+                            </span>
                         </Link>
                     </div>
 
-                    {/* Navigation for medium and large screens */}
-                    <div className="hidden sm:flex items-center space-x-8">
+                    {/* Navigation Links and Controls */}
+                    <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
                         {user && (
                             <>
-                                <Link to="/docs" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Docs</Link>
-                                <Link to="/exercises" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Exercises</Link>
-                                <Link to="/lessons" className="text-sm text-fuchsia-400 hover:text-fuchsia-200 transition-colors">Lessons</Link>
+                                <Link to="/docs" className="text-xs sm:text-sm lg:text-md font-bold text-blue-500 hover:text-sky-400 transition-colors whitespace-nowrap">Docs</Link>
+                                <Link to="/exercises" className="text-xs sm:text-sm lg:text-md font-bold text-blue-500 hover:text-sky-400 transition-colors whitespace-nowrap">Exercises</Link>
+                                <Link to="/lessons" className="text-xs sm:text-sm lg:text-md font-bold text-blue-500 hover:text-sky-400 transition-colors whitespace-nowrap">Lessons</Link>
                             </>
                         )}
 
                         {!user ? (
-                            <Link to="/signin" className="btn1h lg:p-2">Sign In</Link>
+                            <Link to="/signin" className="ml-6 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm sm:text-base font-semibold transition-all duration-200">Sign In</Link>
                         ) : (
                             <>
+                                {/* Notifications */}
                                 <div className="relative">
                                     <button 
-                                        onClick={() => setShowNotifications(!showNotifications)}
-                                        className="text-slate-200 hover:text-fuchsia-400 focus:outline-none"
+                                        onClick={handleNotificationsClick}
+                                        className="text-slate-200 hover:text-sky-500 focus:outline-none cursor-pointer"
                                     >
                                         <div className="relative">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,52 +84,66 @@ function Nav({ user, onSignOut }) {
                                         </div>
                                     </button>
                                     {showNotifications && (
-                                        <div className="dd mt-2">
-                                            {notifications.length > 0 ? (
-                                                notifications.map((notification, index) => (
-                                                    <div key={index} className="p-2 hover:bg-slate-100">
-                                                        {notification.message}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="p-2 text-gray-500">No notifications</div>
-                                            )}
+                                        <div className="absolute right-0 mt-2 w-72 md:w-96 bg-slate-800 rounded-lg shadow-xl py-2 border border-slate-700 z-[110]">
+                                            <div className="max-h-[calc(100vh-6rem)] overflow-y-auto">
+                                                {notifications.length > 0 ? (
+                                                    notifications.map((notification, index) => (
+                                                        <div key={index} className="p-3 hover:bg-slate-700/50 border-b border-slate-700 last:border-0 text-sm text-blue-300">
+                                                            {notification.message}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-3 text-sm text-blue-300">No notifications</div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
 
+                                {/* User Profile */}
                                 <div className="relative">
                                     <button onClick={handleProfileClick} className="flex items-center focus:outline-none cursor-pointer">
                                         <img
                                             src={user.photoURL || '/src/assets/react.svg'}
                                             alt="Profile"
-                                            className="w-9 h-9 rounded-full border-2 border-fuchsia-400 shadow"
+                                            className="w-9 h-9 rounded-full border-2 border-blue-400 shadow cursor-pointer"
                                         />
                                     </button>
                                     {dropdown && (
-                                        <div className="absolute right-0 mt-2 w-44 bg-slate-800 rounded-lg shadow-xl py-2 z-50">
-                                            <div className="px-4 py-2 border-b border-slate-700">
-                                                <p className="text-sm font-medium text-fuchsia-400">{user.displayName || 'User'}</p>
+                                        <div className="absolute right-0 mt-2 w-48 sm:w-56 bg-slate-800 rounded-lg shadow-xl py-2 z-[110] border border-slate-700">
+                                            <div className="px-4 py-3 border-b border-slate-700">
+                                                <p className="text-sm font-medium text-blue-400">{user.displayName || 'User'}</p>
+                                                <p className="text-xs text-blue-300 mt-1 truncate">{user.email}</p>
                                             </div>
-                                            <div className="py-1">
+                                            <div className="py-2">
                                                 <button
                                                     onClick={() => { setDropdown(false); navigate('/profile'); }}
-                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                    className="w-full px-4 py-2 text-sm text-left text-blue-400 hover:bg-slate-700/50 hover:text-sky-400 transition-colors flex items-center gap-2"
                                                 >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                    </svg>
                                                     My Profile
                                                 </button>
                                                 <button
                                                     onClick={() => { setDropdown(false); navigate('/profile/settings'); }}
-                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                    className="w-full px-4 py-2 text-sm text-left text-blue-400 hover:bg-slate-700/50 hover:text-sky-400 transition-colors flex items-center gap-2"
                                                 >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
                                                     Settings
                                                 </button>
                                             </div>
-                                            <div className="border-t border-slate-700 pt-1">
+                                            <div className="border-t border-slate-700 pt-2">
                                                 <button
                                                     onClick={handleSignOutClick}
-                                                    className="w-full px-4 py-2 text-sm text-left text-fuchsia-400 hover:bg-slate-700/50 transition-colors"
+                                                    className="w-full px-4 py-2 text-sm text-left text-blue-400 hover:bg-slate-700/50 hover:text-sky-400 transition-colors flex items-center gap-2"
                                                 >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                    </svg>
                                                     Sign Out
                                                 </button>
                                             </div>
@@ -136,66 +151,19 @@ function Nav({ user, onSignOut }) {
                                     )}
                                 </div>
                             </>
-                        )}
-                    </div>
-
-                    {/* Mobile navigation */}
-                    <div className="sm:hidden flex items-center">
-                        {user && (
-                            <>
-                                <div className="flex items-center space-x-4 mr-4">
-                                    <Link to="/docs" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Docs</Link>
-                                    <Link to="/exercises" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Exercises</Link>
-                                    <Link to="/lessons" className="text-sm font-medium text-fuchsia-400 hover:text-fuchsia-400 transition-colors">Lessons</Link>
-                                </div>
-                                <div className="relative">
-                                    <button onClick={handleProfileClick} className="flex items-center focus:outline-none cursor-pointer">
-                                        <img
-                                            src={user.photoURL || '/src/assets/react.svg'}
-                                            alt="Profile"
-                                            className="w-9 h-9 rounded-full border-2 border-fuchsia-400 shadow"
-                                        />
-                                    </button>
-                                    {dropdown && (
-                                        <div className="dd absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 focus:outline-none z-50">
-                                            <div className="py-1">
-                                                <Link 
-                                                    to="/profile" 
-                                                    className="block px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700" 
-                                                    onClick={() => setDropdown(false)}
-                                                >
-                                                    My Profile
-                                                </Link>
-                                                <Link 
-                                                    to="/profile/settings" 
-                                                    className="block px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700" 
-                                                    onClick={() => setDropdown(false)}
-                                                >
-                                                    Settings
-                                                </Link>
-                                            </div>
-                                            <div className="py-1 border-t border-slate-700">
-                                                <button 
-                                                    onClick={handleSignOutClick}
-                                                    className="block w-full text-left px-4 py-2 text-sm text-fuchsia-400 hover:bg-slate-700"
-                                                >
-                                                    Sign Out
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                        {!user && (
-                            <Link to="/signin" className="btn1h px-4 py-2 text-white bg-fuchsia-600 hover:bg-fuchsia-700 rounded-md transition-colors">Sign In</Link>
                         )}
                     </div>
                 </div>
 
-                {/* Backdrop for dropdown */}
-                {dropdown && (
-                    <div className="fixed inset-0 bg-transparent z-40" onClick={() => setDropdown(false)} />
+                {/* Backdrop */}
+                {(dropdown || showNotifications) && (
+                    <div 
+                        className="fixed inset-0 bg-black/10 z-[90]" 
+                        onClick={() => {
+                            setDropdown(false);
+                            setShowNotifications(false);
+                        }} 
+                    />
                 )}
             </div>
         </nav>

@@ -16,9 +16,9 @@ function NavLi({ href, children }) {
 
 export default function HtmlTutorial() {
   return (
-    <div className="min-h-screen bg-slate-900 flex">
+    <div className="min-h-screen bg-white flex">
       {/* Sidebar */}
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-white border-r border-gray-200">
         <nav className="pt-12">
           <ul className="flex flex-col gap-1 text-fuchsia-200 text-base">
             <NavLi href="#home">HTML Home</NavLi>

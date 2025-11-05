@@ -224,9 +224,9 @@ function Lessons() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-16 px-4 pb-8">
+    <div className="min-h-screen bg-white pt-28 px-4 pb-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-10">
+        <h1 className="text-4xl font-bold text-gray-800 mb-10">
           Start Learning
         </h1>
 
@@ -236,7 +236,7 @@ function Lessons() {
             <Link
               key={key}
               to={`/lessons/${key}`}
-              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-slate-900 ${category.hoverBg} transition-all duration-300 transform hover:scale-[1.02]`}
+              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-slate-900 hover:bg-slate-950 transition-all duration-300 transform hover:scale-[1.02] shadow-lg`}
             >
               <div className="flex items-start gap-5">
                 <img 
@@ -263,14 +263,6 @@ function Lessons() {
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* Recent Progress section can be added here */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-fuchsia-300 mb-6">Recent Progress</h2>
-          <div className="bg-slate-800/50 rounded-lg p-6 text-center">
-            <p className="text-slate-400">Start a lesson to track your progress!</p>
-          </div>
         </div>
       </div>
     </div>
