@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../AuthContext';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import { saveExerciseProgress, getExerciseProgress } from '../../../utils/progressTracker';
 
 export default function CssBeginner() {
+    const { currentUser } = useAuth();
     const [currentExercise, setCurrentExercise] = useState(0);
     const [exerciseStatus, setExerciseStatus] = useState({
         0: false,
@@ -14,16 +17,26 @@ export default function CssBeginner() {
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
     
+    // Load progress from database
     useEffect(() => {
-        const savedStatus = localStorage.getItem('cssBeginnerStatus');
-        if (savedStatus) {
-            setExerciseStatus(JSON.parse(savedStatus));
-        }
-    }, []);
+        const loadProgress = async () => {
+            if (currentUser) {
+                const progress = await getExerciseProgress(currentUser.uid, 'css', 'beginner');
+                if (progress) {
+                    setUserCode(progress.code || '');
+                    // Optionally load completion status from database
+                }
+            }
+        };
+        loadProgress();
+    }, [currentUser]);
 
-    useEffect(() => {
-        localStorage.setItem('cssBeginnerStatus', JSON.stringify(exerciseStatus));
-    }, [exerciseStatus]);
+    // Save progress to database when code changes
+    const saveProgress = (code) => {
+        if (currentUser) {
+            saveExerciseProgress(currentUser.uid, 'css', 'beginner', code, false, 0);
+        }
+    };
 
     const exercises = [
         {
@@ -333,7 +346,10 @@ export default function CssBeginner() {
                             <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
                                 <LiveHtmlEditor 
                                     initialCode={exercises[currentExercise].initialCode}
-                                    onChange={setUserCode}
+                                    onChange={(code) => {
+                                        setUserCode(code);
+                                        saveProgress(code);
+                                    }}
                                 />
                             </div>
 

@@ -1,9 +1,14 @@
 import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../AuthContext';
 import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import { saveExerciseProgress, getExerciseProgress } from '../../utils/progressTracker';
 
 // HTML Exercise component that handles different difficulty levels
 function HtmlExercise() {
   const { level } = useParams();
+  const { currentUser } = useAuth();
+  const [userCode, setUserCode] = useState(null);
   
   // Exercise content for different levels
   const exercises = {
@@ -115,6 +120,28 @@ function HtmlExercise() {
   // Get the exercise content for the current level
   const exercise = exercises[level] || exercises.beginner;
 
+  // Load saved progress when component mounts
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (currentUser && level) {
+        const progress = await getExerciseProgress(currentUser.uid, 'html', level);
+        if (progress && progress.code) {
+          setUserCode(progress.code);
+        }
+      }
+    };
+    loadProgress();
+  }, [currentUser, level]);
+
+  // Handle code change and save to database
+  const handleCodeChange = (newCode) => {
+    setUserCode(newCode);
+    // Auto-save to database
+    if (currentUser) {
+      saveExerciseProgress(currentUser.uid, 'html', level, newCode, false, 0);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">HTML Exercise - {level.charAt(0).toUpperCase() + level.slice(1)} Level</h1>
@@ -131,7 +158,8 @@ function HtmlExercise() {
         </div>
       </div>
       <LiveHtmlEditor
-        initialCode={exercise.initialCode}
+        initialCode={userCode !== null ? userCode : exercise.initialCode}
+        onChange={handleCodeChange}
         solution={exercise.solution}
       />
     </div>
