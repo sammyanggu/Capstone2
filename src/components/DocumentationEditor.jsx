@@ -9,7 +9,7 @@ export default function DocumentationEditor({ code, showOutput = true }) {
           <div className="bg-slate-800 rounded-t px-4 py-2 text-slate-300 text-sm border-b border-slate-700">
             Code Example
           </div>
-          <pre className="w-full h-[400px] bg-slate-800 text-fuchsia-200 rounded-b p-3 font-mono text-sm border-x border-b border-slate-700 overflow-auto">
+          <pre className="w-full h-[400px] bg-slate-800 text-white rounded-b p-3 font-mono text-sm border-x border-b border-slate-700 overflow-auto">
             {code}
           </pre>
         </div>
@@ -21,7 +21,7 @@ export default function DocumentationEditor({ code, showOutput = true }) {
               Output
             </div>
             <iframe
-              className="w-full h-[400px] bg-white rounded-b"
+              className="w-full h-[400px] bg-slate-800 rounded-b"
               style={{ 
                 border: '1px solid #334155',
                 borderTop: 'none'

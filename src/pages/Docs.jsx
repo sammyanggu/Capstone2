@@ -19,7 +19,7 @@ function Tutorials() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {/* HTML */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={htmlIcon} alt="HTML5 Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-orange-600 mb-3">HTML</h3>
                         <p className="text-orange-600 text-center mb-6">Complete guide to HTML elements, attributes, and web page structure.</p>
@@ -31,7 +31,7 @@ function Tutorials() {
                     </div>
 
                     {/* CSS */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={cssIcon} alt="CSS Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-blue-600 mb-3">CSS</h3>
                         <p className="text-blue-600 text-center mb-6">Complete guide to CSS properties, selectors, and layout techniques.</p>
@@ -43,7 +43,7 @@ function Tutorials() {
                     </div>
 
                     {/* JavaScript */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={jsIcon} alt="JavaScript Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-yellow-400 mb-3">JavaScript</h3>
                         <p className="text-yellow-400 text-center mb-6">Complete guide to JavaScript syntax, functions, and DOM manipulation.</p>
@@ -55,7 +55,7 @@ function Tutorials() {
                     </div>
 
                     {/* PHP */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={phpIcon} alt="PHP Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-indigo-400 mb-3">PHP</h3>
                         <p className="text-indigo-400 text-center mb-6">Complete guide to PHP syntax, functions, and server-side concepts.</p>
@@ -67,7 +67,7 @@ function Tutorials() {
                     </div>
 
                     {/* Bootstrap */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={bootstrapIcon} alt="Bootstrap Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-violet-600 mb-3">Bootstrap</h3>
                         <p className="text-violet-600 text-center mb-6">Complete guide to Bootstrap components, classes, and utilities.</p>
@@ -79,7 +79,7 @@ function Tutorials() {
                     </div>
 
                     {/* Tailwind CSS */}
-                    <div className="bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02]">
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
                         <img src={tailwindIcon} alt="Tailwind CSS Logo" className="w-16 h-16 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-center text-sky-400 mb-3">Tailwind CSS</h3>
                         <p className="text-sky-600 text-center mb-6">Complete guide to Tailwind CSS classes, configuration, and best practices.</p>

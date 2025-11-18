@@ -199,7 +199,7 @@ function VideoCard({ video, onSelect }) {
 
   return (
     <div 
-      className="bg-slate-800 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-fuchsia-500 transition-all duration-300"
+      className="bg-white rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-fuchsia-500 transition-all duration-300 shadow-md border border-gray-200"
       onClick={() => onSelect(video)}
     >
       <div className="relative">
@@ -213,10 +213,10 @@ function VideoCard({ video, onSelect }) {
         </span>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-slate-100 mb-2">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
           {video.title}
         </h3>
-        <p className="text-slate-400 text-sm line-clamp-2">
+        <p className="text-gray-600 text-sm line-clamp-2">
           {video.description}
         </p>
       </div>
@@ -258,9 +258,9 @@ export default function LessonDetail() {
   
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-slate-900 pt-20 px-4">
+      <div className="min-h-screen bg-white pt-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-3xl font-bold text-fuchsia-400">
+          <h1 className="text-3xl font-bold text-fuchsia-500">
             Category not found
           </h1>
         </div>
@@ -269,7 +269,7 @@ export default function LessonDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-20 px-4">
+    <div className="min-h-screen bg-white pt-20 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -282,7 +282,7 @@ export default function LessonDetail() {
             <h1 className={`text-3xl font-bold ${lesson.color} mb-2`}>
               {lesson.title} Lessons
             </h1>
-            <p className="text-slate-300">
+            <p className="text-gray-600">
               {lesson.description}
             </p>
           </div>

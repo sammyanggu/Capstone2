@@ -28,10 +28,10 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
         <div className="min-h-[400px] w-full">
           <div className="bg-slate-800 rounded-t px-4 py-2 text-slate-300 text-sm border-b border-slate-700 flex justify-between items-center">
             <span>Code Editor</span>
-            {error && <span className="text-red-400 text-xs">{error}</span>}
+            {error && <span className="text-white text-xs">{error}</span>}
           </div>
           <textarea
-            className="w-full h-[400px] bg-slate-800 text-fuchsia-200 rounded-b p-3 font-mono text-sm border-x border-b border-slate-700 focus:outline-none focus:border-fuchsia-400"
+            className="w-full h-[400px] bg-slate-800 text-white rounded-b p-3 font-mono text-sm border-x border-b border-slate-700 focus:outline-none focus:border-slate-800"
             style={{
               resize: 'none',
               overflowY: 'auto',
@@ -52,10 +52,11 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
             Output
           </div>
           <iframe
-            className="w-full h-[400px] bg-slate-800 rounded-b"
+            className="w-full h-[400px] bg-white rounded-b"
             style={{ 
               border: '1px solid #334155',
-              borderTop: 'none'
+              borderTop: 'none',
+              background: '#ffffff'
             }}
             srcDoc={`
               <!DOCTYPE html>

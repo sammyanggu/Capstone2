@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { auth } from "../firebase";
-import axios from "axios";
+import { auth, db } from "../firebase";
+import { ref, query, orderByChild, equalTo, get, update } from "firebase/database";
 import { toast } from 'react-toastify';
 
 const sections = [
@@ -23,38 +23,96 @@ function Profile() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
         console.log('Your user ID:', firebaseUser.uid);
-        // Fetch user achievements
-        axios.get(`http://localhost/capstone-backend/api/achievements.php?userId=${firebaseUser.uid}`)
-          .then(response => {
-            console.log('Achievements response:', response.data);
-            const { achievements: achievementsData, totalPoints } = response.data;
-            setAchievements(achievementsData || []);
-            setTotalPoints(totalPoints || 0);
-          })
-          .catch(error => console.error("Error fetching achievements:", error));
+        
+        try {
+          // Fetch user achievements from Realtime Database
+          const achievementsRef = ref(db, 'achievements');
+          const achievementsSnapshot = await get(achievementsRef);
+          const achievementsData = [];
+          
+          if (achievementsSnapshot.exists()) {
+            achievementsSnapshot.forEach(childSnapshot => {
+              const data = childSnapshot.val();
+              if (data.userId === firebaseUser.uid) {
+                achievementsData.push({
+                  id: childSnapshot.key,
+                  ...data
+                });
+              }
+            });
+          }
+          
+          setAchievements(achievementsData || []);
+          
+          // Calculate total points
+          const total = achievementsData.reduce((sum, achievement) => sum + (achievement.points || 0), 0);
+          setTotalPoints(total);
+        } catch (error) {
+          console.error("Error fetching achievements:", error);
+        }
 
-        // Fetch user badges
-        axios.get(`http://localhost/capstone-backend/api/badges.php?userId=${firebaseUser.uid}`)
-          .then(response => {
-            console.log('Badges response:', response.data);
-            const { badges: badgesData, groupedBadges: groupedData } = response.data;
-            setBadges(badgesData || []);
-            setGroupedBadges(groupedData || {});
-            const equipped = (badgesData || []).find(badge => badge.isEquipped);
-            if (equipped) setEquippedBadge(equipped);
-          })
-          .catch(error => console.error("Error fetching badges:", error));
+        try {
+          // Fetch user badges from Realtime Database
+          const badgesRef = ref(db, 'badges');
+          const badgesSnapshot = await get(badgesRef);
+          const badgesData = [];
+          
+          if (badgesSnapshot.exists()) {
+            badgesSnapshot.forEach(childSnapshot => {
+              const data = childSnapshot.val();
+              if (data.userId === firebaseUser.uid) {
+                badgesData.push({
+                  id: childSnapshot.key,
+                  ...data
+                });
+              }
+            });
+          }
+          
+          setBadges(badgesData || []);
+          
+          // Group badges by type
+          const grouped = {};
+          badgesData.forEach(badge => {
+            const type = badge.type || 'other';
+            if (!grouped[type]) grouped[type] = [];
+            grouped[type].push(badge);
+          });
+          setGroupedBadges(grouped);
+          
+          // Find equipped badge
+          const equipped = badgesData.find(badge => badge.isEquipped);
+          if (equipped) setEquippedBadge(equipped);
+        } catch (error) {
+          console.error("Error fetching badges:", error);
+        }
 
-        // Fetch notifications
-        axios.get(`http://localhost/capstone-backend/api/notifications.php?userId=${firebaseUser.uid}`)
-          .then(response => {
-            setNotifications(response.data || []);
-          })
-          .catch(error => console.error("Error fetching notifications:", error));
+        try {
+          // Fetch notifications from Realtime Database
+          const notificationsRef = ref(db, 'notifications');
+          const notificationsSnapshot = await get(notificationsRef);
+          const notificationsData = [];
+          
+          if (notificationsSnapshot.exists()) {
+            notificationsSnapshot.forEach(childSnapshot => {
+              const data = childSnapshot.val();
+              if (data.userId === firebaseUser.uid) {
+                notificationsData.push({
+                  id: childSnapshot.key,
+                  ...data
+                });
+              }
+            });
+          }
+          
+          setNotifications(notificationsData || []);
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
       }
     });
     return () => unsubscribe();
@@ -63,7 +121,7 @@ function Profile() {
   return (
     <div className="min-h-screen bg-slate-900">
       {!user ? (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-blue-300">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-emerald-700">
           <h2 className="text-2xl font-bold mb-2">No user found</h2>
           <p className="mb-4">Please sign in to view your profile.</p>
         </div>
@@ -73,9 +131,9 @@ function Profile() {
           <aside className="w-full lg:w-80 bg-slate-800 rounded-xl p-4 sm:p-6 lg:p-8 flex flex-col items-center lg:sticky lg:top-24 lg:h-fit">
             <div className="relative mb-6">
               <img
-                src={user.photoURL || "/assets/react.svg"}
+                src={user.photoURL || "/react.svg"}
                 alt="Profile"
-                className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full border-4 border-blue-500 shadow-lg"
+                className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full border-4 border-emerald-700 shadow-lg"
               />
               {equippedBadge && (
                 <img
@@ -85,10 +143,10 @@ function Profile() {
                 />
               )}
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-blue-400 mb-1 sm:mb-2 text-center">
+            <div className="text-xl sm:text-2xl font-bold text-emerald-700 mb-1 sm:mb-2 text-center">
               {user.displayName || "User"}
             </div>
-            <div className="text-xs sm:text-sm text-blue-400 mb-6 sm:mb-8 text-center break-all">
+            <div className="text-xs sm:text-sm text-emerald-700 mb-6 sm:mb-8 text-center break-all">
               {user.email}
             </div>
             <nav className="flex flex-row lg:flex-col gap-2 sm:gap-3 w-full overflow-x-auto scrollbar-none lg:overflow-visible pb-2 lg:pb-0">
@@ -97,8 +155,8 @@ function Profile() {
                   key={s.key}
                   className={`whitespace-nowrap px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg transition-all duration-200 font-medium text-sm sm:text-base flex-1 lg:flex-auto ${
                     active === s.key 
-                    ? "bg-blue-600 text-white shadow-md" 
-                    : "hover:bg-slate-700/50 text-blue-300"
+                    ? "bg-emerald-700 text-white shadow-md" 
+                    : "hover:bg-slate-700/50 text-emerald-700"
                   }`}
                   onClick={() => setActive(s.key)}
                 >
@@ -112,12 +170,12 @@ function Profile() {
           <main className="flex-1 bg-slate-800/50 rounded-xl p-3 sm:p-6 lg:p-8">
             {active === "progress" && (
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-blue-400 mb-4 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-emerald-700 mb-4 sm:mb-8">
                   Learning Progress
                 </h2>
                 {equippedBadge && (
                   <div className="mb-8">
-                    <h3 className="text-xl font-semibold text-blue-300 mb-4">Current Badge</h3>
+                    <h3 className="text-xl font-semibold text-emerald-700 mb-4">Current Badge</h3>
                     <div className="bg-slate-800 p-6 rounded-lg inline-block">
                       <div className="flex items-center gap-4">
                         <div className="relative">
@@ -132,8 +190,8 @@ function Profile() {
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-blue-300">{equippedBadge.name}</h4>
-                          <p className="text-sm text-blue-200">{equippedBadge.description}</p>
+                          <h4 className="font-semibold text-emerald-300">{equippedBadge.name}</h4>
+                          <p className="text-sm text-emerald-200">{equippedBadge.description}</p>
                         </div>
                       </div>
                     </div>
@@ -144,25 +202,25 @@ function Profile() {
 
             {active === "edit" && (
               <div>
-                <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                <h2 className="text-2xl font-bold text-emerald-700 mb-4">
                   Edit Profile
                 </h2>
-                <p className="text-blue-300">Profile editing form goes here.</p>
+                <p className="text-emerald-700">Profile editing form goes here.</p>
               </div>
             )}
 
             {active === "achievements" && (
               <div className="flex flex-col gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-2 sm:mb-4">
-                  <h2 className="text-xl sm:text-2xl font-bold text-blue-400">
+                  <h2 className="text-xl sm:text-2xl font-bold text-emerald-700">
                     Achievements
                   </h2>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                    <div className="text-blue-300 whitespace-nowrap">
+                    <div className="text-emerald-700 whitespace-nowrap">
                       <span className="font-bold">Total Points:</span> {totalPoints}
                     </div>
                     <select 
-                      className="w-full sm:w-auto bg-slate-700 text-blue-300 rounded px-3 py-1.5 text-sm"
+                      className="w-full sm:w-auto bg-slate-700 text-emerald-700 rounded px-3 py-1.5 text-sm"
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
                     >
@@ -171,12 +229,12 @@ function Profile() {
                       <option value="css">CSS</option>
                       <option value="javascript">JavaScript</option>
                     </select>
-                    <label className="flex items-center gap-2 text-blue-300 whitespace-nowrap">
+                    <label className="flex items-center gap-2 text-emerald-700 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={showUnearned}
                         onChange={(e) => setShowUnearned(e.target.checked)}
-                        className="form-checkbox text-blue-500"
+                        className="form-checkbox text-emerald-700"
                       />
                       Show Unearned
                     </label>
@@ -186,14 +244,14 @@ function Profile() {
                 {/* Stats Overview */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="bg-slate-800 p-4 sm:p-6 rounded-lg transform hover:scale-105 transition-transform">
-                    <h3 className="text-base sm:text-lg font-semibold text-blue-300 mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-emerald-700 mb-2">
                       Achievements Progress
                     </h3>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-3xl font-bold text-blue-400">
+                      <p className="text-3xl font-bold text-emerald-700">
                         {achievements.filter(a => a.isEarned).length}
                       </p>
-                      <p className="text-lg text-blue-300">/ {achievements.length}</p>
+                      <p className="text-lg text-emerald-700">/ {achievements.length}</p>
                     </div>
                     <div className="mt-2 h-2 bg-slate-700 rounded overflow-hidden">
                       <div 
@@ -205,14 +263,14 @@ function Profile() {
                     </div>
                   </div>
                   <div className="bg-slate-800 p-4 sm:p-6 rounded-lg transform hover:scale-105 transition-transform">
-                    <h3 className="text-base sm:text-lg font-semibold text-blue-300 mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-emerald-300 mb-2">
                       Badges Progress
                     </h3>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-3xl font-bold text-blue-400">
+                      <p className="text-3xl font-bold text-emerald-400">
                         {badges.filter(b => b.isEarned).length}
                       </p>
-                      <p className="text-lg text-blue-300">/ {badges.length}</p>
+                      <p className="text-lg text-emerald-300">/ {badges.length}</p>
                     </div>
                     <div className="mt-2 h-2 bg-slate-700 rounded overflow-hidden">
                       <div 
@@ -233,7 +291,7 @@ function Profile() {
                       <div 
                         key={achievement.id} 
                         className={`bg-slate-800 p-3 sm:p-4 rounded-lg relative transform hover:scale-105 transition-transform ${
-                          achievement.isEarned ? 'border-2 border-blue-500' : 'opacity-75'
+                          achievement.isEarned ? 'border-2 border-emerald-700' : 'opacity-75'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -244,7 +302,7 @@ function Profile() {
                               className={`w-12 h-12 ${!achievement.isEarned && 'grayscale'}`}
                             />
                             {achievement.isEarned && (
-                              <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-1">
+                              <div className="absolute -top-1 -right-1 bg-emerald-700 rounded-full p-1">
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
                                 </svg>
@@ -252,18 +310,18 @@ function Profile() {
                             )}
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-blue-300">
+                            <h3 className="text-lg font-semibold text-emerald-300">
                               {achievement.name}
                             </h3>
-                            <p className="text-sm text-blue-200">
+                            <p className="text-sm text-emerald-200">
                               {achievement.description}
                             </p>
                             <div className="flex justify-between items-center mt-2">
-                              <p className="text-sm text-blue-400">
+                              <p className="text-sm text-emerald-400">
                                 {achievement.points} points
                               </p>
                               {achievement.dateEarned && (
-                                <p className="text-xs text-blue-200">
+                                <p className="text-xs text-emerald-200">
                                   Earned: {new Date(achievement.dateEarned).toLocaleDateString()}
                                 </p>
                               )}
@@ -308,7 +366,7 @@ function Profile() {
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-blue-300 mb-2">Equipped Badge</h3>
+                  <h3 className="text-lg font-semibold text-emerald-700 mb-2">Equipped Badge</h3>
                   {equippedBadge ? (
                     <div className="bg-slate-800 p-4 rounded-lg inline-block relative overflow-hidden">
                       <div className="absolute inset-0 opacity-10" style={{ 
@@ -329,14 +387,14 @@ function Profile() {
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-blue-300">{equippedBadge.name}</h4>
-                          <p className="text-sm text-blue-200">{equippedBadge.description}</p>
-                          <p className="text-xs text-blue-400 mt-1">Type: {equippedBadge.type || 'General'}</p>
+                          <h4 className="font-semibold text-emerald-700">{equippedBadge.name}</h4>
+                          <p className="text-sm text-emerald-700">{equippedBadge.description}</p>
+                          <p className="text-xs text-emerald-700 mt-1">Type: {equippedBadge.type || 'General'}</p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-blue-300">No badge equipped</p>
+                    <p className="text-emerald-700">No badge equipped</p>
                   )}
                 </div>
 
@@ -344,7 +402,7 @@ function Profile() {
                   .filter(([type]) => selectedCategory === 'all' || type.toLowerCase() === selectedCategory)
                   .map(([type, typeBadges]) => (
                     <div key={type} className="mb-8">
-                      <h3 className="text-lg font-semibold text-blue-300 mb-4 capitalize">
+                      <h3 className="text-lg font-semibold text-emerald-700 mb-4 capitalize">
                         {type} Badges
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
@@ -373,33 +431,37 @@ function Profile() {
                                 </div>
                               </div>
                               <div className="flex-1">
-                                <h4 className="font-semibold text-blue-300">{badge.name}</h4>
-                                <p className="text-sm text-blue-200">{badge.description}</p>
+                                <h4 className="font-semibold text-emerald-700">{badge.name}</h4>
+                                <p className="text-sm text-emerald-700">{badge.description}</p>
                                 {badge.isEarned ? (
                                   <>
-                                    <p className="text-xs text-blue-200 mt-1">
+                                    <p className="text-xs text-emerald-700 mt-1">
                                       Earned: {new Date(badge.dateEarned).toLocaleDateString()}
                                     </p>
                                     <button
-                                      onClick={() => {
-                                        axios.post(`http://localhost/capstone-backend/api/badges.php`, {
-                                          userId: user.uid,
-                                          badgeId: badge.id,
-                                          action: 'equip'
-                                        })
-                                        .then(() => {
+                                      onClick={async () => {
+                                        try {
+                                          // Unequip previous badge if any
+                                          if (equippedBadge?.id) {
+                                            const oldBadgeRef = ref(db, 'badges/' + equippedBadge.id);
+                                            await update(oldBadgeRef, { isEquipped: false });
+                                          }
+                                          
+                                          // Equip new badge
+                                          const newBadgeRef = ref(db, 'badges/' + badge.id);
+                                          await update(newBadgeRef, { isEquipped: true });
+                                          
                                           setEquippedBadge(badge);
                                           toast.success('Badge equipped successfully!');
-                                        })
-                                        .catch(error => {
+                                        } catch (error) {
                                           console.error("Error equipping badge:", error);
                                           toast.error('Failed to equip badge');
-                                        });
+                                        }
                                       }}
                                       className={`mt-2 px-3 py-1 rounded transition-colors ${
                                         equippedBadge?.id === badge.id
-                                          ? 'bg-blue-700 text-white cursor-not-allowed'
-                                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                          ? 'bg-emerald-800 text-white cursor-not-allowed'
+                                          : 'bg-emerald-700 hover:bg-emerald-800 text-white'
                                       }`}
                                       disabled={equippedBadge?.id === badge.id}
                                     >
@@ -408,7 +470,7 @@ function Profile() {
                                   </>
                                 ) : (
                                   <div className="mt-2">
-                                    <p className="text-xs text-blue-300">Requirements:</p>
+                                    <p className="text-xs text-emerald-700">Requirements:</p>
                                     <ul className="text-xs text-blue-200 list-disc list-inside">
                                       {badge.requiredAchievements.map((req, idx) => (
                                         <li key={idx}>{req}</li>

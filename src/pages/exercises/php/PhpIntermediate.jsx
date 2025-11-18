@@ -77,20 +77,20 @@ const PhpIntermediate = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 pt-20 px-4">
+        <div className="min-h-screen bg-white pt-20 px-4">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-bold text-fuchsia-500 mb-8">PHP Exercises - Intermediate</h1>
+                <h1 className="text-3xl font-bold text-emerald-600 mb-8">PHP Exercises - Intermediate</h1>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Exercise List */}
-                    <div className="bg-slate-800 rounded-xl p-6">
-                        <h2 className="text-xl font-semibold text-fuchsia-400 mb-4">Exercises</h2>
+                    <div className="bg-gray-100 rounded-xl p-6">
+                        <h2 className="text-xl font-semibold text-emerald-600 mb-4">Exercises</h2>
                         <div className="space-y-6">
                             {exercises.map((exercise, index) => (
-                                <div key={index} className="border border-slate-700 rounded-lg p-4">
-                                    <h3 className="text-lg font-medium text-fuchsia-300 mb-2">{exercise.title}</h3>
-                                    <p className="text-slate-300 mb-3 text-sm">{exercise.description}</p>
-                                    <ul className="list-disc list-inside text-slate-400 text-sm space-y-1">
+                                <div key={index} className="border border-gray-300 rounded-lg p-4">
+                                    <h3 className="text-lg font-medium text-emerald-600 mb-2">{exercise.title}</h3>
+                                    <p className="text-gray-700 mb-3 text-sm">{exercise.description}</p>
+                                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
                                         {exercise.tasks.map((task, taskIndex) => (
                                             <li key={taskIndex}>{task}</li>
                                         ))}
@@ -101,16 +101,16 @@ const PhpIntermediate = () => {
                     </div>
 
                     {/* Code Editor */}
-                    <div className="bg-slate-800 rounded-xl p-6">
-                        <h2 className="text-xl font-semibold text-fuchsia-400 mb-4">Code Editor</h2>
+                    <div className="bg-gray-100 rounded-xl p-6">
+                        <h2 className="text-xl font-semibold text-emerald-600 mb-4">Code Editor</h2>
                         <LiveHtmlEditor 
                             code={code}
                             onChange={handleCodeChange}
                             language="php"
                         />
                         <div className="mt-4">
-                            <h3 className="text-lg font-medium text-fuchsia-300 mb-2">Output</h3>
-                            <div className="bg-slate-900 rounded-lg p-4 text-slate-300">
+                            <h3 className="text-lg font-medium text-emerald-600 mb-2">Output</h3>
+                            <div className="bg-white rounded-lg p-4 text-gray-700 border border-gray-300">
                                 <pre>{output}</pre>
                             </div>
                         </div>

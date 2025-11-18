@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 // Component for video lesson card
 function VideoCard({ title, thumbnail, duration, category }) {
   return (
-    <div className="bg-slate-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-fuchsia-500 transition-all duration-300">
+    <div className="bg-white rounded-lg overflow-hidden hover:ring-2 hover:ring-fuchsia-500 transition-all duration-300 shadow-md border border-gray-200">
       <div className="relative">
         <img 
           src={thumbnail} 
@@ -16,8 +16,8 @@ function VideoCard({ title, thumbnail, duration, category }) {
         </span>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-slate-100 mb-2">{title}</h3>
-        <span className="inline-block bg-fuchsia-500/20 text-fuchsia-400 rounded px-2 py-1 text-sm">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+        <span className="inline-block bg-fuchsia-500/20 text-fuchsia-600 rounded px-2 py-1 text-sm">
           {category}
         </span>
       </div>
@@ -112,9 +112,9 @@ export default function VideoLessons() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-20 px-4">
+    <div className="min-h-screen bg-white pt-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-fuchsia-400 mb-8">
+        <h1 className="text-3xl font-bold text-fuchsia-600 mb-8">
           Video Lessons
         </h1>
 
@@ -127,7 +127,7 @@ export default function VideoLessons() {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 
                 ${selectedCategory === category.id 
                   ? 'bg-fuchsia-500 text-white' 
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               {category.label}
             </button>
@@ -150,7 +150,7 @@ export default function VideoLessons() {
         {/* No results message */}
         {filteredVideos.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-slate-400 text-lg">
+            <p className="text-gray-600 text-lg">
               No video lessons found for this category.
             </p>
           </div>

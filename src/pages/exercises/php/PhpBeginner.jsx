@@ -165,10 +165,10 @@ for ($i = 1; $i <= 5; $i++) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Exercise navigation */}
-      <div className="sticky top-16 bg-slate-900/95 backdrop-blur z-10 border-b border-slate-800 pb-3">
-        <h1 className="text-2xl font-bold text-fuchsia-400 px-4 pt-4 pb-3">
+      <div className="sticky top-16 bg-white/95 backdrop-blur z-10 border-b border-gray-300 pb-3">
+        <h1 className="text-2xl font-bold text-emerald-600 px-4 pt-4 pb-3">
           PHP Beginner Exercises
         </h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-2 px-4">
@@ -186,10 +186,10 @@ for ($i = 1; $i <= 5; $i++) {
               }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 currentExercise === index
-                  ? 'bg-fuchsia-600 text-white shadow-md'
+                  ? 'bg-emerald-600 text-white shadow-md'
                   : index === 0 || exerciseStatus[index - 1]
-                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  : 'bg-slate-800/50 text-slate-500 cursor-not-allowed'
+                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               } ${exerciseStatus[index] ? 'ring-1 ring-green-500/50' : ''}`}
             >
               Exercise {index + 1}
@@ -201,27 +201,27 @@ for ($i = 1; $i <= 5; $i++) {
       {/* Main content */}
       <div className="p-4">
         {/* Exercise Title and Instructions */}
-        <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
-          <h2 className="text-xl font-bold text-fuchsia-400 mb-2">
+        <div className="bg-gray-100 rounded-lg p-4 mb-4">
+          <h2 className="text-xl font-bold text-emerald-600 mb-2">
             {exercises[currentExercise].title}
           </h2>
-          <div className="bg-slate-900/50 rounded p-3 border border-slate-700">
-            <h3 className="text-white font-medium mb-2">Instructions:</h3>
-            <p className="text-slate-300 text-base leading-relaxed">
+          <div className="bg-white rounded p-3 border border-gray-300">
+            <h3 className="text-gray-800 font-medium mb-2">Instructions:</h3>
+            <p className="text-gray-700 text-base leading-relaxed">
               {exercises[currentExercise].description}
             </p>
           </div>
 
           <button
             onClick={toggleHints}
-            className="mt-3 text-fuchsia-400 hover:text-fuchsia-300 flex items-center cursor-pointer text-sm bg-slate-900/50 px-3 py-2 rounded-md hover:bg-slate-900 transition-colors"
+            className="mt-3 text-emerald-600 hover:text-emerald-700 flex items-center cursor-pointer text-sm bg-gray-50 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
           >
             <span className="mr-1.5">💡</span> {showHints ? 'Hide Hints' : 'Show Hints'}
         </button>
 
         {showHints && (
-          <div className="mt-2 bg-slate-900/50 rounded p-3 border border-fuchsia-500/20">
-            <h4 className="text-fuchsia-400 font-medium mb-2">Helpful Hints:</h4>
+          <div className="mt-2 bg-slate-900/50 rounded p-3 border border-emerald-500/20">
+            <h4 className="text-emerald-400 font-medium mb-2">Helpful Hints:</h4>
             <ul className="list-disc list-inside text-slate-300 space-y-2 text-sm">
               {exercises[currentExercise].hints.map((hint, index) => (
                 <li key={index}>{hint}</li>

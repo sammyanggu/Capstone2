@@ -477,16 +477,16 @@ export default function JsIntermediate() {
   const currentExerciseData = exercises[currentExercise];
   
   return (
-    <div className="min-h-screen bg-slate-900 pt-16">
+    <div className="min-h-screen bg-white pt-16">
       {/* Congratulations Modal */}
       {showCongrats && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-slate-800 p-6 rounded-lg shadow-xl border border-fuchsia-500 animate-bounce">
+          <div className="bg-white p-6 rounded-lg shadow-xl border border-emerald-500 animate-bounce">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-fuchsia-400 mb-2">🎉 Congratulations! 🎉</h3>
-              <p className="text-slate-300">You've completed this exercise!</p>
+              <h3 className="text-2xl font-bold text-emerald-500 mb-2">🎉 Congratulations! 🎉</h3>
+              <p className="text-gray-700">You've completed this exercise!</p>
               {currentExercise < exercises.length - 1 && (
-                <p className="text-slate-400 text-sm mt-2">Moving to next exercise...</p>
+                <p className="text-gray-600 text-sm mt-2">Moving to next exercise...</p>
               )}
             </div>
           </div>
@@ -494,8 +494,8 @@ export default function JsIntermediate() {
       )}
 
       <div className="container mx-auto px-4 py-4 max-w-4xl">
-        <div className="bg-slate-800/50 rounded-lg shadow-lg p-4 mb-4">
-          <h1 className="text-xl font-bold text-fuchsia-400 mb-3">JavaScript Intermediate Exercises</h1>
+        <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
+          <h1 className="text-xl font-bold text-emerald-600 mb-3">JavaScript Intermediate Exercises</h1>
           
           {/* Exercise Navigation */}
           <div className="flex gap-2 mb-4 flex-wrap">
@@ -504,12 +504,12 @@ export default function JsIntermediate() {
                 key={index}
                 className={`px-3 py-1.5 rounded-lg text-sm ${
                   !canAccessExercise(index)
-                    ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : currentExercise === index
-                    ? 'bg-fuchsia-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : exerciseStatus[index]
                     ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                 }`}
                 onClick={() => canAccessExercise(index) && setCurrentExercise(index)}
                 disabled={!canAccessExercise(index)}
@@ -523,14 +523,14 @@ export default function JsIntermediate() {
           </div>
 
           {/* Current Exercise */}
-          <div className="bg-slate-900/50 rounded-lg p-4 mb-4">
-            <h2 className="text-lg font-bold text-fuchsia-400 mb-1">{exercises[currentExercise].title}</h2>
-            <p className="text-slate-300 mb-3 text-sm">{exercises[currentExercise].instructions}</p>
+          <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+            <h2 className="text-lg font-bold text-emerald-600 mb-1">{exercises[currentExercise].title}</h2>
+            <p className="text-gray-700 mb-3 text-sm">{exercises[currentExercise].instructions}</p>
             
             {/* Hints */}
             <div className="mb-4">
               <button 
-                className="text-fuchsia-400 hover:text-fuchsia-300 text-sm font-medium flex items-center gap-2"
+                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-2"
                 onClick={() => document.getElementById('hints-intermediate').classList.toggle('hidden')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -538,8 +538,8 @@ export default function JsIntermediate() {
                 </svg>
                 Show Hints
               </button>
-              <div id="hints-intermediate" className="hidden mt-2 bg-slate-800/50 rounded p-4 border border-slate-700/50">
-                <ul className="list-disc list-inside text-slate-300 space-y-1">
+              <div id="hints-intermediate" className="hidden mt-2 bg-gray-50 rounded p-4 border border-gray-300">
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {exercises[currentExercise].hints.map((hint, index) => (
                     <li key={index} className="text-sm">{hint}</li>
                   ))}
@@ -548,7 +548,7 @@ export default function JsIntermediate() {
             </div>
 
             {/* Code Editor */}
-            <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden mb-4">
+            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden mb-4">
               <LiveHtmlEditor
                 initialCode={exercises[currentExercise].initialCode}
                 solution={exercises[currentExercise].solution}
@@ -559,14 +559,14 @@ export default function JsIntermediate() {
             {/* Submit Button */}
             <button
               onClick={handleCodeSubmit}
-              className="px-4 py-2 bg-fuchsia-500 text-white rounded hover:bg-fuchsia-600 transition-colors cursor-pointer text-sm font-medium"
+              className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
             >
               Submit Code
             </button>
 
             {/* Error Message */}
             {showError && (
-              <div className="mt-4 bg-red-900/30 border border-red-700/50 text-red-200 px-4 py-3 rounded animate-shake">
+              <div className="mt-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded animate-shake">
                 <p>Not quite right! Check the requirements and try again.</p>
               </div>
             )}

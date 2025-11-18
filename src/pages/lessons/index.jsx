@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 // Import SVG assets
@@ -194,18 +193,8 @@ function Lessons() {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Here you'll fetch lessons from your API
-        // Example:
-        // axios.get(`http://localhost/capstone-backend/api/lessons.php?userId=${firebaseUser.uid}`)
-        //   .then(response => {
-        //     setLessons(response.data);
-        //     setLoading(false);
-        //   })
-        //   .catch(error => {
-        //     console.error("Error fetching lessons:", error);
-        //     setLoading(false);
-        //   });
-        setLoading(false); // Remove this when implementing actual API call
+        // TODO: Fetch lessons from Firestore when implemented
+        setLoading(false);
       }
     });
     return () => unsubscribe();
@@ -213,7 +202,7 @@ function Lessons() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 pt-20 px-4">
+      <div className="min-h-screen bg-white pt-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-[60vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
@@ -236,7 +225,7 @@ function Lessons() {
             <Link
               key={key}
               to={`/lessons/${key}`}
-              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-slate-900 hover:bg-slate-950 transition-all duration-300 transform hover:scale-[1.02] shadow-lg`}
+              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-gray-50 hover:bg-gray-100 transition-all duration-300 transform hover:scale-[1.02] shadow-md`}
             >
               <div className="flex items-start gap-5">
                 <img 
@@ -248,16 +237,16 @@ function Lessons() {
                   <h2 className={`text-2xl font-bold ${category.color}`}>
                     {category.title}
                   </h2>
-                  <p className="text-slate-300 text-sm mt-1.5">
+                  <p className="text-gray-600 text-sm mt-1.5">
                     {category.description}
                   </p>
                   
                   {/* Progress indicators can be added here when connected to backend */}
                   <div className="mt-6 flex items-center gap-3">
-                    <div className="flex-1 h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2.5 bg-gray-300 rounded-full overflow-hidden">
                       <div className={`h-full ${category.color.replace('text', 'bg')}`} style={{ width: '0%' }}></div>
                     </div>
-                    <span className="text-sm text-slate-400 font-medium">0%</span>
+                    <span className="text-sm text-gray-600 font-medium">0%</span>
                   </div>
                 </div>
               </div>

@@ -1,33 +1,88 @@
 import React from 'react';
 import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import NavLi from '../../components/NavLi';
 
 export default function BootstrapTutorial() {
+  const [isAsideCollapsed, setIsAsideCollapsed] = React.useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-900 flex pt-28">
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+    <div className="min-h-screen bg-white flex pt-28">
+      {/* Open button (visible when aside is closed) */}
+      {isAsideCollapsed && (
+        <button
+          onClick={() => setIsAsideCollapsed(false)}
+          className="fixed left-0 top-[4.5rem] z-30 p-2 rounded-r bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-all duration-200 border-y border-r border-slate-800"
+          aria-label="Open menu"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed w-64 left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ${
+          isAsideCollapsed ? '-translate-x-full' : 'translate-x-0'
+        }`}
+      >
+        {/* Close button inside aside */}
+        {!isAsideCollapsed && (
+          <button
+            onClick={() => setIsAsideCollapsed(true)}
+            className="absolute right-2 top-3 z-30 p-1.5 rounded bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-colors"
+            aria-label="Close menu"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
         <nav className="pt-12">
-          <ul className="flex flex-col gap-2 text-fuchsia-200 text-base">
-            <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Bootstrap Home</a></li>
-            <li><a href="#intro" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Getting Started</a></li>
+          <ul className="flex flex-col gap-2 text-slate-200 text-base">
+            <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Bootstrap Home</a></li>
+            <li><a href="#intro" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Getting Started</a></li>
             
             {/* Layout */}
-            <li className="mt-4 mb-2 text-fuchsia-400 font-semibold">Layout</li>
-            <li><a href="#containers" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Containers</a></li>
-            <li><a href="#grid" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Grid System</a></li>
-            <li><a href="#flex" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Flex</a></li>
+            <li className="mt-4 mb-2 text-emerald-400 font-semibold">Layout</li>
+            <li><a href="#containers" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Containers</a></li>
+            <li><a href="#grid" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Grid System</a></li>
+            <li><a href="#flex" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Flex</a></li>
             
             {/* Content */}
-            <li className="mt-4 mb-2 text-fuchsia-400 font-semibold">Content</li>
-            <li><a href="#typography" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Typography</a></li>
-            <li><a href="#images" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Images</a></li>
-            <li><a href="#tables" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Tables</a></li>
+            <li className="mt-4 mb-2 text-emerald-400 font-semibold">Content</li>
+            <li><a href="#typography" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Typography</a></li>
+            <li><a href="#images" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Images</a></li>
+            <li><a href="#tables" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Tables</a></li>
 
             {/* Forms */}
-            <li className="mt-4 mb-2 text-fuchsia-400 font-semibold">Forms</li>
-            <li><a href="#forms-overview" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Form Overview</a></li>
-            <li><a href="#input-groups" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Input Groups</a></li>
-            <li><a href="#floating-labels" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Floating Labels</a></li>
-            <li><a href="#validation" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Form Validation</a></li>
+            <li className="mt-4 mb-2 text-emerald-400 font-semibold">Forms</li>
+            <li><a href="#forms-overview" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Form Overview</a></li>
+            <li><a href="#input-groups" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Input Groups</a></li>
+            <li><a href="#floating-labels" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Floating Labels</a></li>
+            <li><a href="#validation" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-emerald-400 transition">Form Validation</a></li>
             
             {/* Components */}
             <li className="mt-4 mb-2 text-fuchsia-400 font-semibold">Components</li>

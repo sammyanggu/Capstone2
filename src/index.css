@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-modal-slide-up {
+  animation: modal-slide-up 0.3s ease-out;
+}
+
 html, body {
   width: 100%;
   overflow-x: hidden;
@@ -9,16 +24,16 @@ html, body {
 }
 
 #root {
-  @apply w-full block;
+  @apply w-full block bg-white;
 }
 
 .btn1 {
-  @apply border-2 border-blue-600 text-blue-600 p-8 rounded-2xl py-1 hover:border-sky-500 hover:text-sky-500 cursor-pointer transition-all duration-300 ease-in-out;
+  @apply border-2 border-emerald-600 text-emerald-600 p-8 rounded-2xl py-1 hover:border-emerald-500 hover:text-emerald-500 cursor-pointer transition-all duration-300 ease-in-out;
 }
 
 /* Custom underline animation for .linkS (center-out on hover for lg+) */
 .linkS {
-  @apply font-semibold underline underline-offset-4 decoration-sky-500 decoration-2 transition-all duration-300 ease-in-out lg:no-underline lg:after:content-[''] lg:after:absolute lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:bottom-0 lg:after:h-0.5 lg:after:w-0 lg:after:bg-blue-600 lg:after:transition-all lg:after:duration-300 lg:group-hover:after:w-full lg:after:origin-center hover:text-blue-600 cursor-pointer;
+  @apply font-semibold underline underline-offset-4 decoration-emerald-500 decoration-2 transition-all duration-300 ease-in-out lg:no-underline lg:after:content-[''] lg:after:absolute lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:bottom-0 lg:after:h-0.5 lg:after:w-0 lg:after:bg-emerald-600 lg:after:transition-all lg:after:duration-300 lg:group-hover:after:w-full lg:after:origin-center hover:text-emerald-600 cursor-pointer;
 }
 
 @keyframes bounce {
@@ -49,7 +64,7 @@ html, body {
 /* Custom hover button style */
 @layer components {
   .btn1h {
-    @apply border-2 font-semibold border-sky-500 text-blue-600 min-w-25 rounded-full flex items-center justify-center hover:bg-blue-600 hover:border-blue-600 hover:text-white cursor-pointer transition-all duration-300 ease-in-out;
+    @apply border-2 font-semibold border-emerald-500 text-emerald-600 min-w-25 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white cursor-pointer transition-all duration-300 ease-in-out;
   }
 
   /* === Home.jsx classes === */
@@ -67,13 +82,13 @@ html, body {
     }
   }
   .cardS {
-    @apply flex flex-col gap-6 mb-16;
+    @apply grid grid-cols-1 md:grid-cols-3 gap-8 mb-20;
   }
   .cardF {
-    @apply bg-white p-4 sm:p-6 rounded-lg shadow-lg flex flex-col items-center;
+    @apply bg-white p-6 sm:p-8 rounded-lg shadow-lg flex flex-col items-center border border-gray-200 hover:shadow-xl transition-shadow;
   }
   .titleF {
-    @apply font-bold text-lg text-blue-600;
+    @apply font-bold text-lg text-emerald-600;
   }
   .heroT {
     @apply text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 text-center text-white drop-shadow-xl tracking-tight;
@@ -82,7 +97,7 @@ html, body {
     @apply text-lg sm:text-xl md:text-2xl max-w-2xl text-center text-sky-200 font-medium drop-shadow-lg;
   }
   .mainC {
-    @apply container mx-auto px-4 pt-0 pb-8;
+    @apply w-full px-4 sm:px-6 md:px-8 pt-4 pb-12 flex flex-col;
   }
   .mtHero {
     @apply mt-6 sm:mt-10 md:mt-14;
@@ -112,19 +127,19 @@ html, body {
     @apply rounded-full border-4 border-sky-500 mb-4 shadow w-16 h-16 sm:w-10 sm:h-10 md:w-18 md:h-18 lg:w-22 lg:h-22 xl:w-25 xl:h-25;
   }
   .PName {
-    @apply font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-blue-600 mb-2 text-left break-words;
+    @apply font-bold text-base sm:text-lg md:text-xl lg:text-2xl text-emerald-600 mb-2 text-left break-words;
   }
   .divA {
     @apply flex flex-col w-full gap-1 mt-2;
   }
   .AA {
-    @apply w-full block text-center text-lg font-semibold text-blue-600 px-2 py-1 rounded hover:bg-transparent hover:text-sky-500 transition-all duration-300 ease-in-out cursor-pointer border-0 shadow-none sm:text-sm;
+    @apply w-full block text-center text-lg font-semibold text-emerald-600 px-2 py-1 rounded hover:bg-transparent hover:text-emerald-500 transition-all duration-300 ease-in-out cursor-pointer border-0 shadow-none sm:text-sm;
   }
   .PContent {
     @apply flex-1 bg-white rounded-xl shadow-lg p-8 min-h-[300px] flex items-center justify-center;
   }
   .PSectionTitle {
-    @apply font-bold text-lg text-blue-600 mb-4;
+    @apply font-bold text-lg text-emerald-600 mb-4;
   }
   .PEmail {
     @apply text-gray-600 mb-2;
@@ -150,19 +165,19 @@ html, body {
 
 /* === Exercises.jsx classes === */
 .exercises-container {
-  @apply container mx-auto px-4 py-8;
+  @apply w-full px-4 py-12 sm:py-16 md:py-20 bg-white min-h-screen;
 }
 .exercises-title {
-  @apply text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-center text-black;
+  @apply text-4xl sm:text-5xl md:text-6xl font-bold mb-12 sm:mb-16 text-center text-black;
 }
 .exercises-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto;
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 max-w-7xl mx-auto;
 }
 .exercise-card {
-  @apply bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg flex flex-col min-h-[220px] md:min-h-[240px];
+  @apply bg-white p-6 sm:p-8 md:p-10 rounded-lg shadow-lg flex flex-col min-h-[260px] md:min-h-[300px] border border-gray-200 hover:shadow-xl transition-shadow;
 }
 .exercise-card-title {
-  @apply text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-blue-600;
+  @apply text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-emerald-600;
 }
 .exercise-card-desc {
   @apply mb-2 sm:mb-4;
@@ -176,37 +191,37 @@ html, body {
 
 /* === Tutorials.jsx classes === */
 .tutorials-container {
-  @apply container mx-auto px-4 py-8;
+  @apply w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 bg-white;
 }
 .tutorials-title {
-  @apply text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-center;
+  @apply text-4xl sm:text-5xl font-bold mb-4 text-center;
 }
 .tutorials-subtitle {
-  @apply text-lg text-slate-400 mb-8 text-center;
+  @apply text-lg text-gray-600 mb-12 text-center;
 }
 .tutorials-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto;
 }
 .tutorial-card {
-  @apply bg-gradient-to-b from-white to-gray-100 p-6 rounded-xl shadow-xl flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl;
+  @apply bg-white p-8 rounded-xl shadow-lg flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border border-gray-200;
 }
 .tutorial-logo {
-  @apply w-14 h-14 mb-3;
+  @apply w-16 h-16 mb-4;
 }
 .tutorial-card-title {
-  @apply text-lg sm:text-xl font-bold mb-2 text-fuchsia-400;
+  @apply text-lg sm:text-xl font-bold mb-2 text-emerald-400;
 }
 .tutorial-card-desc {
   @apply mb-4 text-center text-gray-600;
 }
 .tutorial-card-btn {
-  @apply border-2 font-semibold border-fuchsia-400 text-fuchsia-400 px-6 py-1 rounded-full flex items-center gap-2 hover:bg-fuchsia-600 hover:border-fuchsia-600 hover:text-slate-900 cursor-pointer transition-all duration-300 ease-in-out;
+  @apply border-2 font-semibold border-emerald-400 text-emerald-400 px-6 py-1 rounded-full flex items-center gap-2 hover:bg-emerald-600 hover:border-emerald-600 hover:text-slate-900 cursor-pointer transition-all duration-300 ease-in-out;
 }
 .dd {
   @apply absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50;
 }
 .ddbtn {
-  @apply w-full text-left px-4 py-2 text-fuchsia-600 hover:bg-gray-100 hover:text-fuchsia-500 text-sm border-b border-gray-200 cursor-pointer;
+  @apply w-full text-left px-4 py-2 text-emerald-600 hover:bg-gray-100 hover:text-emerald-500 text-sm border-b border-gray-200 cursor-pointer;
 }
 .ddbtn:last-child {
   @apply border-b-0;
