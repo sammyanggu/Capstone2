@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { saveLessonProgress, getLessonProgress } from '../../utils/progressTracker';
 
 // Import icons
 import { 
@@ -194,7 +196,7 @@ const lessonData = {
   }
 };
 
-function VideoCard({ video, onSelect }) {
+function VideoCard({ video, onSelect, progress = 0 }) {
   const thumbnailUrl = `https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`;
 
   return (
@@ -211,6 +213,15 @@ function VideoCard({ video, onSelect }) {
         <span className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
           {video.duration}
         </span>
+        {/* Progress Bar */}
+        {progress > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300">
+            <div 
+              className="h-full bg-fuchsia-500"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -219,6 +230,18 @@ function VideoCard({ video, onSelect }) {
         <p className="text-gray-600 text-sm line-clamp-2">
           {video.description}
         </p>
+        {/* Progress Indicator */}
+        {progress > 0 && (
+          <div className="mt-3 flex items-center gap-2">
+            <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-fuchsia-500"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <span className="text-xs font-semibold text-fuchsia-600">{progress}%</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -253,8 +276,60 @@ function VideoPlayer({ video, onClose }) {
 export default function LessonDetail() {
   const { category } = useParams();
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [user, setUser] = useState(null);
+  const [watchProgress, setWatchProgress] = useState({});
   
   const lesson = lessonData[category];
+
+  // Load user and progress on mount
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser && lesson) {
+        // Load progress for all videos in this category
+        try {
+          const progressData = {};
+          for (const video of lesson.videos) {
+            const progress = await getLessonProgress(firebaseUser.uid, category, video.title);
+            if (progress) {
+              progressData[video.id] = progress.progressPercent || 0;
+            } else {
+              progressData[video.id] = 0;
+            }
+          }
+          setWatchProgress(progressData);
+        } catch (error) {
+          console.error('Error loading progress:', error);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [category, lesson]);
+
+  // Save progress when video is selected or progress changes
+  const handleVideoSelect = (video) => {
+    setSelectedVideo(video);
+    // Auto-mark as started (25% progress)
+    if (user) {
+      saveLessonProgress(user.uid, category, video.title, 25, false);
+      setWatchProgress(prev => ({
+        ...prev,
+        [video.id]: 25
+      }));
+    }
+  };
+
+  // Mark lesson as completed
+  const markLessonComplete = (videoId, videoTitle) => {
+    if (user) {
+      saveLessonProgress(user.uid, category, videoTitle, 100, true);
+      setWatchProgress(prev => ({
+        ...prev,
+        [videoId]: 100
+      }));
+    }
+  };
   
   if (!lesson) {
     return (
@@ -294,7 +369,8 @@ export default function LessonDetail() {
             <VideoCard
               key={video.id}
               video={video}
-              onSelect={setSelectedVideo}
+              onSelect={handleVideoSelect}
+              progress={watchProgress[video.id] || 0}
             />
           ))}
         </div>

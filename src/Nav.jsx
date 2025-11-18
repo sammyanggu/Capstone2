@@ -150,30 +150,7 @@ function Nav() {
                                 </div>
                             </>
                         )}
-                        {!currentUser ? (
-                            <div
-                                onClick={() => setShowAuthModal(true)}
-                                className="ml-6 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all duration-200 cursor-pointer"
-                                style={{
-                                    border: '2px solid rgba(16, 185, 129, 0.6)',
-                                    color: '#10b981',
-                                    background: 'rgba(16, 185, 129, 0.05)',
-                                    boxShadow: '0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 10px rgba(16, 185, 129, 0.05)'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.boxShadow = '0 0 25px rgba(16, 185, 129, 0.6), inset 0 0 15px rgba(16, 185, 129, 0.1)';
-                                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.9)';
-                                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 10px rgba(16, 185, 129, 0.05)';
-                                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.6)';
-                                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.05)';
-                                }}
-                            >
-                                Sign In
-                            </div>
-                        ) : (
+                        {currentUser && (
                             <>
                                 {/* Notifications */}
                                 <div className="relative">

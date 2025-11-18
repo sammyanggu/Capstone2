@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { auth, db } from "../firebase";
 import { ref, query, orderByChild, equalTo, get, update } from "firebase/database";
 import { toast } from 'react-toastify';
+import ProgressStats from "../components/ProgressStats";
 
 const sections = [
   { key: "progress", label: "Progress" },
@@ -119,7 +120,7 @@ function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-white">
       {!user ? (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-emerald-700">
           <h2 className="text-2xl font-bold mb-2">No user found</h2>
@@ -167,7 +168,7 @@ function Profile() {
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 bg-slate-800/50 rounded-xl p-3 sm:p-6 lg:p-8">
+          <main className="flex-1 bg-white rounded-xl p-3 sm:p-6 lg:p-8">
             {active === "progress" && (
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-emerald-700 mb-4 sm:mb-8">
@@ -197,6 +198,7 @@ function Profile() {
                     </div>
                   </div>
                 )}
+                {user && <ProgressStats userId={user.uid} />}
               </div>
             )}
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { Link } from 'react-router-dom';
+import { getCategoryLessonProgress } from '../../utils/progressTracker';
 
 // Import SVG assets
 import { 
@@ -188,12 +189,29 @@ function Lessons() {
   const [user, setUser] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoryProgress, setCategoryProgress] = useState({});
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // TODO: Fetch lessons from Firestore when implemented
+        // Load progress for all categories
+        try {
+          const progressData = {};
+          const categoryKeys = ['html', 'css', 'javascript', 'php', 'bootstrap', 'tailwind'];
+          
+          for (const category of categoryKeys) {
+            const progress = await getCategoryLessonProgress(firebaseUser.uid, category);
+            if (progress) {
+              progressData[category] = progress;
+            }
+          }
+          
+          setCategoryProgress(progressData);
+        } catch (error) {
+          console.error('Error loading progress:', error);
+        }
+        
         setLoading(false);
       }
     });
@@ -241,12 +259,32 @@ function Lessons() {
                     {category.description}
                   </p>
                   
-                  {/* Progress indicators can be added here when connected to backend */}
+                  {/* Progress indicators */}
                   <div className="mt-6 flex items-center gap-3">
                     <div className="flex-1 h-2.5 bg-gray-300 rounded-full overflow-hidden">
-                      <div className={`h-full ${category.color.replace('text', 'bg')}`} style={{ width: '0%' }}></div>
+                      {(() => {
+                        const progress = categoryProgress[key];
+                        let avgProgress = 0;
+                        if (progress) {
+                          const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
+                          avgProgress = Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length);
+                        }
+                        return (
+                          <div 
+                            className={`h-full ${category.color.replace('text', 'bg')}`} 
+                            style={{ width: `${avgProgress}%` }}
+                          ></div>
+                        );
+                      })()}
                     </div>
-                    <span className="text-sm text-gray-600 font-medium">0%</span>
+                    <span className="text-sm text-gray-600 font-medium">
+                      {(() => {
+                        const progress = categoryProgress[key];
+                        if (!progress) return '0%';
+                        const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
+                        return Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length) + '%';
+                      })()}
+                    </span>
                   </div>
                 </div>
               </div>
