@@ -1,69 +1,138 @@
 // Home page. Welcome message, feature highlights.
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
+import AuthModal from '../components/AuthModal';
+
 function Home() {
+    const [isZooming, setIsZooming] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const navigate = useNavigate();
+    const { currentUser, loading } = useAuth();
+
+    // Redirect to profile if user is already logged in
+    useEffect(() => {
+        if (!loading && currentUser) {
+            navigate('/profile');
+        }
+    }, [currentUser, loading, navigate]);
+
+    useEffect(() => {
+        // Load particles.js library
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js';
+        script.async = true;
+        script.onload = () => {
+            // Initialize particles after library loads
+            if (window.particlesJS) {
+                window.particlesJS("particles", {
+                    particles: {
+                        number: { value: 60 },
+                        size: { value: 2 },
+                        move: { speed: 1 },
+                        color: { value: "#10b981" },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: "#059669",
+                            opacity: 0.4
+                        }
+                    }
+                });
+            }
+        };
+        document.body.appendChild(script);
+
+        return () => {
+            // Cleanup: remove script if needed
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
+        };
+    }, []);
+
+    const handleYesClick = () => {
+        setIsZooming(true);
+        // Show auth modal after zoom animation completes
+        setTimeout(() => {
+            setShowAuthModal(true);
+        }, 1000);
+    };
+
     // Render the homepage layout
     return (
         <>
-            {/* Hero Section with Background Image - flush under nav */}
-            <div className="relative w-full overflow-hidden mb-0 max-w-[100vw]">
-                {/* Background image for hero section */}
-                <img src="/Homepage.jpg" alt="Homepage background" className="imgHeroBg" />
-                {/* Overlay with title and description */}
-                <div className="absolute inset-0 flex flex-col justify-center items-center bg-black/40">
-                    <h1 className="heroT">
-                        Unlock Your Coding Journey
+            {/* Hero Section with Particles Animation */}
+            <div className={`relative w-full h-screen overflow-hidden mb-0 max-w-[100vw] bg-slate-900 transition-transform duration-1000 ${isZooming ? 'scale-150' : 'scale-100'}`}>
+                <div id="particles" className="absolute inset-0"></div>
+                
+                {/* Soft gradient glow effect */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute w-96 h-96 bg-gradient-to-r from-emerald-500/30 to-transparent rounded-full blur-3xl animate-pulse" style={{
+                        left: '-100px',
+                        top: '-100px',
+                        animation: 'floatGlow 12s infinite alternate ease-in-out'
+                    }}></div>
+                </div>
+
+                {/* Hero content overlay */}
+                <div className={`absolute inset-0 flex flex-col justify-center items-center z-10 transition-opacity duration-500 ${isZooming ? 'opacity-0' : 'opacity-100'}`}>
+                    <h1 className="text-white text-5xl md:text-6xl font-bold text-center drop-shadow-lg" style={{
+                        textShadow: '0 0 20px rgba(255,255,255,0.3)'
+                    }}>
+                        Ready to start your journey?
                     </h1>
-                    <p className="heroD">
-                        Learn, practice, and build real projects with interactive tutorials, AI-powered tools, and a vibrant community. Start mastering web development today!
-                    </p>
+                    
+                    {/* Interactive Element */}
+                    <div className="flex gap-6 mt-12">
+                        <div
+                            onClick={handleYesClick}
+                            className="group relative cursor-pointer flex items-center gap-3 px-8 py-4 text-white font-bold text-lg transition-all duration-500 transform hover:scale-110"
+                            style={{
+                                background: 'rgba(16, 185, 129, 0.1)',
+                                border: '2px solid rgba(16, 185, 129, 0.4)',
+                                backdropFilter: 'blur(10px)',
+                                borderRadius: '50px',
+                                boxShadow: '0 0 40px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.boxShadow = '0 0 60px rgba(16, 185, 129, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.1)';
+                                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.8)';
+                                e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.boxShadow = '0 0 40px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                                e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                            }}
+                        >
+                            <span className="group-hover:opacity-100 opacity-70 transition-opacity">Let's Go</span>
+                            <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                    </div>
                 </div>
+
+                <style>{`
+                    @keyframes floatGlow {
+                        from { transform: translate(-200px, -150px); }
+                        to   { transform: translate(200px, 150px); }
+                    }
+                `}</style>
             </div>
-            {/* Main Content below hero image */}
-            <div className="container mx-auto px-4 pt-0 pb-8 mt-6 sm:mt-10 md:mt-14">
-                {/* Learn-Practice-Grow Section */}
-                <div className="cardS">
-                    <div className="cardF">
-                        <h2 className="font-bold text-lg text-fuchsia-400">Learn</h2>
-                        <p className="text-center">Access our extensive library of tutorials and courses.</p>
-                    </div>
-                    <div className="cardF">
-                        <h2 className="font-bold text-lg text-fuchsia-400">Practice</h2>
-                        <p className="text-center">Enhance your skills with hands-on exercises.</p>
-                    </div>
-                    <div className="cardF">
-                        <h2 className="font-bold text-lg text-fuchsia-400">Grow</h2>
-                        <p className="text-center">Track your progress and level up your abilities.</p>
-                    </div>
-                </div>
-                {/* Features Section */}
-                <div className="featuresS">
-                    {/* Each feature block */}
-                    <div className="featureB">
-                        <span className="text-3xl mb-1">{'>'}</span>
-                        <span className="featureT">Interactive Learning</span>
-                        <span className="featureD">Write code in your browser and get immediate feedback if your solution is correct.</span>
-                    </div>
-                    <div className="featureB">
-                        <span className="text-3xl mb-1" role="img" aria-label="book">📖</span>
-                        <span className="featureT">Beginner Friendly</span>
-                        <span className="featureD">No worries if you have no knowledge about programming yet, we will teach you the basics.</span>
-                    </div>
-                    <div className="featureB">
-                        <span className="text-3xl mb-1" role="img" aria-label="lightning">⚡</span>
-                        <span className="featureT">All Skill Levels</span>
-                        <span className="featureD">Whether you are a beginner or advanced programmer, we offer the right courses for your needs.</span>
-                    </div>
-                    <div className="featureB">
-                        <span className="text-3xl mb-1" role="img" aria-label="profile">👤</span>
-                        <span className="featureT">Personal Profile</span>
-                        <span className="featureD">All your progress will be tracked and displayed in your personal profile area.</span>
-                    </div>
-                    <div className="featureB">
-                        <span className="text-3xl mb-1" role="img" aria-label="ai">🤖</span>
-                        <span className="featureT">Powered by AI</span>
-                        <span className="featureD">Ask your personal AI assistant anytime you need help.</span>
-                    </div>
-                </div>
-            </div>
+
+            {/* Auth Modal */}
+            <AuthModal 
+                isOpen={showAuthModal} 
+                onClose={() => {
+                    setShowAuthModal(false);
+                    setIsZooming(false);
+                }}
+                onSuccess={(userData) => {
+                    setShowAuthModal(false);
+                    // Force a page reload to ensure all states are updated
+                    window.location.reload();
+                }}
+            />
         </>
     );
 }
