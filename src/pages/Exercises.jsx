@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LevelModal from "../components/LevelModal";
+import LoadingScreen from "../components/LoadingScreen";
 import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../assets/icons/index.js';
 
 function Exercises() {
@@ -18,8 +19,17 @@ function Exercises() {
 	const [levelphp, setlevelphp] = useState(false);
 	const [levelbootstrap, setlevelbootstrap] = useState(false);
 	const [leveltailwind, setleveltailwind] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	// Navigation function
 	const navigate = useNavigate();
+
+	const handleNavigateWithLoading = (path) => {
+		setIsLoading(true);
+		setTimeout(() => {
+			navigate(path);
+			setIsLoading(false);
+		}, 1000);
+	};
 
 	return (
 		<div className="w-full min-h-screen bg-white pt-24">
@@ -179,7 +189,7 @@ function Exercises() {
 						onClose={() => setlevelhtml(false)}
 						onSelectLevel={(level) => {
 							setlevelhtml(false);
-							navigate(`/exercises/html/${level}`);
+							handleNavigateWithLoading(`/exercises/html/${level}`);
 						}}
 						title="Select HTML Exercise Level"
 					/>
@@ -190,7 +200,7 @@ function Exercises() {
 						onClose={() => setlevelcss(false)}
 						onSelectLevel={(level) => {
 							setlevelcss(false);
-							navigate(`/exercises/css/${level}`);
+							handleNavigateWithLoading(`/exercises/css/${level}`);
 						}}
 						title="Select CSS Exercise Level"
 					/>
@@ -201,7 +211,7 @@ function Exercises() {
 						onClose={() => setleveljavascript(false)}
 						onSelectLevel={(level) => {
 							setleveljavascript(false);
-							navigate(`/exercises/javascript/${level}`);
+							handleNavigateWithLoading(`/exercises/javascript/${level}`);
 						}}
 						title="Select JavaScript Exercise Level"
 					/>
@@ -219,19 +229,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/advanced')}
 								>
 									Advanced
 								</button>
@@ -254,19 +264,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/advanced')}
 								>
 									Advanced
 								</button>
@@ -289,19 +299,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/advanced')}
 								>
 									Advanced
 								</button>
@@ -324,19 +334,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/advanced')}
 								>
 									Advanced
 								</button>
@@ -359,19 +369,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/advanced')}
 								>
 									Advanced
 								</button>
@@ -394,19 +404,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/advanced')}
 								>
 									Advanced
 								</button>
@@ -421,6 +431,7 @@ function Exercises() {
 					)}
 				</div>
 			)}
+			{isLoading && <LoadingScreen />}
 		</div>
 	);
 }

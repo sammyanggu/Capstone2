@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import AuthModal from '../components/AuthModal';
+import LoadingScreen from '../components/LoadingScreen';
 
 function Home() {
     const [isZooming, setIsZooming] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState(false);
+    const [isLoadingAfterLogin, setIsLoadingAfterLogin] = useState(false);
     const navigate = useNavigate();
     const { currentUser, loading } = useAuth();
 
@@ -129,10 +131,16 @@ function Home() {
                 }}
                 onSuccess={(userData) => {
                     setShowAuthModal(false);
-                    // Force a page reload to ensure all states are updated
-                    window.location.reload();
+                    setIsLoadingAfterLogin(true);
+                    // Show loading screen before reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 }}
             />
+
+            {/* Loading Screen */}
+            {isLoadingAfterLogin && <LoadingScreen />}
         </>
     );
 }

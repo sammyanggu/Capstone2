@@ -120,19 +120,9 @@ function AppContent() {
             <Exercises />
           </PrivateRoute>
         } />
-        <Route path="/exercises/html/beginner" element={
+        <Route path="/exercises/html/:level" element={
           <PrivateRoute user={currentUser}>
             <HtmlBeginner />
-          </PrivateRoute>
-        } />
-        <Route path="/exercises/html/intermediate" element={
-          <PrivateRoute user={currentUser}>
-            <HtmlIntermediate />
-          </PrivateRoute>
-        } />
-        <Route path="/exercises/html/advanced" element={
-          <PrivateRoute user={currentUser}>
-            <HtmlAdvanced />
           </PrivateRoute>
         } />
         <Route path="/exercises/css/:level" element={
@@ -148,6 +138,16 @@ function AppContent() {
         <Route path="/exercises/php/:level" element={
           <PrivateRoute user={currentUser}>
             <PhpExercise />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/bootstrap/:level" element={
+          <PrivateRoute user={currentUser}>
+            <HtmlBeginner />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/tailwind/:level" element={
+          <PrivateRoute user={currentUser}>
+            <HtmlBeginner />
           </PrivateRoute>
         } />
 
