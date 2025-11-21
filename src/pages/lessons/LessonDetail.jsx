@@ -252,7 +252,7 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0 }) {
   if (!video) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4">
       <div className="relative w-full max-w-5xl bg-slate-900 rounded-lg overflow-hidden">
         <button 
           onClick={onClose}
