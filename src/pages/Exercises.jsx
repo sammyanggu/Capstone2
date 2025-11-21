@@ -3,106 +3,193 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LevelModal from "../components/LevelModal";
+import LoadingScreen from "../components/LoadingScreen";
 import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../assets/icons/index.js';
 
 function Exercises() {
-	// States to show/hide modals
+	// Mock progress data - replace with actual progress from backend
+	const defaultProgress = {
+		beginner: true,
+		intermediate: false,
+		advanced: false
+	};
 	const [levelhtml, setlevelhtml] = useState(false);
 	const [levelcss, setlevelcss] = useState(false);
 	const [leveljavascript, setleveljavascript] = useState(false);
 	const [levelphp, setlevelphp] = useState(false);
 	const [levelbootstrap, setlevelbootstrap] = useState(false);
 	const [leveltailwind, setleveltailwind] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	// Navigation function
 	const navigate = useNavigate();
 
+	const handleNavigateWithLoading = (path) => {
+		setIsLoading(true);
+		setTimeout(() => {
+			navigate(path);
+			setIsLoading(false);
+		}, 1000);
+	};
+
 	return (
-		<div className="exercises-container mt-20 sm:mt-16">
-			{/* Page title */}
-			<h1 className="exercises-title">Coding Exercises</h1>
-			{/* Exercise cards for each language */}
-			<div className="flex flex-wrap justify-center gap-8 mb-8">
-				{/* HTML Card */}
-				<button
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setlevelhtml((v) => !v);
-						setlevelphp(false);
-						setlevelbootstrap(false);
-						setleveltailwind(false);
-					}}
-				>
-					<img
-						src={htmlIcon}
-						alt="HTML Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-orange-600 transition-shadow ease-in-out duration-300 cursor-pointer"
-					/>
-					<span className="mt-2 font-bold text-orange-400">HTML</span>
-				</button>
-				{/* CSS Card */}
-				<button 
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setlevelcss((v) => !v);
-						setlevelhtml(false);
-						setlevelphp(false);
-						setlevelbootstrap(false);
-						setleveltailwind(false);
-						setleveljavascript(false);
-					}}
-				>
-					<img
-						src={cssIcon}
-						alt="CSS Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-blue-600 transition-shadow ease-in-out duration-300 cursor-pointer"
-					/>
-					<span className="mt-2 font-bold text-blue-400">CSS</span>
-				</button>
-				{/* JS Card */}
-				<button 
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setleveljavascript((v) => !v);
-						setlevelhtml(false);
-						setlevelphp(false);
-						setlevelbootstrap(false);
-						setleveltailwind(false);
-						setlevelcss(false);
-					}}
-				>
-					<img
-						src={jsIcon}
-						alt="JavaScript Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-yellow-600 transition-shadow duration-300 ease-in-out cursor-pointer"
-					/>
-					<span className="mt-2 font-bold text-yellow-400">JavaScript</span>
-				</button>
-				{/* PHP Card */}
-				<button
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setlevelphp((v) => !v);
-						setlevelhtml(false);
-						setlevelbootstrap(false);
-						setleveltailwind(false);
-					}}
-				>
-					<img
-						src={phpIcon}
-						alt="PHP Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-purple-600 transition-shadow duration-300 ease-in-out cursor-pointer"
-					/>
-					<span className="mt-2 font-bold text-purple-400">PHP</span>
-				</button>
+		<div className="w-full min-h-screen bg-white pt-24">
+			{/* Full width header with logos */}
+			<div className="w-full bg-gradient-to-b from-gray-50 to-white py-16 px-4 sm:px-6 md:px-8 lg:px-12">
+				<h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center text-black mb-16 md:mb-20">Coding Exercises</h1>
 				
-				{/* Level Modals */}
+				{/* First Row - HTML, CSS, JavaScript */}
+				<div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 mb-12">
+					{/* HTML */}
+					<button
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setlevelhtml((v) => !v);
+							setlevelcss(false);
+							setleveljavascript(false);
+							setlevelphp(false);
+							setlevelbootstrap(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={htmlIcon}
+							alt="HTML Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(249,115,22,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(249,115,22,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(249,115,22,0))'}
+						/>
+						<span className="mt-4 font-bold text-orange-500 text-sm sm:text-base md:text-lg lg:text-xl">HTML</span>
+					</button>
+
+					{/* CSS */}
+					<button 
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setlevelcss((v) => !v);
+							setlevelhtml(false);
+							setleveljavascript(false);
+							setlevelphp(false);
+							setlevelbootstrap(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={cssIcon}
+							alt="CSS Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(59,130,246,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(59,130,246,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(59,130,246,0))'}
+						/>
+						<span className="mt-4 font-bold text-blue-500 text-sm sm:text-base md:text-lg lg:text-xl">CSS</span>
+					</button>
+
+					{/* JavaScript */}
+					<button 
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setleveljavascript((v) => !v);
+							setlevelhtml(false);
+							setlevelcss(false);
+							setlevelphp(false);
+							setlevelbootstrap(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={jsIcon}
+							alt="JavaScript Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(234,179,8,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(234,179,8,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(234,179,8,0))'}
+						/>
+						<span className="mt-4 font-bold text-yellow-500 text-sm sm:text-base md:text-lg lg:text-xl">JavaScript</span>
+					</button>
+				</div>
+
+				{/* Second Row - PHP, Bootstrap, Tailwind */}
+				<div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16">
+					{/* PHP */}
+					<button
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setlevelphp((v) => !v);
+							setlevelhtml(false);
+							setlevelcss(false);
+							setleveljavascript(false);
+							setlevelbootstrap(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={phpIcon}
+							alt="PHP Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(168,85,247,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(168,85,247,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(168,85,247,0))'}
+						/>
+						<span className="mt-4 font-bold text-purple-500 text-sm sm:text-base md:text-lg lg:text-xl">PHP</span>
+					</button>
+
+					{/* Bootstrap */}
+					<button
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setlevelbootstrap((v) => !v);
+							setlevelhtml(false);
+							setlevelcss(false);
+							setleveljavascript(false);
+							setlevelphp(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={bootstrapIcon}
+							alt="Bootstrap Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(109,40,217,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(109,40,217,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(109,40,217,0))'}
+						/>
+						<span className="mt-4 font-bold text-purple-600 text-sm sm:text-base md:text-lg lg:text-xl">Bootstrap</span>
+					</button>
+
+					{/* Tailwind */}
+					<button
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setleveltailwind((v) => !v);
+							setlevelhtml(false);
+							setlevelcss(false);
+							setleveljavascript(false);
+							setlevelphp(false);
+							setlevelbootstrap(false);
+						}}
+					>
+						<img
+							src={tailwindIcon}
+							alt="Tailwind CSS Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(34,197,94,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(34,197,94,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(34,197,94,0))'}
+						/>
+						<span className="mt-4 font-bold text-cyan-500 text-sm sm:text-base md:text-lg lg:text-xl">Tailwind</span>
+					</button>
+				</div>
+			</div>
+			
+			{/* Level Modals */}
 				{levelhtml && (
 					<LevelModal
 						isOpen={levelhtml}
 						onClose={() => setlevelhtml(false)}
 						onSelectLevel={(level) => {
 							setlevelhtml(false);
-							navigate(`/exercises/html/${level}`);
+							handleNavigateWithLoading(`/exercises/html/${level}`);
 						}}
 						title="Select HTML Exercise Level"
 					/>
@@ -113,7 +200,7 @@ function Exercises() {
 						onClose={() => setlevelcss(false)}
 						onSelectLevel={(level) => {
 							setlevelcss(false);
-							navigate(`/exercises/css/${level}`);
+							handleNavigateWithLoading(`/exercises/css/${level}`);
 						}}
 						title="Select CSS Exercise Level"
 					/>
@@ -124,47 +211,12 @@ function Exercises() {
 						onClose={() => setleveljavascript(false)}
 						onSelectLevel={(level) => {
 							setleveljavascript(false);
-							navigate(`/exercises/javascript/${level}`);
+							handleNavigateWithLoading(`/exercises/javascript/${level}`);
 						}}
 						title="Select JavaScript Exercise Level"
 					/>
 				)}
-				{/* Bootstrap Card */}
-				<button
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setlevelbootstrap((v) => !v);
-						setlevelhtml(false);
-						setlevelphp(false);
-						setleveltailwind(false);
-					}}
-				>
-					<img
-						src={bootstrapIcon}
-						alt="Bootstrap Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-purple-600 transition-shadow duration-300 ease-in-out cursor-pointer"
-					/>
-					<span className="mt-2 font-bold text-purple-500">Bootstrap</span>
-				</button>
-				{/* Tailwind Card */}
-				<button
-					className="flex flex-col items-center w-36 hover:scale-105 transition-transform duration-200 cursor-pointer"
-					onClick={() => {
-						setleveltailwind((v) => !v);
-						setlevelhtml(false);
-						setlevelphp(false);
-						setlevelbootstrap(false);
-					}}
-				>
-					<img
-						src={tailwindIcon}
-						alt="Tailwind CSS Logo"
-						className="w-20 h-20 mx-auto drop-shadow-lg hover:drop-shadow-cyan-600 transition-shadow duration-300 ease-in-out"
-					/>
-					<span className="mt-2 font-bold text-cyan-400">Tailwind</span>
-				</button>
-			</div>
-
+				
 			{/* Modal Backdrop */}
 			{(levelhtml || levelcss || leveljavascript || levelphp || levelbootstrap || leveltailwind) && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
@@ -177,19 +229,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-orange-500"
-									onClick={() => navigate('/exercises/html/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/html/advanced')}
 								>
 									Advanced
 								</button>
@@ -212,19 +264,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-500"
-									onClick={() => navigate('/exercises/css/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/css/advanced')}
 								>
 									Advanced
 								</button>
@@ -247,19 +299,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-yellow-500"
-									onClick={() => navigate('/exercises/javascript/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/javascript/advanced')}
 								>
 									Advanced
 								</button>
@@ -282,19 +334,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-indigo-500"
-									onClick={() => navigate('/exercises/php/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/php/advanced')}
 								>
 									Advanced
 								</button>
@@ -317,19 +369,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-purple-500"
-									onClick={() => navigate('/exercises/bootstrap/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/bootstrap/advanced')}
 								>
 									Advanced
 								</button>
@@ -352,19 +404,19 @@ function Exercises() {
 							<div className="flex flex-col gap-3 items-center">
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/beginner')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/beginner')}
 								>
 									Beginner
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/intermediate')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/intermediate')}
 								>
 									Intermediate
 								</button>
 								<button 
 									className="btn1h w-48 py-2 text-white font-bold hover:bg-cyan-500"
-									onClick={() => navigate('/exercises/tailwind/advanced')}
+									onClick={() => handleNavigateWithLoading('/exercises/tailwind/advanced')}
 								>
 									Advanced
 								</button>
@@ -379,6 +431,7 @@ function Exercises() {
 					)}
 				</div>
 			)}
+			{isLoading && <LoadingScreen />}
 		</div>
 	);
 }

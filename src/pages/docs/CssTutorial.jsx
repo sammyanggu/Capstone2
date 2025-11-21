@@ -1,60 +1,115 @@
 import React from 'react';
 import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import NavLi from '../../components/NavLi';
 
 export default function CssTutorial() {
+  const [isAsideCollapsed, setIsAsideCollapsed] = React.useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-900 flex pt-28">
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+    <div className="min-h-screen bg-white flex pt-28">
+      {/* Open button (visible when aside is closed) */}
+      {isAsideCollapsed && (
+        <button
+          onClick={() => setIsAsideCollapsed(false)}
+          className="fixed left-0 top-[4.5rem] z-30 p-2 rounded-r bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-all duration-200 border-y border-r border-slate-800"
+          aria-label="Open menu"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed w-64 left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ${
+          isAsideCollapsed ? '-translate-x-full' : 'translate-x-0'
+        }`}
+      >
+        {/* Close button inside aside */}
+        {!isAsideCollapsed && (
+          <button
+            onClick={() => setIsAsideCollapsed(true)}
+            className="absolute right-2 top-3 z-30 p-1.5 rounded bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-colors"
+            aria-label="Close menu"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
         <nav className="pt-12">
-          <ul className="flex flex-col gap-2 text-fuchsia-200 text-base">
-            <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Home</a></li>
-            <li><a href="#intro" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Introduction</a></li>
-            <li><a href="#syntax" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Syntax</a></li>
-            <li><a href="#selectors" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Selectors</a></li>
-            <li><a href="#colors" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Colors</a></li>
-            <li><a href="#backgrounds" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Backgrounds</a></li>
-            <li><a href="#borders" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Borders</a></li>
-            <li><a href="#margins" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Margins</a></li>
-            <li><a href="#padding" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Padding</a></li>
-            <li><a href="#heightwidth" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Height/Width</a></li>
-            <li><a href="#boxmodel" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Box Model</a></li>
-            <li><a href="#text" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Text</a></li>
-            <li><a href="#fonts" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Fonts</a></li>
-            <li><a href="#links" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Links</a></li>
-            <li><a href="#lists" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Lists</a></li>
-            <li><a href="#tables" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Tables</a></li>
-            <li><a href="#display" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Display</a></li>
-            <li><a href="#position" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Position</a></li>
-            <li><a href="#zindex" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Z-index</a></li>
-            <li><a href="#overflow" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Overflow</a></li>
-            <li><a href="#float" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Float</a></li>
-            <li><a href="#inlineblock" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Inline-block</a></li>
-            <li><a href="#align" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Align</a></li>
-            <li><a href="#combinators" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Combinators</a></li>
-            <li><a href="#pseudo" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Pseudo</a></li>
-            <li><a href="#opacity" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Opacity</a></li>
-            <li><a href="#navbars" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Navbars</a></li>
-            <li><a href="#dropdowns" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Dropdowns</a></li>
-            <li><a href="#forms" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Forms</a></li>
-            <li><a href="#animations" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Animations</a></li>
-            <li><a href="#transitions" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Transitions</a></li>
-            <li><a href="#variables" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">CSS Variables</a></li>
+          <ul className="flex flex-col gap-1 text-slate-200 text-base">
+            <li><a href="#home" className="block py-2 px-3 rounded hover:text-emerald-600 hover:bg-slate-800 transition">CSS Home</a></li>
+            <li><a href="#intro" className="block py-2 px-3 rounded hover:text-emerald-600 hover:bg-slate-800 transition">CSS Introduction</a></li>
+            <li><a href="#syntax" className="block py-2 px-3 rounded hover:text-emerald-600 hover:bg-slate-800 transition">CSS Syntax</a></li>
+            <li><a href="#selectors" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Selectors</a></li>
+            <li><a href="#colors" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Colors</a></li>
+            <li><a href="#backgrounds" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Backgrounds</a></li>
+            <li><a href="#borders" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Borders</a></li>
+            <li><a href="#margins" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Margins</a></li>
+            <li><a href="#padding" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Padding</a></li>
+            <li><a href="#heightwidth" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Height/Width</a></li>
+            <li><a href="#boxmodel" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Box Model</a></li>
+            <li><a href="#text" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Text</a></li>
+            <li><a href="#fonts" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Fonts</a></li>
+            <li><a href="#links" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Links</a></li>
+            <li><a href="#lists" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Lists</a></li>
+            <li><a href="#tables" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Tables</a></li>
+            <li><a href="#display" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Display</a></li>
+            <li><a href="#position" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Position</a></li>
+            <li><a href="#zindex" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Z-index</a></li>
+            <li><a href="#overflow" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Overflow</a></li>
+            <li><a href="#float" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Float</a></li>
+            <li><a href="#inlineblock" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Inline-block</a></li>
+            <li><a href="#align" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Align</a></li>
+            <li><a href="#combinators" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Combinators</a></li>
+            <li><a href="#pseudo" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Pseudo</a></li>
+            <li><a href="#opacity" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Opacity</a></li>
+            <li><a href="#navbars" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Navbars</a></li>
+            <li><a href="#dropdowns" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Dropdowns</a></li>
+            <li><a href="#forms" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Forms</a></li>
+            <li><a href="#animations" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Animations</a></li>
+            <li><a href="#transitions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Transitions</a></li>
+            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">CSS Variables</a></li>
           </ul>
         </nav>
       </aside>
       <div className="w-full flex justify-center">
         <div className="max-w-4xl flex-1 pt-28 px-4 sm:px-8 md:ml-64">
-          <header className="mb-10 border-b border-fuchsia-600 pb-6" id="home">
-            <h1 className="text-4xl font-bold text-fuchsia-400 mb-2">CSS Fundamentals</h1>
-            <p className="text-lg text-fuchsia-200">Learn how to style and layout web pages using CSS. Try editing the code and see the result live!</p>
+          <header className="mb-10 border-b border-emerald-600 pb-6" id="home">
+            <h1 className="text-4xl font-bold text-emerald-600 mb-2">CSS Fundamentals</h1>
+            <p className="text-lg text-black">Learn how to style and layout web pages using CSS. Try editing the code and see the result live!</p>
           </header>
           <section id="intro" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">CSS Introduction</h2>
-            <p className="text-slate-200 mb-4">CSS (Cascading Style Sheets) is used to style and layout web pages. It controls the color, font, spacing, and positioning of elements.</p>
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">CSS Introduction</h2>
+            <p className="text-black mb-4">CSS (Cascading Style Sheets) is used to style and layout web pages. It controls the color, font, spacing, and positioning of elements.</p>
           </section>
           <section id="syntax" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">CSS Syntax</h2>
-            <p className="text-slate-200 mb-4">CSS syntax consists of a selector and a declaration block. The declaration block contains one or more declarations separated by semicolons.</p>
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">CSS Syntax</h2>
+            <p className="text-black mb-4">CSS syntax consists of a selector and a declaration block. The declaration block contains one or more declarations separated by semicolons.</p>
             <LiveHtmlEditor initialCode={`<style>
 /* Basic syntax */
 h1 { 
@@ -73,7 +128,7 @@ p, span {
 <h1>Hello CSS!</h1>
 <p>This is styled with CSS.</p>
 <span>This span shares the same style as paragraphs.</span>`} />
-            <ul className="list-disc pl-6 text-slate-200 mt-4">
+            <ul className="list-disc pl-6 text-black mt-4">
               <li>Selectors point to the HTML elements you want to style</li>
               <li>The declaration block contains the actual styles</li>
               <li>Each property-value pair is a declaration</li>
@@ -82,8 +137,8 @@ p, span {
           </section>
 
           <section id="selectors" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">CSS Selectors</h2>
-            <p className="text-slate-200 mb-4">CSS selectors are patterns used to select and style HTML elements. There are several types of selectors with different specificity levels.</p>
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">CSS Selectors</h2>
+            <p className="text-black mb-4">CSS selectors are patterns used to select and style HTML elements. There are several types of selectors with different specificity levels.</p>
             <LiveHtmlEditor initialCode={`<style>
 /* Element selector */
 p {
@@ -140,23 +195,23 @@ input[type="text"] {
 <input type="text" placeholder="Text input field">`} />
             
             <div className="mt-6 space-y-4">
-              <h3 className="text-xl text-fuchsia-300">Types of Selectors:</h3>
-              <ul className="list-disc pl-6 text-slate-200">
-                <li><code className="bg-slate-700 px-1 rounded">element</code> - Selects all elements of that type</li>
-                <li><code className="bg-slate-700 px-1 rounded">.class</code> - Selects elements with a specific class</li>
-                <li><code className="bg-slate-700 px-1 rounded">#id</code> - Selects an element with a specific ID</li>
-                <li><code className="bg-slate-700 px-1 rounded">element element</code> - Selects descendants</li>
-                <li><code className="bg-slate-700 px-1 rounded">element {'>'} element</code> - Selects direct children</li>
-                <li><code className="bg-slate-700 px-1 rounded">element + element</code> - Selects adjacent siblings</li>
-                <li><code className="bg-slate-700 px-1 rounded">:pseudo-class</code> - Selects elements in a specific state</li>
-                <li><code className="bg-slate-700 px-1 rounded">[attribute]</code> - Selects elements with a specific attribute</li>
+              <h3 className="text-xl text-blue-600">Types of Selectors:</h3>
+              <ul className="list-disc pl-6 text-black">
+                <li><code className="bg-gray-200 px-1 rounded">element</code> - Selects all elements of that type</li>
+                <li><code className="bg-gray-200 px-1 rounded">.class</code> - Selects elements with a specific class</li>
+                <li><code className="bg-gray-200 px-1 rounded">#id</code> - Selects an element with a specific ID</li>
+                <li><code className="bg-gray-200 px-1 rounded">element element</code> - Selects descendants</li>
+                <li><code className="bg-gray-200 px-1 rounded">element {'>'} element</code> - Selects direct children</li>
+                <li><code className="bg-gray-200 px-1 rounded">element + element</code> - Selects adjacent siblings</li>
+                <li><code className="bg-gray-200 px-1 rounded">:pseudo-class</code> - Selects elements in a specific state</li>
+                <li><code className="bg-gray-200 px-1 rounded">[attribute]</code> - Selects elements with a specific attribute</li>
               </ul>
             </div>
           </section>
 
           <section id="colors" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">CSS Colors</h2>
-            <p className="text-slate-200 mb-4">CSS supports various color formats including names, hexadecimal, RGB, RGBA, HSL, and HSLA.</p>
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">CSS Colors</h2>
+            <p className="text-black mb-4">CSS supports various color formats including names, hexadecimal, RGB, RGBA, HSL, and HSLA.</p>
             <LiveHtmlEditor initialCode={`<style>
 .color-box {
   width: 100%;
@@ -192,7 +247,7 @@ input[type="text"] {
 <div class="color-box hsl">HSL: hsl(259, 90%, 66%)</div>
 <div class="color-box hsla">HSLA: hsla(259, 90%, 66%, 0.5)</div>`} />
             
-            <ul className="list-disc pl-6 text-slate-200 mt-4">
+            <ul className="list-disc pl-6 text-black mt-4">
               <li>Named colors: predefined color names like 'red', 'blue', etc.</li>
               <li>Hexadecimal: #RRGGBB format (#000000 to #FFFFFF)</li>
               <li>RGB/RGBA: rgb(red, green, blue) / rgba(red, green, blue, alpha)</li>
@@ -202,8 +257,8 @@ input[type="text"] {
           </section>
 
           <section id="backgrounds" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">CSS Backgrounds</h2>
-            <p className="text-slate-200 mb-4">CSS backgrounds can include colors, images, gradients, and various positioning options.</p>
+            <h2 className="text-2xl font-semibold text-blue-600 mb-2">CSS Backgrounds</h2>
+            <p className="text-black mb-4">CSS backgrounds can include colors, images, gradients, and various positioning options.</p>
             <LiveHtmlEditor initialCode={`<style>
 .bg-example {
   width: 100%;
@@ -251,33 +306,33 @@ input[type="text"] {
 </style>
 
 <div class="bg-example bg-solid"></div>
-<p class="text-slate-200 mb-4">Solid Background Color</p>
+<p className="text-black mb-4">Solid Background Color</p>
 
 <div class="bg-example bg-image"></div>
-<p class="text-slate-200 mb-4">Background Image</p>
+<p class="text-black mb-4">Background Image</p>
 
 <div class="bg-example bg-gradient"></div>
-<p class="text-slate-200 mb-4">Linear Gradient</p>
+<p class="text-black mb-4">Linear Gradient</p>
 
 <div class="bg-example bg-radial"></div>
-<p class="text-slate-200 mb-4">Radial Gradient</p>
+<p class="text-black mb-4">Radial Gradient</p>
 
 <div class="bg-example bg-pattern"></div>
-<p class="text-slate-200 mb-4">Repeating Pattern</p>
+<p class="text-black mb-4">Repeating Pattern</p>
 
 <div class="bg-example bg-multiple"></div>
-<p class="text-slate-200 mb-4">Multiple Backgrounds</p>`} />
+<p class="text-black mb-4">Multiple Backgrounds</p>`} />
             
             <div className="mt-6 space-y-4">
-              <h3 className="text-xl text-fuchsia-300">Background Properties:</h3>
-              <ul className="list-disc pl-6 text-slate-200">
-                <li><code className="bg-slate-700 px-1 rounded">background-color</code> - Sets the background color</li>
-                <li><code className="bg-slate-700 px-1 rounded">background-image</code> - Sets one or more background images</li>
-                <li><code className="bg-slate-700 px-1 rounded">background-size</code> - Controls image size (cover, contain, specific dimensions)</li>
-                <li><code className="bg-slate-700 px-1 rounded">background-position</code> - Sets the starting position</li>
-                <li><code className="bg-slate-700 px-1 rounded">background-repeat</code> - Controls image repetition</li>
-                <li><code className="bg-slate-700 px-1 rounded">background-attachment</code> - Sets scrolling behavior</li>
-                <li>Shorthand <code className="bg-slate-700 px-1 rounded">background</code> property combines multiple values</li>
+              <h3 className="text-xl text-blue-600">Background Properties:</h3>
+              <ul className="list-disc pl-6 text-black">
+                <li><code className="bg-gray-200 px-1 rounded">background-color</code> - Sets the background color</li>
+                <li><code className="bg-gray-200 px-1 rounded">background-image</code> - Sets one or more background images</li>
+                <li><code className="bg-gray-200 px-1 rounded">background-size</code> - Controls image size (cover, contain, specific dimensions)</li>
+                <li><code className="bg-gray-200 px-1 rounded">background-position</code> - Sets the starting position</li>
+                <li><code className="bg-gray-200 px-1 rounded">background-repeat</code> - Controls image repetition</li>
+                <li><code className="bg-gray-200 px-1 rounded">background-attachment</code> - Sets scrolling behavior</li>
+                <li>Shorthand <code className="bg-gray-200 px-1 rounded">background</code> property combines multiple values</li>
               </ul>
             </div>
           </section>

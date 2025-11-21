@@ -1,44 +1,41 @@
 // Modal component for selecting user level (Beginner, Intermediate, Advanced)
 import React from 'react';
 
-export default function LevelModal({ open, onClose, onSelect, progress }) {
-  // If modal is not open, render nothing
-  if (!open) return null;
-  // Modal overlay and content must be wrapped in a single parent element
+export default function LevelModal({ isOpen, onClose, onSelectLevel, title, icon, color = "fuchsia" }) {
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      {/* Modal content box */}
-      <div className="bg-slate-900 rounded-lg p-8 max-w-xs w-full shadow-lg border border-fuchsia-600">
-        {/* Modal title */}
-        <h2 className="text-xl font-bold text-fuchsia-400 mb-4 text-center">Select Level</h2>
-        {/* Level selection buttons */}
-        <div className="flex flex-col gap-3">
-          {/* Beginner button, always enabled */}
-          <button
-            className="btn1h py-2"
-            onClick={() => onSelect('beginner')}
+      <div className={`bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100`}>
+        <div className="flex justify-center mb-6">
+          {icon && <img src={icon} alt={title} className="w-16 h-16 drop-shadow-lg" />}
+        </div>
+        <div className="flex flex-col gap-3 items-center">
+          <button 
+            className={`btn1h w-48 py-2 text-white font-bold hover:bg-${color}-500`}
+            onClick={() => onSelectLevel('beginner')}
           >
-            Beginner {progress.beginner && <span className="ml-2 text-green-400">&#10003;</span>}
+            Beginner
           </button>
-          {/* Intermediate button, enabled if beginner is done */}
-          <button
-            className="btn1h py-2 disabled:opacity-50"
-            onClick={() => onSelect('intermediate')}
-            disabled={!progress.beginner}
+          <button 
+            className={`btn1h w-48 py-2 text-white font-bold hover:bg-${color}-500`}
+            onClick={() => onSelectLevel('intermediate')}
           >
-            Intermediate {progress.intermediate && <span className="ml-2 text-green-400">&#10003;</span>}
+            Intermediate
           </button>
-          {/* Advanced button, enabled if intermediate is done */}
-          <button
-            className="btn1h py-2 disabled:opacity-50"
-            onClick={() => onSelect('advanced')}
-            disabled={!progress.intermediate}
+          <button 
+            className={`btn1h w-48 py-2 text-white font-bold hover:bg-${color}-500`}
+            onClick={() => onSelectLevel('advanced')}
           >
-            Advanced {progress.advanced && <span className="ml-2 text-green-400">&#10003;</span>}
+            Advanced
           </button>
         </div>
-        {/* Close modal button */}
-        <button className="mt-6 text-fuchsia-300 underline w-full" onClick={onClose}>Close</button>
+        <button
+          className={`mt-6 text-slate-400 hover:text-${color}-400 transition-colors text-sm font-medium`}
+          onClick={onClose}
+        >
+          Close
+        </button>
       </div>
     </div>
   );

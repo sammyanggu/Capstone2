@@ -1,7 +1,11 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import { useAuth } from '../../../AuthContext';
+import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 export default function JsBeginner() {
+  const { currentUser } = useAuth();
   const [currentExercise, setCurrentExercise] = React.useState(0);
   const [exerciseStatus, setExerciseStatus] = React.useState({
     0: false,
@@ -13,18 +17,54 @@ export default function JsBeginner() {
   const [showError, setShowError] = React.useState(false);
   const [showCongrats, setShowCongrats] = React.useState(false);
   const [userCode, setUserCode] = React.useState('');
+  const [codeByExercise, setCodeByExercise] = React.useState({
+    0: '', 1: '', 2: '', 3: '', 4: ''
+  });
+  const saveTimeoutRef = React.useRef(null);
+  const [isSaving, setIsSaving] = React.useState(false);
 
-  // Save progress to localStorage
+  // Load progress from database
   React.useEffect(() => {
-    const savedStatus = localStorage.getItem('jsBeginnerStatus');
-    if (savedStatus) {
-      setExerciseStatus(JSON.parse(savedStatus));
+    const loadProgress = async () => {
+      if (currentUser) {
+        const progress = await getExerciseProgress(currentUser.uid, 'javascript', 'beginner');
+        if (progress) {
+          setUserCode(progress.code || '');
+        }
+      }
+    };
+    loadProgress();
+  }, [currentUser]);
+
+  // Save progress to database when code changes with debouncing
+  const saveProgress = (code) => {
+    if (!currentUser) return;
+    
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
-  }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem('jsBeginnerStatus', JSON.stringify(exerciseStatus));
-  }, [exerciseStatus]);
+    
+    // Set new timeout for auto-save (debounce for 1 second)
+    saveTimeoutRef.current = setTimeout(() => {
+      setIsSaving(true);
+      saveExerciseProgress(currentUser.uid, 'javascript', 'beginner', code, false, 0)
+        .then((success) => {
+          if (success) {
+            console.log('JS progress saved successfully');
+          } else {
+            console.error('Failed to save JS progress');
+            toast.error('Failed to save progress');
+          }
+          setIsSaving(false);
+        })
+        .catch((error) => {
+          console.error('Error saving JS progress:', error);
+          toast.error('Error saving progress');
+          setIsSaving(false);
+        });
+    }, 1000);
+  };
 
   const handleCodeSubmit = () => {
     // Clean up the code for comparison by removing whitespace and converting to lowercase
@@ -79,6 +119,15 @@ export default function JsBeginner() {
       setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
       setShowError(false);
       setShowCongrats(true);
+      
+      // If this is the last exercise, save completion to database
+      if (currentExercise === exercises.length - 1) {
+        if (currentUser) {
+          completeExercise(currentUser.uid, 'javascript', 'beginner', 10);
+          toast.success('JavaScript Beginner completed! 🎉');
+        }
+      }
+      
       setTimeout(() => {
         setShowCongrats(false);
         if (currentExercise < exercises.length - 1) {
@@ -329,16 +378,16 @@ export default function JsBeginner() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-16">
+    <div className="min-h-screen bg-white pt-16">
       {/* Congratulations Modal */}
       {showCongrats && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-slate-800 p-6 rounded-lg shadow-xl border border-fuchsia-500 animate-bounce">
+          <div className="bg-white p-6 rounded-lg shadow-xl border border-emerald-500 animate-bounce">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-fuchsia-400 mb-2">🎉 Congratulations! 🎉</h3>
-              <p className="text-slate-300">You've completed this exercise!</p>
+              <h3 className="text-2xl font-bold text-emerald-500 mb-2">🎉 Congratulations! 🎉</h3>
+              <p className="text-gray-700">You've completed this exercise!</p>
               {currentExercise < exercises.length - 1 && (
-                <p className="text-slate-400 text-sm mt-2">Moving to next exercise...</p>
+                <p className="text-gray-600 text-sm mt-2">Moving to next exercise...</p>
               )}
             </div>
           </div>
@@ -346,8 +395,8 @@ export default function JsBeginner() {
       )}
 
       <div className="container mx-auto px-4 py-4 max-w-4xl">
-        <div className="bg-slate-800/50 rounded-lg shadow-lg p-4 mb-4">
-          <h1 className="text-xl font-bold text-fuchsia-400 mb-3">JavaScript Beginner Exercises</h1>
+        <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
+          <h1 className="text-xl font-bold text-emerald-600 mb-3">JavaScript Beginner Exercises</h1>
           
           {/* Exercise Navigation */}
           <div className="flex gap-2 mb-4 flex-wrap">
@@ -356,12 +405,12 @@ export default function JsBeginner() {
                 key={index}
                 className={`px-3 py-1.5 rounded-lg text-sm ${
                   !canAccessExercise(index)
-                    ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : currentExercise === index
-                    ? 'bg-fuchsia-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : exerciseStatus[index]
                     ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                 }`}
                 onClick={() => canAccessExercise(index) && setCurrentExercise(index)}
                 disabled={!canAccessExercise(index)}
@@ -375,14 +424,14 @@ export default function JsBeginner() {
           </div>
 
           {/* Current Exercise */}
-          <div className="bg-slate-900/50 rounded-lg p-4 mb-4">
-            <h2 className="text-lg font-bold text-fuchsia-400 mb-1">{exercises[currentExercise].title}</h2>
-            <p className="text-slate-300 mb-3 text-sm">{exercises[currentExercise].instructions}</p>
+          <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+            <h2 className="text-lg font-bold text-emerald-600 mb-1">{exercises[currentExercise].title}</h2>
+            <p className="text-gray-700 mb-3 text-sm">{exercises[currentExercise].instructions}</p>
             
             {/* Hints */}
             <div className="mb-4">
               <button 
-                className="text-fuchsia-400 hover:text-fuchsia-300 text-sm font-medium flex items-center gap-2"
+                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-2"
                 onClick={() => document.getElementById('hints-beginner').classList.toggle('hidden')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -390,8 +439,8 @@ export default function JsBeginner() {
                 </svg>
                 Show Hints
               </button>
-              <div id="hints-beginner" className="hidden mt-2 bg-slate-800/50 rounded p-4 border border-slate-700/50">
-                <ul className="list-disc list-inside text-slate-300 space-y-1">
+              <div id="hints-beginner" className="hidden mt-2 bg-gray-50 rounded p-4 border border-gray-300">
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {exercises[currentExercise].hints.map((hint, index) => (
                     <li key={index} className="text-sm">{hint}</li>
                   ))}
@@ -400,25 +449,29 @@ export default function JsBeginner() {
             </div>
 
             {/* Code Editor */}
-            <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden mb-4">
+            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden mb-4">
               <LiveHtmlEditor
-                initialCode={exercises[currentExercise].initialCode}
+                initialCode={codeByExercise[currentExercise] || exercises[currentExercise].initialCode}
                 solution={exercises[currentExercise].solution}
-                onChange={setUserCode}
+                onChange={(code) => {
+                  setUserCode(code);
+                  setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
+                  saveProgress(code);
+                }}
               />
             </div>
 
             {/* Submit Button */}
             <button
               onClick={handleCodeSubmit}
-              className="px-4 py-2 bg-fuchsia-500 text-white rounded hover:bg-fuchsia-600 transition-colors cursor-pointer text-sm font-medium"
+              className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
             >
               Submit Code
             </button>
 
             {/* Error Message */}
             {showError && (
-              <div className="mt-4 bg-red-900/30 border border-red-700/50 text-red-200 px-4 py-3 rounded animate-shake">
+              <div className="mt-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded animate-shake">
                 <p>Not quite right! Check the requirements and try again.</p>
               </div>
             )}

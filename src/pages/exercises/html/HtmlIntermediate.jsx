@@ -332,16 +332,16 @@ export default function HtmlIntermediate() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 pt-16">
+        <div className="min-h-screen bg-white pt-16">
             {/* Congratulations Modal */}
             {showCongrats && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-                    <div className="bg-slate-800 p-6 rounded-lg shadow-xl border border-fuchsia-500 animate-bounce">
+                    <div className="bg-white p-6 rounded-lg shadow-xl border border-emerald-500 animate-bounce">
                         <div className="text-center">
-                            <h3 className="text-2xl font-bold text-fuchsia-400 mb-2">🎉 Congratulations! 🎉</h3>
-                            <p className="text-slate-300">You've completed this exercise!</p>
+                            <h3 className="text-2xl font-bold text-emerald-500 mb-2">🎉 Congratulations! 🎉</h3>
+                            <p className="text-gray-700">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-slate-400 text-sm mt-2">Moving to next exercise...</p>
+                                <p className="text-gray-600 text-sm mt-2">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -349,8 +349,8 @@ export default function HtmlIntermediate() {
             )}
 
             <div className="container mx-auto px-4 py-4 max-w-4xl">
-                <div className="bg-slate-800/50 rounded-lg shadow-lg p-4 mb-4">
-                    <h1 className="text-xl font-bold text-fuchsia-400 mb-3">HTML Intermediate Exercises</h1>
+                <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
+                    <h1 className="text-xl font-bold text-emerald-600 mb-3">HTML Intermediate Exercises</h1>
                     
                     {/* Exercise Navigation */}
                     <div className="flex gap-2 mb-4 flex-wrap">
@@ -359,12 +359,12 @@ export default function HtmlIntermediate() {
                                 key={index}
                                 className={`px-3 py-1.5 rounded-lg text-sm ${
                                     !canAccessExercise(index)
-                                        ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                         : currentExercise === index
-                                        ? 'bg-fuchsia-500 text-white hover:bg-fuchsia-600'
+                                        ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                                         : exerciseStatus[index]
                                         ? 'bg-green-500 text-white hover:bg-green-600'
-                                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                        : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                                 }`}
                                 onClick={() => canAccessExercise(index) && setCurrentExercise(index)}
                                 disabled={!canAccessExercise(index)}
@@ -378,20 +378,20 @@ export default function HtmlIntermediate() {
                     </div>
 
                     {/* Current Exercise */}
-                    <div className="bg-slate-900/50 rounded-lg p-4 mb-4">
-                        <h2 className="text-lg font-bold text-fuchsia-400 mb-1">{exercises[currentExercise].title}</h2>
-                        <p className="text-slate-300 mb-3 text-sm">{exercises[currentExercise].description}</p>
+                    <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+                        <h2 className="text-lg font-bold text-emerald-600 mb-1">{exercises[currentExercise].title}</h2>
+                        <p className="text-gray-700 mb-3 text-sm">{exercises[currentExercise].description}</p>
                         
                         <div>
                             <div className="bg-slate-800/50 rounded p-4 mb-4 border border-slate-700/50">
-                                <h3 className="text-lg font-semibold text-fuchsia-300 mb-2">Your Task:</h3>
+                                <h3 className="text-lg font-semibold text-emerald-300 mb-2">Your Task:</h3>
                                 <p className="text-slate-300">{exercises[currentExercise].task}</p>
                             </div>
                             
                             {/* Hints */}
                             <div className="mb-4">
                                 <button 
-                                    className="text-fuchsia-400 hover:text-fuchsia-300 text-sm font-medium flex items-center gap-2"
+                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2"
                                     onClick={() => document.getElementById('hints').classList.toggle('hidden')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -420,13 +420,13 @@ export default function HtmlIntermediate() {
                             <div className="mt-4 flex gap-4">
                                 <button
                                     onClick={handleCodeSubmit}
-                                    className="px-4 py-2 bg-fuchsia-500 text-white rounded hover:bg-fuchsia-600 transition-colors cursor-pointer text-sm font-medium"
+                                    className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
                                 >
                                     Submit Code
                                 </button>
 
                                 <button 
-                                    className="text-fuchsia-400 hover:text-fuchsia-300 text-sm font-medium flex items-center gap-2"
+                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2"
                                     onClick={() => document.getElementById('solution').classList.toggle('hidden')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

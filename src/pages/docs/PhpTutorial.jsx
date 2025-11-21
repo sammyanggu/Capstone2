@@ -1,38 +1,100 @@
 import React from 'react';
-import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import DocumentationEditor from '../../components/DocumentationEditor';
+import NavLi from '../../components/NavLi';
 
 export default function PhpTutorial() {
+  const [isAsideCollapsed, setIsAsideCollapsed] = React.useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-900 flex pt-28">
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+    <div className="min-h-screen bg-white flex flex-col md:flex-row pt-20">
+      {/* Open button (visible when aside is closed) */}
+      {isAsideCollapsed && (
+        <button
+          onClick={() => setIsAsideCollapsed(false)}
+          className="fixed left-0 top-[4.5rem] z-30 p-2 rounded-r bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-all duration-200 border-y border-r border-slate-800"
+          aria-label="Open menu"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed w-64 left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ${
+          isAsideCollapsed ? '-translate-x-full' : 'translate-x-0'
+        }`}
+      >
+        {/* Close button inside aside */}
+        {!isAsideCollapsed && (
+          <button
+            onClick={() => setIsAsideCollapsed(true)}
+            className="absolute right-2 top-3 z-30 p-1.5 rounded bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-colors"
+            aria-label="Close menu"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
         <nav className="pt-12">
-          <ul className="flex flex-col gap-2 text-fuchsia-200 text-base">
-            <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Home</a></li>
-            <li><a href="#intro" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Introduction</a></li>
-            <li><a href="#syntax" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Syntax</a></li>
-            <li><a href="#variables" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Variables</a></li>
-            <li><a href="#arrays" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Arrays</a></li>
-            <li><a href="#loops" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Loops</a></li>
-            <li><a href="#functions" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Functions</a></li>
-            <li><a href="#forms" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Forms</a></li>
-            <li><a href="#database" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Database</a></li>
-            <li><a href="#sessions" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">PHP Sessions</a></li>
+          <ul className="flex flex-col gap-1 text-slate-200 text-base">
+            <li><a href="#home" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Home</a></li>
+            <li><a href="#intro" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Introduction</a></li>
+            <li><a href="#syntax" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Syntax</a></li>
+            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Variables</a></li>
+            <li><a href="#arrays" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Arrays</a></li>
+            <li><a href="#loops" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Loops</a></li>
+            <li><a href="#functions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Functions</a></li>
+            <li><a href="#forms" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Forms</a></li>
+            <li><a href="#database" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Database</a></li>
+            <li><a href="#sessions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Sessions</a></li>
           </ul>
         </nav>
       </aside>
+
+      {/* Main content */}
       <div className="w-full flex justify-center">
-        <div className="max-w-4xl flex-1 pt-28 px-4 sm:px-8 md:ml-64">
-          <header className="mb-10 border-b border-fuchsia-600 pb-6" id="home">
-            <h1 className="text-4xl font-bold text-fuchsia-400 mb-2">PHP Fundamentals</h1>
-            <p className="text-lg text-fuchsia-200">Master PHP programming with practical examples!</p>
+        <div className="max-w-4xl w-full pt-8 px-4 sm:px-8 md:ml-64">
+          <header className="mb-10 border-b border-emerald-700 pb-6" id="home">
+            <div className="flex items-center gap-4 mb-4">
+              <img src="/src/assets/icons/php.svg" alt="PHP Logo" className="w-16 h-16" />
+              <div>
+                <h1 className="text-4xl font-bold text-emerald-700">PHP Fundamentals</h1>
+                <p className="text-lg text-black">Master PHP programming with practical examples!</p>
+              </div>
+            </div>
           </header>
 
           <section id="intro" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Introduction</h2>
-            <p className="text-slate-200 mb-4">PHP (Hypertext Preprocessor) is a popular server-side scripting language designed specifically for web development. It's embedded directly in HTML and executes on the server.</p>
-            
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">Key Features of PHP</h3>
-            <ul className="list-disc pl-6 text-slate-200 space-y-2">
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">PHP Introduction</h2>
+            <p className="text-black mb-4">PHP (Hypertext Preprocessor) is a popular server-side scripting language designed specifically for web development. It's embedded directly in HTML and executes on the server.</p>
+
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">Key Features of PHP</h3>
+            <ul className="list-disc pl-6 text-black space-y-2">
               <li>Server-side scripting</li>
               <li>Command line scripting</li>
               <li>Writing desktop applications</li>
@@ -41,8 +103,8 @@ export default function PhpTutorial() {
               <li>Free and open source</li>
             </ul>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">What You Can Build with PHP</h3>
-            <ul className="list-disc pl-6 text-slate-200 space-y-2">
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">What You Can Build with PHP</h3>
+            <ul className="list-disc pl-6 text-black space-y-2">
               <li>Dynamic websites and web applications</li>
               <li>E-commerce platforms</li>
               <li>Content Management Systems (like WordPress)</li>
@@ -52,12 +114,12 @@ export default function PhpTutorial() {
           </section>
 
           <section id="datatypes" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Data Types</h2>
-            <p className="text-slate-200 mb-4">PHP supports several data types that can be used to store different kinds of values. Understanding these types is crucial for proper data handling.</p>
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Data Types</h2>
+            <p className="text-black mb-4">PHP supports several data types that can be used to store different kinds of values. Understanding these types is crucial for proper data handling.</p>
             
-            <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Basic Data Types:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+            <div className="bg-slate-800 p-4 rounded-lg mb-6">
+              <h4 className="text-emerald-700 font-bold mb-2">Basic Data Types:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li><span className="text-yellow-400">String</span> - Text and characters</li>
                 <li><span className="text-yellow-400">Integer</span> - Whole numbers</li>
                 <li><span className="text-yellow-400">Float/Double</span> - Decimal numbers</li>
@@ -68,10 +130,9 @@ export default function PhpTutorial() {
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Type Checking</h3>
-            <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
-{`<?php
+            <h3 className="text-xl text-black mt-6 mb-2">1. Type Checking</h3>
+            <DocumentationEditor 
+              code={`<?php
 // gettype() - returns the type
 $value = "Hello";
 echo gettype($value);  // string
@@ -86,10 +147,9 @@ echo is_string($number);   // false
 echo is_array([1, 2, 3]);  // true
 echo is_null(null);        // true
 ?>`}
-              </pre>
-            </div>
+            />
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Type Casting</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Type Casting</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -116,12 +176,12 @@ declare(strict_types=1);
           </section>
 
           <section id="strings" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Strings</h2>
-            <p className="text-slate-200 mb-4">Strings in PHP are sequences of characters and have many built-in functions for manipulation.</p>
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Strings</h2>
+            <p className="text-black mb-4">Strings in PHP are sequences of characters and have many built-in functions for manipulation.</p>
 
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Common String Operations:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Common String Operations:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li>Concatenation with <span className="text-yellow-400">.</span> operator</li>
                 <li>Length checking with <span className="text-yellow-400">strlen()</span></li>
                 <li>Case modification (upper/lower)</li>
@@ -130,7 +190,7 @@ declare(strict_types=1);
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. String Functions</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">1. String Functions</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -159,7 +219,7 @@ echo str_replace("World", "PHP", $str); // Hello PHP
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. String Formatting</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. String Formatting</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -183,12 +243,12 @@ echo rtrim($text);     // "  Hello World"
           </section>
 
           <section id="variables" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Variables</h2>
-            <p className="text-slate-200 mb-4">Variables in PHP are used to store data that can be used throughout your program. PHP variables are dynamic, meaning you don't need to declare their type.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Variables</h2>
+            <p className="text-black mb-4">Variables in PHP are used to store data that can be used throughout your program. PHP variables are dynamic, meaning you don't need to declare their type.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Variable Rules:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Variable Rules:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li>Must start with a <code className="text-yellow-400">$</code> sign</li>
                 <li>Must begin with a letter or underscore</li>
                 <li>Can only contain alphanumeric characters (A-z, 0-9) and underscores</li>
@@ -196,7 +256,7 @@ echo rtrim($text);     // "  Hello World"
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Variable Types</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Variable Types</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -226,8 +286,8 @@ var_dump($price);   // float(19.99)
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Variable Scope</h3>
-            <p className="text-slate-200 mb-4">PHP has different variable scopes that determine where variables can be accessed:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Variable Scope</h3>
+            <p className="text-black mb-4">PHP has different variable scopes that determine where variables can be accessed:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -259,8 +319,8 @@ countCalls(); // Output: 2
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Constants</h3>
-            <p className="text-slate-200 mb-4">Constants are like variables except their value cannot be changed after they are defined:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Constants</h3>
+            <p className="text-black mb-4">Constants are like variables except their value cannot be changed after they are defined:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -282,10 +342,10 @@ echo __FILE__;       // Shows file path
           </section>
 
           <section id="syntax" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Syntax</h2>
-            <p className="text-slate-200 mb-4">PHP code is executed on the server and the HTML result is sent back to the browser. PHP code must be written inside special PHP tags.</p>
-            
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Basic Syntax</h3>
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Syntax</h2>
+            <p className="text-black mb-4">PHP code is executed on the server and the HTML result is sent back to the browser. PHP code must be written inside special PHP tags.</p>
+
+            <h3 className="text-xl text-black mt-6 mb-2">1. Basic Syntax</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -311,7 +371,7 @@ echo __FILE__;       // Shows file path
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. PHP in HTML</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. PHP in HTML</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<!DOCTYPE html>
@@ -332,7 +392,7 @@ echo __FILE__;       // Shows file path
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Echo vs Print</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Echo vs Print</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -356,12 +416,12 @@ echo 'Hello $name';    // Variables don't work in single quotes
           </section>
 
           <section id="operators" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Operators</h2>
-            <p className="text-slate-200 mb-4">PHP provides various operators for performing operations on variables and values.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Operators</h2>
+            <p className="text-black mb-4">PHP provides various operators for performing operations on variables and values.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Types of Operators:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Types of Operators:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li><span className="text-yellow-400">Arithmetic</span> - Math operations (+, -, *, /, %)</li>
                 <li><span className="text-yellow-400">Assignment</span> - Assign values (=, +=, -=)</li>
                 <li><span className="text-yellow-400">Comparison</span> - Compare values (==, ===, !=, &gt;)</li>
@@ -370,7 +430,7 @@ echo 'Hello $name';    // Variables don't work in single quotes
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Arithmetic & Assignment</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Arithmetic & Assignment</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -396,7 +456,7 @@ $x %= 3;    // Same as: $x = $x % 3
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Comparison & Logical</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Comparison & Logical</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -424,12 +484,12 @@ var_dump(!$x);       // false (NOT)
           </section>
 
           <section id="math" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Math</h2>
-            <p className="text-slate-200 mb-4">PHP provides many built-in functions for mathematical operations.</p>
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Math</h2>
+            <p className="text-black mb-4">PHP provides many built-in functions for mathematical operations.</p>
 
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Common Math Functions:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Common Math Functions:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li><span className="text-yellow-400">min(), max()</span> - Find minimum/maximum</li>
                 <li><span className="text-yellow-400">round(), ceil(), floor()</span> - Rounding numbers</li>
                 <li><span className="text-yellow-400">rand()</span> - Generate random numbers</li>
@@ -437,7 +497,7 @@ var_dump(!$x);       // false (NOT)
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Basic Math Functions</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Basic Math Functions</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -461,7 +521,7 @@ echo rand(1, 100);    // Random number between 1 and 100
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Advanced Math Functions</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Advanced Math Functions</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -487,19 +547,19 @@ var_dump(is_numeric("abc"));     // false
           </section>
 
           <section id="arrays" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Arrays</h2>
-            <p className="text-slate-200 mb-4">Arrays in PHP are ordered maps that can hold multiple values of any type. They are extremely flexible and can be used as arrays, lists, dictionaries, collections, and more.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Arrays</h2>
+            <p className="text-black mb-4">Arrays in PHP are ordered maps that can hold multiple values of any type. They are extremely flexible and can be used as arrays, lists, dictionaries, collections, and more.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Types of Arrays in PHP:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Types of Arrays in PHP:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li><span className="text-yellow-400">Indexed Arrays</span> - Arrays with numeric keys</li>
                 <li><span className="text-yellow-400">Associative Arrays</span> - Arrays with named keys</li>
                 <li><span className="text-yellow-400">Multidimensional Arrays</span> - Arrays containing one or more arrays</li>
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Indexed Arrays</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Indexed Arrays</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -523,8 +583,8 @@ sort($fruits);               // Sort array
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Associative Arrays</h3>
-            <p className="text-slate-200 mb-4">Associative arrays use named keys instead of numeric indexes:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Associative Arrays</h3>
+            <p className="text-black mb-4">Associative arrays use named keys instead of numeric indexes:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -550,8 +610,8 @@ var_dump(array_key_exists("name", $person)); // Check key
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Multidimensional Arrays</h3>
-            <p className="text-slate-200 mb-4">Arrays can contain other arrays to create multi-dimensional structures:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Multidimensional Arrays</h3>
+            <p className="text-black mb-4">Arrays can contain other arrays to create multi-dimensional structures:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -583,19 +643,19 @@ foreach ($users as $user) {
           </section>
 
           <section id="loops" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Loops</h2>
-            <p className="text-slate-200 mb-4">Loops are used to execute a block of code multiple times based on a condition.</p>
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Loops</h2>
+            <p className="text-black mb-4">Loops are used to execute a block of code multiple times based on a condition.</p>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. For Loop</h3>
-            <p className="text-slate-200 mb-4">The for loop is used when you know exactly how many times you want to execute a block of code. It consists of three parameters:</p>
-            <ul className="list-disc pl-6 text-slate-200 mb-4">
+            <h3 className="text-xl text-black mt-6 mb-2">1. For Loop</h3>
+            <p className="text-black mb-4">The for loop is used when you know exactly how many times you want to execute a block of code. It consists of three parameters:</p>
+            <ul className="list-disc pl-6 text-black mb-4">
               <li>initialization - Sets a counter variable</li>
               <li>condition - Tests if the loop should continue</li>
               <li>increment/decrement - Updates the counter</li>
             </ul>
-            <p className="text-slate-200 mb-4">Example: Let's count from 0 to 4 and work with arrays using for loops:</p>
+            <p className="text-black mb-4">Example: Let's count from 0 to 4 and work with arrays using for loops:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Basic for loop
 for ($i = 0; $i < 5; $i++) {
@@ -619,17 +679,17 @@ for ($i = 1; $i <= 5; $i++) {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. While Loop</h3>
-            <p className="text-slate-200 mb-4">The while loop executes a block of code as long as a specified condition is true. It's perfect for situations where you don't know exactly how many times the loop should run.</p>
-            <p className="text-slate-200 mb-4">Common uses of while loops include:</p>
-            <ul className="list-disc pl-6 text-slate-200 mb-4">
+            <h3 className="text-xl text-black mt-6 mb-2">2. While Loop</h3>
+            <p className="text-black mb-4">The while loop executes a block of code as long as a specified condition is true. It's perfect for situations where you don't know exactly how many times the loop should run.</p>
+            <p className="text-black mb-4">Common uses of while loops include:</p>
+            <ul className="list-disc pl-6 text-black mb-4">
               <li>Reading file contents until the end</li>
               <li>Processing database results</li>
               <li>Running tasks until a condition changes</li>
             </ul>
-            <p className="text-slate-200 mb-4">Here are examples of while loops in different scenarios:</p>
+            <p className="text-black mb-4">Here are examples of while loops in different scenarios:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Basic while loop
 $count = 1;
@@ -658,9 +718,9 @@ while (true) {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Do-While Loop</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Do-While Loop</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Basic do-while loop
 $i = 1;
@@ -679,9 +739,9 @@ do {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">4. Foreach Loop</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">4. Foreach Loop</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Foreach with indexed array
 $fruits = ["apple", "banana", "orange"];
@@ -714,12 +774,12 @@ foreach ($users as $user) {
           </section>
 
           <section id="functions" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Functions</h2>
-            <p className="text-slate-200 mb-4">Functions are reusable blocks of code that perform specific tasks. They help in organizing code, preventing repetition, and making programs easier to maintain.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Functions</h2>
+            <p className="text-black mb-4">Functions are reusable blocks of code that perform specific tasks. They help in organizing code, preventing repetition, and making programs easier to maintain.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Why Use Functions?</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Why Use Functions?</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li>Code Reusability - Write once, use many times</li>
                 <li>Better Organization - Break down complex tasks into smaller parts</li>
                 <li>Easier Maintenance - Fix issues in one place</li>
@@ -727,10 +787,10 @@ foreach ($users as $user) {
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Basic Functions</h3>
-            <p className="text-slate-200 mb-4">Basic functions are the foundation of PHP programming. They can take parameters (inputs) and return values (outputs). Here's how to create and use them:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Basic Functions</h3>
+            <p className="text-black mb-4">Basic functions are the foundation of PHP programming. They can take parameters (inputs) and return values (outputs). Here's how to create and use them:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Simple function
 function sayHello($name) {
@@ -758,9 +818,9 @@ function checkNumber($num) {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Advanced Functions</h3>
-            <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <h3 className="text-xl text-black mt-6 mb-2">2. Advanced Functions</h3>
+              <div className="bg-slate-800 p-4 rounded-lg mb-4">
+                <pre className="text-white">
 {`<?php
 // Type declarations (PHP 7+)
 function addNumbers(int $a, int $b): int {
@@ -794,9 +854,9 @@ echo $num;  // Output: 6
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Built-in Functions</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Built-in Functions</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // String functions
 $text = "Hello World";
@@ -827,12 +887,12 @@ echo floor(3.7);          // Round down
           </section>
 
           <section id="forms" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Forms</h2>
-            <p className="text-slate-200 mb-4">Forms are essential for collecting user input in web applications. PHP provides several ways to handle form data securely and process user submissions.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP Forms</h2>
+            <p className="text-black mb-4">Forms are essential for collecting user input in web applications. PHP provides several ways to handle form data securely and process user submissions.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Form Handling Concepts:</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-white mb-2">Form Handling Concepts:</h4>
+              <ul className="list-disc pl-6 text-white space-y-2">
                 <li><span className="text-yellow-400">$_POST</span> - Used for secure data transmission, not visible in URL</li>
                 <li><span className="text-yellow-400">$_GET</span> - Data is sent through URL parameters</li>
                 <li><span className="text-yellow-400">Form Validation</span> - Checking user input for correctness</li>
@@ -841,16 +901,16 @@ echo floor(3.7);          // Round down
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Basic Form Handling</h3>
-            <p className="text-slate-200 mb-4">When processing forms in PHP, you should always:</p>
-            <ul className="list-disc pl-6 text-slate-200 mb-4">
+            <h3 className="text-xl text-black mt-6 mb-2">1. Basic Form Handling</h3>
+            <p className="text-black mb-4">When processing forms in PHP, you should always:</p>
+            <ul className="list-disc pl-6 text-black mb-4">
               <li>Validate the form submission method (POST/GET)</li>
               <li>Sanitize all user inputs to prevent security vulnerabilities</li>
               <li>Validate required fields and data formats</li>
               <li>Provide clear feedback to users</li>
             </ul>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 // Form processing
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -883,9 +943,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. File Upload</h3>
-            <p className="text-slate-200 mb-4">File uploads are handled differently from regular form data. You need to:</p>
-            <ul className="list-disc pl-6 text-slate-200 mb-4">
+            <h3 className="text-xl text-black mt-6 mb-2">2. File Upload</h3>
+            <p className="text-black mb-4">File uploads are handled differently from regular form data. You need to:</p>
+            <ul className="list-disc pl-6 text-black mb-4">
               <li>Use <code className="text-yellow-400">enctype="multipart/form-data"</code> in your form</li>
               <li>Handle files through the <code className="text-yellow-400">$_FILES</code> superglobal</li>
               <li>Implement security checks for file type and size</li>
@@ -893,7 +953,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </ul>
             
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-white">
 {`<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileToUpload"])) {
@@ -944,9 +1004,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Form Validation Class</h3>
-            <p className="text-slate-200 mb-4">Creating a validation class helps organize and reuse form validation logic. This approach offers several benefits:</p>
-            <ul className="list-disc pl-6 text-slate-200 mb-4">
+            <h3 className="text-xl text-black mt-6 mb-2">3. Form Validation Class</h3>
+            <p className="text-black mb-4">Creating a validation class helps organize and reuse form validation logic. This approach offers several benefits:</p>
+            <ul className="list-disc pl-6 text-black mb-4">
               <li>Centralized validation rules</li>
               <li>Consistent error handling</li>
               <li>Reusable validation methods</li>
@@ -954,7 +1014,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </ul>
             
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-black">
 {`<?php
 class FormValidator {
     private $errors = [];
@@ -1016,12 +1076,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </section>
 
           <section id="database" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP MySQL Database</h2>
-            <p className="text-slate-200 mb-4">PHP with MySQL is one of the most popular combinations for web database applications. MySQL is a powerful, open-source database system that works perfectly with PHP.</p>
-            
+            <h2 className="text-2xl font-semibold text-black mb-2">PHP MySQL Database</h2>
+            <p className="text-black mb-4">PHP with MySQL is one of the most popular combinations for web database applications. MySQL is a powerful, open-source database system that works perfectly with PHP.</p>
+
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Why Use MySQL with PHP?</h4>
-              <ul className="list-disc pl-6 text-slate-200 space-y-2">
+              <h4 className="text-black mb-2">Why Use MySQL with PHP?</h4>
+              <ul className="list-disc pl-6 text-black space-y-2">
                 <li>Free and Open Source - No licensing costs</li>
                 <li>Easy to Use - Simple SQL syntax and PHP functions</li>
                 <li>Fast Performance - Optimized for web applications</li>
@@ -1030,8 +1090,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Database Connection</h3>
-            <p className="text-slate-200 mb-4">Before you can work with MySQL, you need to establish a connection to your database. Here's how to connect using the MySQLi Object-Oriented approach:</p>
+            <h3 className="text-xl text-black mt-6 mb-2">1. Database Connection</h3>
+            <p className="text-black mb-4">Before you can work with MySQL, you need to establish a connection to your database. Here's how to connect using the MySQLi Object-Oriented approach:</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1056,9 +1116,9 @@ $conn->close();
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Create Database</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">2. Create Database</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-black">
 {`<?php
 $sql = "CREATE DATABASE myDB";
 if ($conn->query($sql) === TRUE) {
@@ -1083,9 +1143,9 @@ if ($conn->query($sql) === TRUE) {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Insert Data</h3>
+            <h3 className="text-xl text-black mt-6 mb-2">3. Insert Data</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
-              <pre className="text-slate-200">
+              <pre className="text-black">
 {`<?php
 // Prepare and bind
 $stmt = $conn->prepare("INSERT INTO Users (firstname, lastname, email) 

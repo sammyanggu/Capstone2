@@ -1,12 +1,67 @@
 import React from 'react';
 import LiveHtmlEditor from '../../components/LiveHtmlEditor';
+import NavLi from '../../components/NavLi';
 
 export default function TailwindTutorial() {
+  const [isAsideCollapsed, setIsAsideCollapsed] = React.useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-900 flex pt-28">
-      <aside className="hidden md:block w-64 pr-8 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800">
+    <div className="min-h-screen bg-white flex pt-28">
+      {/* Open button (visible when aside is closed) */}
+      {isAsideCollapsed && (
+        <button
+          onClick={() => setIsAsideCollapsed(false)}
+          className="fixed left-0 top-[4.5rem] z-30 p-2 rounded-r bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-all duration-200 border-y border-r border-slate-800"
+          aria-label="Open menu"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed w-64 left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-20 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ${
+          isAsideCollapsed ? '-translate-x-full' : 'translate-x-0'
+        }`}
+      >
+        {/* Close button inside aside */}
+        {!isAsideCollapsed && (
+          <button
+            onClick={() => setIsAsideCollapsed(true)}
+            className="absolute right-2 top-3 z-30 p-1.5 rounded bg-slate-900 text-emerald-700 hover:text-emerald-500 transition-colors"
+            aria-label="Close menu"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
         <nav className="pt-12">
-          <ul className="flex flex-col gap-2 text-fuchsia-200 text-base">
+          <ul className="flex flex-col gap-2 text-slate-200 text-base">
             <li><a href="#home" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Tailwind Home</a></li>
             <li><a href="#intro" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Getting Started</a></li>
             <li><a href="#utility" className="block py-2 px-3 rounded hover:bg-slate-800 hover:text-fuchsia-400 transition">Utility Classes</a></li>

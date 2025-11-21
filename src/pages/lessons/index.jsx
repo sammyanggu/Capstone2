@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { getCategoryLessonProgress } from '../../utils/progressTracker';
 
 // Import SVG assets
 import { 
@@ -189,23 +189,30 @@ function Lessons() {
   const [user, setUser] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoryProgress, setCategoryProgress] = useState({});
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Here you'll fetch lessons from your API
-        // Example:
-        // axios.get(`http://localhost/capstone-backend/api/lessons.php?userId=${firebaseUser.uid}`)
-        //   .then(response => {
-        //     setLessons(response.data);
-        //     setLoading(false);
-        //   })
-        //   .catch(error => {
-        //     console.error("Error fetching lessons:", error);
-        //     setLoading(false);
-        //   });
-        setLoading(false); // Remove this when implementing actual API call
+        // Load progress for all categories
+        try {
+          const progressData = {};
+          const categoryKeys = ['html', 'css', 'javascript', 'php', 'bootstrap', 'tailwind'];
+          
+          for (const category of categoryKeys) {
+            const progress = await getCategoryLessonProgress(firebaseUser.uid, category);
+            if (progress) {
+              progressData[category] = progress;
+            }
+          }
+          
+          setCategoryProgress(progressData);
+        } catch (error) {
+          console.error('Error loading progress:', error);
+        }
+        
+        setLoading(false);
       }
     });
     return () => unsubscribe();
@@ -213,7 +220,7 @@ function Lessons() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 pt-20 px-4">
+      <div className="min-h-screen bg-white pt-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-[60vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
@@ -224,53 +231,65 @@ function Lessons() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-20 px-4 pb-8">
+    <div className="min-h-screen bg-white pt-28 px-4 pb-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-fuchsia-400 mb-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-10">
           Start Learning
         </h1>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(categories).map(([key, category]) => (
             <Link
               key={key}
               to={`/lessons/${key}`}
-              className={`block p-6 rounded-lg border ${category.borderColor} bg-slate-800/50 ${category.hoverBg} transition-all duration-300 transform hover:scale-102`}
+              className={`block p-5 rounded-xl border-2 ${category.borderColor} bg-gray-50 hover:bg-gray-100 transition-all duration-300 transform hover:scale-[1.02] shadow-md`}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-5">
                 <img 
                   src={category.icon} 
                   alt={category.title} 
-                  className="w-12 h-12"
+                  className="w-14 h-14"
                 />
-                <div>
-                  <h2 className={`text-xl font-bold ${category.color} mb-2`}>
+                <div className="flex-1">
+                  <h2 className={`text-2xl font-bold ${category.color}`}>
                     {category.title}
                   </h2>
-                  <p className="text-slate-300 text-sm">
+                  <p className="text-gray-600 text-sm mt-1.5">
                     {category.description}
                   </p>
                   
-                  {/* Progress indicators can be added here when connected to backend */}
-                  <div className="mt-4 flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                      <div className={`h-full ${category.color.replace('text', 'bg')}`} style={{ width: '0%' }}></div>
+                  {/* Progress indicators */}
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="flex-1 h-2.5 bg-gray-300 rounded-full overflow-hidden">
+                      {(() => {
+                        const progress = categoryProgress[key];
+                        let avgProgress = 0;
+                        if (progress) {
+                          const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
+                          avgProgress = Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length);
+                        }
+                        return (
+                          <div 
+                            className={`h-full ${category.color.replace('text', 'bg')}`} 
+                            style={{ width: `${avgProgress}%` }}
+                          ></div>
+                        );
+                      })()}
                     </div>
-                    <span className="text-xs text-slate-400">0%</span>
+                    <span className="text-sm text-gray-600 font-medium">
+                      {(() => {
+                        const progress = categoryProgress[key];
+                        if (!progress) return '0%';
+                        const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
+                        return Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length) + '%';
+                      })()}
+                    </span>
                   </div>
                 </div>
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* Recent Progress section can be added here */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-fuchsia-300 mb-6">Recent Progress</h2>
-          <div className="bg-slate-800/50 rounded-lg p-6 text-center">
-            <p className="text-slate-400">Start a lesson to track your progress!</p>
-          </div>
         </div>
       </div>
     </div>
