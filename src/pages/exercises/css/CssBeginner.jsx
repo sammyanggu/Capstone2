@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../AuthContext';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
-import { saveExerciseProgress, getExerciseProgress } from '../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 export default function CssBeginner() {
     const { currentUser } = useAuth();
@@ -16,26 +17,62 @@ export default function CssBeginner() {
     const [showError, setShowError] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
+    const [codeByExercise, setCodeByExercise] = useState({
+      0: '', 1: '', 2: '', 3: ''
+    });
+    const saveTimeoutRef = useRef(null);
+    const [isSaving, setIsSaving] = useState(false);
     
     // Load progress from database
     useEffect(() => {
         const loadProgress = async () => {
             if (currentUser) {
-                const progress = await getExerciseProgress(currentUser.uid, 'css', 'beginner');
-                if (progress) {
-                    setUserCode(progress.code || '');
-                    // Optionally load completion status from database
+                try {
+                    const progress = await getExerciseProgress(currentUser.uid, 'css', 'beginner');
+                    console.log('Loaded CSS progress:', progress);
+                    if (progress && progress.code) {
+                        setUserCode(progress.code);
+                        // Restore per-exercise code tracking if available
+                        if (progress.codeByExercise) {
+                            setCodeByExercise(progress.codeByExercise);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading CSS progress:', error);
                 }
             }
         };
         loadProgress();
     }, [currentUser]);
 
-    // Save progress to database when code changes
+    // Save progress to database when code changes with debouncing
     const saveProgress = (code) => {
-        if (currentUser) {
-            saveExerciseProgress(currentUser.uid, 'css', 'beginner', code, false, 0);
+        if (!currentUser) return;
+        
+        // Clear existing timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
         }
+        
+        // Set new timeout for auto-save (debounce for 1 second)
+        saveTimeoutRef.current = setTimeout(() => {
+            setIsSaving(true);
+            saveExerciseProgress(currentUser.uid, 'css', 'beginner', code, false, 0)
+                .then((success) => {
+                    if (success) {
+                        console.log('CSS progress saved successfully');
+                    } else {
+                        console.error('Failed to save CSS progress');
+                        toast.error('Failed to save progress');
+                    }
+                    setIsSaving(false);
+                })
+                .catch((error) => {
+                    console.error('Error saving CSS progress:', error);
+                    toast.error('Error saving progress');
+                    setIsSaving(false);
+                });
+        }, 1000);
     };
 
     const exercises = [
@@ -248,6 +285,15 @@ export default function CssBeginner() {
         if (correct) {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
             setShowCongrats(true);
+            
+            // If this is the last exercise, save completion to database
+            if (currentExercise === exercises.length - 1) {
+                if (currentUser) {
+                    completeExercise(currentUser.uid, 'css', 'beginner', 10);
+                    toast.success('CSS Beginner completed! 🎉');
+                }
+            }
+            
             setTimeout(() => {
                 setShowCongrats(false);
                 if (currentExercise < exercises.length - 1) {
@@ -345,9 +391,10 @@ export default function CssBeginner() {
                             {/* Code Editor */}
                             <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
                                 <LiveHtmlEditor 
-                                    initialCode={exercises[currentExercise].initialCode}
+                                    initialCode={codeByExercise[currentExercise] || exercises[currentExercise].initialCode}
                                     onChange={(code) => {
                                         setUserCode(code);
+                                        setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
                                         saveProgress(code);
                                     }}
                                 />

@@ -1,7 +1,11 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import { useAuth } from '../../../AuthContext';
+import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 export default function JsBeginner() {
+  const { currentUser } = useAuth();
   const [currentExercise, setCurrentExercise] = React.useState(0);
   const [exerciseStatus, setExerciseStatus] = React.useState({
     0: false,
@@ -13,18 +17,54 @@ export default function JsBeginner() {
   const [showError, setShowError] = React.useState(false);
   const [showCongrats, setShowCongrats] = React.useState(false);
   const [userCode, setUserCode] = React.useState('');
+  const [codeByExercise, setCodeByExercise] = React.useState({
+    0: '', 1: '', 2: '', 3: '', 4: ''
+  });
+  const saveTimeoutRef = React.useRef(null);
+  const [isSaving, setIsSaving] = React.useState(false);
 
-  // Save progress to localStorage
+  // Load progress from database
   React.useEffect(() => {
-    const savedStatus = localStorage.getItem('jsBeginnerStatus');
-    if (savedStatus) {
-      setExerciseStatus(JSON.parse(savedStatus));
+    const loadProgress = async () => {
+      if (currentUser) {
+        const progress = await getExerciseProgress(currentUser.uid, 'javascript', 'beginner');
+        if (progress) {
+          setUserCode(progress.code || '');
+        }
+      }
+    };
+    loadProgress();
+  }, [currentUser]);
+
+  // Save progress to database when code changes with debouncing
+  const saveProgress = (code) => {
+    if (!currentUser) return;
+    
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
-  }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem('jsBeginnerStatus', JSON.stringify(exerciseStatus));
-  }, [exerciseStatus]);
+    
+    // Set new timeout for auto-save (debounce for 1 second)
+    saveTimeoutRef.current = setTimeout(() => {
+      setIsSaving(true);
+      saveExerciseProgress(currentUser.uid, 'javascript', 'beginner', code, false, 0)
+        .then((success) => {
+          if (success) {
+            console.log('JS progress saved successfully');
+          } else {
+            console.error('Failed to save JS progress');
+            toast.error('Failed to save progress');
+          }
+          setIsSaving(false);
+        })
+        .catch((error) => {
+          console.error('Error saving JS progress:', error);
+          toast.error('Error saving progress');
+          setIsSaving(false);
+        });
+    }, 1000);
+  };
 
   const handleCodeSubmit = () => {
     // Clean up the code for comparison by removing whitespace and converting to lowercase
@@ -79,6 +119,15 @@ export default function JsBeginner() {
       setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
       setShowError(false);
       setShowCongrats(true);
+      
+      // If this is the last exercise, save completion to database
+      if (currentExercise === exercises.length - 1) {
+        if (currentUser) {
+          completeExercise(currentUser.uid, 'javascript', 'beginner', 10);
+          toast.success('JavaScript Beginner completed! 🎉');
+        }
+      }
+      
       setTimeout(() => {
         setShowCongrats(false);
         if (currentExercise < exercises.length - 1) {
@@ -402,9 +451,13 @@ export default function JsBeginner() {
             {/* Code Editor */}
             <div className="bg-white rounded-lg border border-gray-300 overflow-hidden mb-4">
               <LiveHtmlEditor
-                initialCode={exercises[currentExercise].initialCode}
+                initialCode={codeByExercise[currentExercise] || exercises[currentExercise].initialCode}
                 solution={exercises[currentExercise].solution}
-                onChange={setUserCode}
+                onChange={(code) => {
+                  setUserCode(code);
+                  setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
+                  saveProgress(code);
+                }}
               />
             </div>
 

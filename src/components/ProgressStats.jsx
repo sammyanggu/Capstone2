@@ -7,7 +7,7 @@ const ProgressStats = ({ userId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadStats = async () => {
+    const fetchStats = async () => {
       setLoading(true);
       try {
         const [exercises, lessons] = await Promise.all([
@@ -24,8 +24,31 @@ const ProgressStats = ({ userId }) => {
     };
 
     if (userId) {
-      loadStats();
+      fetchStats();
     }
+
+    // Listen for progress updates so we can refresh stats automatically
+    const handler = (e) => {
+      try {
+        const detail = e?.detail || {};
+        if (!detail || !detail.userId) {
+          // If no userId provided, just refresh
+          fetchStats();
+          return;
+        }
+        if (detail.userId === userId) {
+          fetchStats();
+        }
+      } catch (err) {
+        console.error('Error handling progress-updated event:', err);
+      }
+    };
+
+    window.addEventListener('progress-updated', handler);
+
+    return () => {
+      window.removeEventListener('progress-updated', handler);
+    };
   }, [userId]);
 
   if (loading) {

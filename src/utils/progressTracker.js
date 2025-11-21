@@ -19,7 +19,7 @@ export const saveExerciseProgress = async (
   points = 0
 ) => {
   if (!userId) {
-    console.error('User ID is required to save progress');
+    console.error('❌ User ID is required to save progress');
     return false;
   }
 
@@ -39,16 +39,31 @@ export const saveExerciseProgress = async (
       submittedAt: isCompleted ? Date.now() : null
     };
 
+    console.log('📝 Saving progress to Firebase:', {
+      path: `users/${userId}/progress/exercises/${exerciseType}/${level}`,
+      data: progressData
+    });
+
     await set(progressRef, progressData);
+    console.log('✅ Progress saved successfully');
 
     // Update user's total points if exercise is completed
     if (isCompleted) {
       await updateUserPoints(userId, points);
     }
 
+    // Dispatch a global event so UI can react (e.g., refresh stats)
+    try {
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('progress-updated', { detail: { userId, type: 'exercise', exerciseType, level, isCompleted } }));
+      }
+    } catch (e) {
+      // ignore dispatch errors in non-browser environments
+    }
+
     return true;
   } catch (error) {
-    console.error('Error saving exercise progress:', error);
+    console.error('❌ Error saving exercise progress:', error);
     return false;
   }
 };
@@ -61,7 +76,7 @@ export const saveExerciseProgress = async (
  */
 export const getExerciseProgress = async (userId, exerciseType, level) => {
   if (!userId) {
-    console.error('User ID is required to fetch progress');
+    console.error('❌ User ID is required to fetch progress');
     return null;
   }
 
@@ -71,15 +86,21 @@ export const getExerciseProgress = async (userId, exerciseType, level) => {
       `users/${userId}/progress/exercises/${exerciseType}/${level}`
     );
 
+    console.log('📖 Fetching progress from Firebase:', {
+      path: `users/${userId}/progress/exercises/${exerciseType}/${level}`
+    });
+
     const snapshot = await get(progressRef);
 
     if (snapshot.exists()) {
+      console.log('✅ Progress found:', snapshot.val());
       return snapshot.val();
     }
 
+    console.log('ℹ️ No progress data found');
     return null;
   } catch (error) {
-    console.error('Error fetching exercise progress:', error);
+    console.error('❌ Error fetching exercise progress:', error);
     return null;
   }
 };
@@ -242,6 +263,15 @@ export const saveLessonProgress = async (
     };
 
     await set(progressRef, progressData);
+    // Dispatch a global event so UI can react (e.g., refresh stats)
+    try {
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('progress-updated', { detail: { userId, type: 'lesson', category } }));
+      }
+    } catch (e) {
+      // ignore dispatch errors in non-browser environments
+    }
+
     return true;
   } catch (error) {
     console.error('Error saving lesson progress:', error);

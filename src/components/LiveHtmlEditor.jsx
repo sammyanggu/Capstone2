@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function LiveHtmlEditor({ initialCode = '', onChange }) {
+export default function LiveHtmlEditor({ initialCode = '', onChange, solution }) {
   const [code, setCode] = useState(initialCode);
   const [error, setError] = useState(null);
 
@@ -12,6 +12,8 @@ export default function LiveHtmlEditor({ initialCode = '', onChange }) {
     const newCode = event.target.value;
     setCode(newCode);
     try {
+      // Debug: log that the editor is emitting change events
+      console.log('LiveHtmlEditor onChange ->', newCode.substring(0, 200));
       if (onChange) {
         onChange(newCode);
       }

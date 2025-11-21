@@ -25,22 +25,34 @@ function Home() {
         script.src = 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js';
         script.async = true;
         script.onload = () => {
-            // Initialize particles after library loads
-            if (window.particlesJS) {
-                window.particlesJS("particles", {
-                    particles: {
-                        number: { value: 60 },
-                        size: { value: 2 },
-                        move: { speed: 1 },
-                        color: { value: "#10b981" },
-                        line_linked: {
-                            enable: true,
-                            distance: 150,
-                            color: "#059669",
-                            opacity: 0.4
+            // Initialize particles after library loads, but only if the target element exists.
+            try {
+                const container = document.getElementById('particles');
+                if (!container) {
+                    // Target not present (navigated away or not rendered) — skip init.
+                    return;
+                }
+
+                if (window.particlesJS) {
+                    window.particlesJS("particles", {
+                        particles: {
+                            number: { value: 60 },
+                            size: { value: 2 },
+                            move: { speed: 1 },
+                            color: { value: "#10b981" },
+                            line_linked: {
+                                enable: true,
+                                distance: 150,
+                                color: "#059669",
+                                opacity: 0.4
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            } catch (err) {
+                // Log the error but don't break the app
+                // eslint-disable-next-line no-console
+                console.error('Particles initialization failed:', err);
             }
         };
         document.body.appendChild(script);

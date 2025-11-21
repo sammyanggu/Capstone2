@@ -1,8 +1,12 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import '../../exercises/exercises.css';
+import { useAuth } from '../../../AuthContext';
+import { saveExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 export default function PhpBeginner() {
+  const { currentUser } = useAuth();
   const [currentExercise, setCurrentExercise] = React.useState(0);
   const [exerciseStatus, setExerciseStatus] = React.useState({
     0: false, 1: false, 2: false, 3: false, 4: false
@@ -154,6 +158,22 @@ for ($i = 1; $i <= 5; $i++) {
       }));
       setShowCongrats(true);
       setShowError(false);
+      // Persist completion to database when signed in
+      if (currentUser && currentUser.uid) {
+        const levelKey = `beginner/${currentExercise}`;
+        saveExerciseProgress(currentUser.uid, 'php', levelKey, userCode || '', true, 10)
+          .then((ok) => {
+            if (ok) {
+              completeExercise(currentUser.uid, 'php', levelKey, 10).catch(() => {});
+              toast.success('Saved progress to your account.');
+            } else {
+              console.warn('Failed to save PHP exercise progress to Firebase');
+            }
+          })
+          .catch((err) => {
+            console.error('Error saving PHP exercise progress:', err);
+          });
+      }
     } else {
       setShowError(true);
       setShowCongrats(false);

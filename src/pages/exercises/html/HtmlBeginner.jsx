@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import { useAuth } from '../../../AuthContext';
+import { saveExerciseProgress, getExerciseProgress } from '../../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 export default function HtmlBeginner() {
+    const { currentUser } = useAuth();
     const [currentExercise, setCurrentExercise] = useState(0);
     const [exerciseStatus, setExerciseStatus] = useState({
         0: false,
@@ -21,6 +25,34 @@ export default function HtmlBeginner() {
             setExerciseStatus(JSON.parse(savedStatus));
         }
     }, []);
+
+    // Load saved progress from Firebase for signed-in users
+    useEffect(() => {
+        const loadFirebaseProgress = async () => {
+            if (!currentUser?.uid) return;
+            try {
+                const newStatus = { ...exerciseStatus };
+                for (let i = 0; i < exercises.length; i++) {
+                    const levelKey = `beginner-${i}`;
+                    const progress = await getExerciseProgress(currentUser.uid, 'html', levelKey);
+                    if (progress && progress.isCompleted) {
+                        newStatus[i] = true;
+                    }
+                    // If coding exercise and saved code exists, prefill
+                    if (i === 3 && progress && progress.code) {
+                        setUserCode(progress.code);
+                    }
+                }
+                setExerciseStatus(newStatus);
+                console.log('Loaded HTML beginner progress from Firebase:', newStatus);
+            } catch (err) {
+                console.error('Error loading HTML beginner progress from Firebase:', err);
+            }
+        };
+
+        loadFirebaseProgress();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser]);
 
     useEffect(() => {
         localStorage.setItem('htmlExerciseStatus', JSON.stringify(exerciseStatus));
@@ -106,8 +138,20 @@ export default function HtmlBeginner() {
             setSelectedAnswer('');
             setShowCongrats(true);
             // Hide congrats and move to next exercise after delay
-            setTimeout(() => {
+            setTimeout(async () => {
                 setShowCongrats(false);
+                // Save to Firebase when signed in
+                if (currentUser?.uid) {
+                    try {
+                        const levelKey = `beginner-${currentExercise}`;
+                        const ok = await saveExerciseProgress(currentUser.uid, 'html', levelKey, '', true, 10);
+                        if (ok) console.log('Saved MCQ completion to Firebase for', levelKey);
+                        else console.warn('Failed to save MCQ completion to Firebase for', levelKey);
+                    } catch (err) {
+                        console.error('Error saving MCQ completion to Firebase:', err);
+                    }
+                }
+
                 if (currentExercise < exercises.length - 1) {
                     setCurrentExercise(currentExercise + 1);
                 }
@@ -146,8 +190,25 @@ export default function HtmlBeginner() {
         if (correct) {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
             setShowCongrats(true);
-            setTimeout(() => {
+            setTimeout(async () => {
                 setShowCongrats(false);
+                // Save code completion to Firebase when signed in
+                if (currentUser?.uid) {
+                    try {
+                        const levelKey = `beginner-${currentExercise}`;
+                        const ok = await saveExerciseProgress(currentUser.uid, 'html', levelKey, userCode || '', true, 10);
+                        if (ok) {
+                            console.log('Saved code completion to Firebase for', levelKey);
+                            toast.success('Progress saved to your account.');
+                        } else {
+                            console.warn('Failed to save code completion to Firebase for', levelKey);
+                        }
+                    } catch (err) {
+                        console.error('Error saving code completion to Firebase:', err);
+                        toast.error('Error saving progress to server');
+                    }
+                }
+
                 if (currentExercise < exercises.length - 1) {
                     setCurrentExercise(currentExercise + 1);
                 }

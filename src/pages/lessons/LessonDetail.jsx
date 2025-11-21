@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { saveLessonProgress, getLessonProgress } from '../../utils/progressTracker';
+import { toast } from 'react-toastify';
 
 // Import icons
 import { 
@@ -201,7 +202,7 @@ function VideoCard({ video, onSelect, progress = 0 }) {
 
   return (
     <div 
-      className="bg-white rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-fuchsia-500 transition-all duration-300 shadow-md border border-gray-200"
+      className="bg-white rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-emerald-600 transition-all duration-300 shadow-md border border-gray-200"
       onClick={() => onSelect(video)}
     >
       <div className="relative">
@@ -217,7 +218,7 @@ function VideoCard({ video, onSelect, progress = 0 }) {
         {progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-300">
             <div 
-              className="h-full bg-fuchsia-500"
+              className="h-full bg-emerald-600"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -235,11 +236,11 @@ function VideoCard({ video, onSelect, progress = 0 }) {
           <div className="mt-3 flex items-center gap-2">
             <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-fuchsia-500"
+                className="h-full bg-emerald-600"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <span className="text-xs font-semibold text-fuchsia-600">{progress}%</span>
+            <span className="text-xs font-semibold text-emerald-600">{progress}%</span>
           </div>
         )}
       </div>
@@ -247,12 +248,12 @@ function VideoCard({ video, onSelect, progress = 0 }) {
   );
 }
 
-function VideoPlayer({ video, onClose }) {
+function VideoPlayer({ video, onClose, onComplete, progress = 0 }) {
   if (!video) return null;
 
   return (
     <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-5xl aspect-video bg-slate-900 rounded-lg overflow-hidden">
+      <div className="relative w-full max-w-5xl bg-slate-900 rounded-lg overflow-hidden">
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 z-10 text-white/80 hover:text-white bg-black/50 rounded-full p-2"
@@ -261,13 +262,51 @@ function VideoPlayer({ video, onClose }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <iframe
-          src={`https://www.youtube.com/embed/${video.videoId}`}
-          title={video.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full"
-        ></iframe>
+        <div className="aspect-video w-full">
+          <iframe
+            src={`https://www.youtube.com/embed/${video.videoId}`}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          ></iframe>
+        </div>
+        
+        {/* Video Info and Complete Button */}
+        <div className="bg-slate-800 p-4 border-t border-slate-700">
+          <h3 className="text-white font-semibold mb-2">{video.title}</h3>
+          <p className="text-gray-300 text-sm mb-4">{video.description}</p>
+          
+          {/* Progress Bar */}
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-gray-400">Progress</span>
+              <span className="text-sm font-semibold text-emerald-600">{progress}%</span>
+            </div>
+            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          {/* Mark Complete Button */}
+          {progress < 100 && (
+            <button
+              onClick={() => onComplete(video.id, video.title)}
+              className="w-full py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all"
+            >
+              ✓ Mark as Complete
+            </button>
+          )}
+          
+          {progress === 100 && (
+            <div className="w-full py-2 bg-emerald-600 text-white font-semibold rounded-lg text-center">
+              ✓ Completed
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -308,11 +347,17 @@ export default function LessonDetail() {
   }, [category, lesson]);
 
   // Save progress when video is selected or progress changes
-  const handleVideoSelect = (video) => {
+  const handleVideoSelect = async (video) => {
     setSelectedVideo(video);
     // Auto-mark as started (25% progress)
     if (user) {
-      saveLessonProgress(user.uid, category, video.title, 25, false);
+      try {
+        const ok = await saveLessonProgress(user.uid, category, video.title, 25, false);
+        if (!ok) console.warn('Failed to save lesson start progress for', video.title);
+      } catch (err) {
+        console.error('Error saving lesson start progress:', err);
+      }
+
       setWatchProgress(prev => ({
         ...prev,
         [video.id]: 25
@@ -321,13 +366,26 @@ export default function LessonDetail() {
   };
 
   // Mark lesson as completed
-  const markLessonComplete = (videoId, videoTitle) => {
+  const markLessonComplete = async (videoId, videoTitle) => {
     if (user) {
-      saveLessonProgress(user.uid, category, videoTitle, 100, true);
-      setWatchProgress(prev => ({
-        ...prev,
-        [videoId]: 100
-      }));
+      try {
+        const ok = await saveLessonProgress(user.uid, category, videoTitle, 100, true);
+        if (!ok) {
+          console.warn('Failed to save lesson completion for', videoTitle);
+          toast.error('Could not save lesson progress.');
+        } else {
+          setWatchProgress(prev => ({
+            ...prev,
+            [videoId]: 100
+          }));
+          toast.success('Lesson completed! 🎉');
+        }
+      } catch (err) {
+        console.error('Error saving lesson completion:', err);
+        toast.error('Error saving lesson progress');
+      }
+    } else {
+      toast.warn('Sign in to save lesson progress');
     }
   };
   
@@ -380,6 +438,8 @@ export default function LessonDetail() {
           <VideoPlayer
             video={selectedVideo}
             onClose={() => setSelectedVideo(null)}
+            onComplete={markLessonComplete}
+            progress={watchProgress[selectedVideo.id] || 0}
           />
         )}
       </div>
