@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { saveLessonProgress, getLessonProgress } from '../../utils/progressTracker';
@@ -248,28 +248,134 @@ function VideoCard({ video, onSelect, progress = 0 }) {
   );
 }
 
-function VideoPlayer({ video, onClose, onComplete, progress = 0 }) {
+function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category }) {
+  const iframeRef = useRef(null);
+  const [player, setPlayer] = useState(null);
+  const [currentProgress, setCurrentProgress] = useState(progress);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const lastSavedProgressRef = useRef(0);
+
   if (!video) return null;
 
+  // Initialize YouTube IFrame API and track progress
+  useEffect(() => {
+    if (!iframeRef.current) return;
+
+    let playerInstance = null;
+    let trackingInterval = null;
+
+    const onPlayerReady = () => {
+      console.log('YouTube player ready');
+      if (playerInstance) {
+        setDuration(playerInstance.getDuration());
+      }
+    };
+
+    const onPlayerStateChange = (event) => {
+      const state = event.data;
+      if (state === window.YT.PlayerState.PLAYING) {
+        setIsPlaying(true);
+        
+        // Start tracking progress every 1 second
+        if (trackingInterval) clearInterval(trackingInterval);
+        trackingInterval = setInterval(() => {
+          if (playerInstance && playerInstance.getCurrentTime) {
+            const current = playerInstance.getCurrentTime();
+            const dur = playerInstance.getDuration();
+            if (dur > 0) {
+              const percent = Math.round((current / dur) * 100);
+              setCurrentProgress(percent);
+              
+              // Auto-save progress at milestones: 25%, 50%, 75%, 100%
+              if (user && (percent === 25 || percent === 50 || percent === 75 || percent === 100)) {
+                if (percent !== lastSavedProgressRef.current) {
+                  saveLessonProgress(user.uid, category, video.title, percent, false).catch(err => 
+                    console.error('Error saving progress:', err)
+                  );
+                  lastSavedProgressRef.current = percent;
+                }
+              }
+            }
+          }
+        }, 1000);
+      } else {
+        setIsPlaying(false);
+        if (trackingInterval) clearInterval(trackingInterval);
+      }
+    };
+
+    // Load YouTube IFrame API
+    if (window.YT && window.YT.Player) {
+      playerInstance = new window.YT.Player(iframeRef.current, {
+        height: '100%',
+        width: '100%',
+        videoId: video.videoId,
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange
+        }
+      });
+      setPlayer(playerInstance);
+    } else {
+      // Load the YouTube IFrame API script
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        playerInstance = new window.YT.Player(iframeRef.current, {
+          height: '100%',
+          width: '100%',
+          videoId: video.videoId,
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange
+          }
+        });
+        setPlayer(playerInstance);
+      };
+    }
+
+    return () => {
+      if (trackingInterval) clearInterval(trackingInterval);
+      if (playerInstance && playerInstance.destroy) {
+        playerInstance.destroy();
+      }
+    };
+  }, [video, user, category]);
+
+  const handleClose = () => {
+    // Save final progress before closing
+    if (user && currentProgress > lastSavedProgressRef.current) {
+      saveLessonProgress(user.uid, category, video.title, currentProgress, false).catch(err =>
+        console.error('Error saving final progress:', err)
+      );
+    }
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4">
-      <div className="relative w-full max-w-5xl bg-slate-900 rounded-lg overflow-hidden">
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 text-white/80 hover:text-white bg-black/50 rounded-full p-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div 
+      className="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4"
+      onClick={handleClose}
+    >
+      {/* Close button - positioned fixed to viewport, not relative to modal */}
+      <button 
+        onClick={handleClose}
+        className="fixed top-4 right-4 z-[250] text-white/80 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div 
+        className="relative w-full max-w-3xl bg-slate-900 rounded-lg overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="aspect-video w-full">
-          <iframe
-            src={`https://www.youtube.com/embed/${video.videoId}`}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full"
-          ></iframe>
+          <div ref={iframeRef} className="w-full h-full"></div>
         </div>
         
         {/* Video Info and Complete Button */}
@@ -280,19 +386,19 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0 }) {
           {/* Progress Bar */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-gray-400">Progress</span>
-              <span className="text-sm font-semibold text-emerald-600">{progress}%</span>
+              <span className="text-xs text-gray-400">Watch Progress</span>
+              <span className="text-sm font-semibold text-emerald-600">{currentProgress}%</span>
             </div>
             <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600"
-                style={{ width: `${progress}%` }}
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all"
+                style={{ width: `${currentProgress}%` }}
               ></div>
             </div>
           </div>
           
           {/* Mark Complete Button */}
-          {progress < 100 && (
+          {currentProgress < 100 && (
             <button
               onClick={() => onComplete(video.id, video.title)}
               className="w-full py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all"
@@ -301,9 +407,9 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0 }) {
             </button>
           )}
           
-          {progress === 100 && (
+          {currentProgress >= 100 && (
             <div className="w-full py-2 bg-emerald-600 text-white font-semibold rounded-lg text-center">
-              ✓ Completed
+              ✓ Completed ({currentProgress}%)
             </div>
           )}
         </div>
@@ -440,6 +546,8 @@ export default function LessonDetail() {
             onClose={() => setSelectedVideo(null)}
             onComplete={markLessonComplete}
             progress={watchProgress[selectedVideo.id] || 0}
+            user={user}
+            category={category}
           />
         )}
       </div>
