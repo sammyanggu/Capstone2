@@ -14,8 +14,8 @@ function Tutorials() {
     return (
         <div className="min-h-screen bg-white pt-20 sm:pt-24 pb-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl sm:text-5xl font-bold text-center text-blue-600 mb-4">Documentation</h1>
-                <h2 className="text-lg sm:text-xl text-center text-blue-600 mb-12 max-w-3xl mx-auto font-bold">Complete reference guides for front-end technologies and web development</h2>
+                <h1 className="text-4xl sm:text-5xl font-bold text-center text-emerald-600 mb-4">Documentation</h1>
+                <h2 className="text-lg sm:text-xl text-center text-emerald-600 mb-12 max-w-3xl mx-auto font-bold">Complete reference guides for front-end technologies and web development</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {/* HTML */}

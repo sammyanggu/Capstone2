@@ -65,13 +65,13 @@ export default function PhpTutorial() {
             <li><a href="#home" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Home</a></li>
             <li><a href="#intro" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Introduction</a></li>
             <li><a href="#syntax" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Syntax</a></li>
-            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Variables</a></li>
-            <li><a href="#arrays" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Arrays</a></li>
-            <li><a href="#loops" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Loops</a></li>
-            <li><a href="#functions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Functions</a></li>
-            <li><a href="#forms" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Forms</a></li>
-            <li><a href="#database" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Database</a></li>
-            <li><a href="#sessions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">PHP Sessions</a></li>
+            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Variables</a></li>
+            <li><a href="#arrays" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Arrays</a></li>
+            <li><a href="#loops" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Loops</a></li>
+            <li><a href="#functions" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Functions</a></li>
+            <li><a href="#forms" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Forms</a></li>
+            <li><a href="#database" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Database</a></li>
+            <li><a href="#sessions" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">PHP Sessions</a></li>
           </ul>
         </nav>
       </aside>
@@ -1178,7 +1178,7 @@ $stmt->execute();
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">4. Select Data</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">4. Select Data</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1211,7 +1211,7 @@ while ($row = $result->fetch_assoc()) {
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">5. Update and Delete</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">5. Update and Delete</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1239,11 +1239,11 @@ echo "Record deleted successfully";
           </section>
 
           <section id="oop" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Object-Oriented Programming (OOP)</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">PHP Object-Oriented Programming (OOP)</h2>
             <p className="text-slate-200 mb-4">PHP supports object-oriented programming, allowing you to create and work with classes and objects.</p>
 
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">OOP Concepts:</h4>
+              <h4 className="text-emerald-700 mb-2">OOP Concepts:</h4>
               <ul className="list-disc pl-6 text-slate-200 space-y-2">
                 <li><span className="text-yellow-400">Classes & Objects</span> - Blueprints and instances</li>
                 <li><span className="text-yellow-400">Properties</span> - Class variables</li>
@@ -1253,7 +1253,7 @@ echo "Record deleted successfully";
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Classes and Objects</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">1. Classes and Objects</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1284,7 +1284,7 @@ echo $car->getInfo();
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Inheritance</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">2. Inheritance</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1321,7 +1321,7 @@ echo $tesla->getInfo();
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Interfaces and Abstract Classes</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">3. Interfaces and Abstract Classes</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1364,7 +1364,7 @@ echo $ferrari->start();
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">4. Traits</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">4. Traits</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php
@@ -1399,11 +1399,11 @@ $manager->createUser("john_doe");
           </section>
 
           <section id="sessions" className="mb-10">
-            <h2 className="text-2xl font-semibold text-fuchsia-300 mb-2">PHP Sessions</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">PHP Sessions</h2>
             <p className="text-slate-200 mb-4">Sessions are used to store user information across multiple pages. Unlike cookies, session data is stored on the server, making it more secure for sensitive information.</p>
             
             <div className="bg-slate-700 p-4 rounded-lg mb-6">
-              <h4 className="text-fuchsia-300 mb-2">Why Use Sessions?</h4>
+              <h4 className="text-emerald-700 mb-2">Why Use Sessions?</h4>
               <ul className="list-disc pl-6 text-slate-200 space-y-2">
                 <li><span className="text-yellow-400">Security</span> - Data stored on server, not client</li>
                 <li><span className="text-yellow-400">State Management</span> - Keep track of user state</li>
@@ -1413,7 +1413,7 @@ $manager->createUser("john_doe");
               </ul>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">1. Start a PHP Session</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">1. Start a PHP Session</h3>
             <p className="text-slate-200 mb-4">Always start your session at the beginning of your script before any output is sent to the browser. This allows you to access session data throughout your application.</p>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
@@ -1431,7 +1431,7 @@ echo "Session variables are set";
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">2. Get Session Variables</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">2. Get Session Variables</h3>
             <p className="text-slate-200 mb-4">You can access session variables from any page that starts a session. Always check if a session variable exists before using it to prevent errors:</p>
             <ul className="list-disc pl-6 text-slate-200 mb-4">
               <li>Use <code className="text-yellow-400">isset()</code> to check if a variable exists</li>
@@ -1460,7 +1460,7 @@ print_r($_SESSION);
               </pre>
             </div>
 
-            <h3 className="text-xl text-fuchsia-300 mt-6 mb-2">3. Modify Session Variables</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">3. Modify Session Variables</h3>
             <div className="bg-slate-800 p-4 rounded-lg mb-4">
               <pre className="text-slate-200">
 {`<?php

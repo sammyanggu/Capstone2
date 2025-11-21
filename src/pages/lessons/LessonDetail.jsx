@@ -258,6 +258,7 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
   const lastSavedProgressRef = useRef(0);
   const lastSavedTimeRef = useRef(0);
   const saveTimeIntervalRef = useRef(null);
+  const hasAutoCompleted = useRef(false);
 
   if (!video) return null;
 
@@ -377,6 +378,8 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
   // Load saved time when video changes
   useEffect(() => {
     if (!user || !video) return;
+    
+    hasAutoCompleted.current = false; // Reset for new video
 
     const loadSavedTime = async () => {
       try {
@@ -395,6 +398,14 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
 
     loadSavedTime();
   }, [video, user, category]);
+
+  // Auto-mark as complete when reaching 100% progress
+  useEffect(() => {
+    if (currentProgress === 100 && user && !hasAutoCompleted.current) {
+      hasAutoCompleted.current = true;
+      onComplete(video.id, video.title);
+    }
+  }, [currentProgress, user, video.id, video.title, onComplete]);
 
   return (
     <div 

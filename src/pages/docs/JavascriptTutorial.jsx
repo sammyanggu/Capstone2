@@ -65,20 +65,20 @@ export default function JavascriptTutorial() {
             <li><a href="#home" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JavaScript Home</a></li>
             <li><a href="#intro" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Introduction</a></li>
             <li><a href="#syntax" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Syntax</a></li>
-            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Variables</a></li>
-            <li><a href="#operators" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Operators</a></li>
-            <li><a href="#functions" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Functions</a></li>
-            <li><a href="#events" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Events</a></li>
-            <li><a href="#dom" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS DOM</a></li>
-            <li><a href="#objects" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Objects</a></li>
-            <li><a href="#arrays" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Arrays</a></li>
-            <li><a href="#loops" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Loops</a></li>
-            <li><a href="#conditionals" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Conditionals</a></li>
-            <li><a href="#date" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Date</a></li>
-            <li><a href="#math" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Math</a></li>
-            <li><a href="#string" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS String</a></li>
-            <li><a href="#number" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS Number</a></li>
-            <li><a href="#json" className="block py-2 px-3 rounded hover:text-blue-600 hover:bg-slate-800 transition">JS JSON</a></li>
+            <li><a href="#variables" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Variables</a></li>
+            <li><a href="#operators" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Operators</a></li>
+            <li><a href="#functions" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Functions</a></li>
+            <li><a href="#events" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Events</a></li>
+            <li><a href="#dom" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS DOM</a></li>
+            <li><a href="#objects" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Objects</a></li>
+            <li><a href="#arrays" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Arrays</a></li>
+            <li><a href="#loops" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Loops</a></li>
+            <li><a href="#conditionals" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Conditionals</a></li>
+            <li><a href="#date" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Date</a></li>
+            <li><a href="#math" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Math</a></li>
+            <li><a href="#string" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS String</a></li>
+            <li><a href="#number" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS Number</a></li>
+            <li><a href="#json" className="block py-2 px-3 rounded hover:text-emerald-700 hover:bg-slate-800 transition">JS JSON</a></li>
           </ul>
         </nav>
       </aside>
@@ -93,7 +93,7 @@ export default function JavascriptTutorial() {
             <p className="text-black mb-4">JavaScript is a programming language that lets you add interactivity to web pages.</p>
           </section>
           <section id="syntax" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript Syntax</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript Syntax</h2>
             <LiveHtmlEditor initialCode={`<script>\ndocument.body.innerHTML = '<h1>Hello JavaScript!</h1><p>This is JS in action.</p>'\n<\/script>`} />
             <p className="text-black mb-4">JavaScript syntax includes statements, variables, and functions. Each statement typically ends with a semicolon, and code blocks are enclosed in curly braces.</p>
           </section>
@@ -154,7 +154,7 @@ document.body.innerHTML = \`
           </section>
 
           <section id="events" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript Events</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript Events</h2>
             <p className="text-black mb-4">Events are actions that can be detected by JavaScript. Common events include clicks, key presses, and form submissions.</p>
             <LiveHtmlEditor initialCode={`<div id="demo">
   <button onclick="changeText()">Click me!</button>
@@ -169,10 +169,10 @@ function changeText() {
           </section>
 
           <section id="dom" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript DOM Manipulation</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript DOM Manipulation</h2>
             <p className="text-black mb-4">The Document Object Model (DOM) is a programming interface for HTML documents. It represents the page as a tree of objects that can be modified with JavaScript.</p>
             
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">1. Selecting Elements</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">1. Selecting Elements</h3>
             <LiveHtmlEditor initialCode={`<div id="selectors-demo">
   <h3>Finding DOM Elements</h3>
   <p class="highlight">First highlighted paragraph</p>
@@ -200,7 +200,7 @@ console.log("Selected by query:", byQuery);
 console.log("Selected by queryAll:", byQueryAll);
 <\/script>`} />
 
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">2. Creating and Modifying Elements</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">2. Creating and Modifying Elements</h3>
             <LiveHtmlEditor initialCode={`<div id="modification-demo">
   <h3>DOM Modification</h3>
   <div id="content"></div>
@@ -259,7 +259,7 @@ function removeElements() {
 }
 <\/script>`} />
 
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">3. Event Handling</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">3. Event Handling</h3>
             <LiveHtmlEditor initialCode={`<div id="events-demo">
   <h3>Event Handling Demo</h3>
   <button id="btn1">Click Me (onclick)</button>
@@ -301,7 +301,7 @@ function logEvent(text) {
 <\/script>`} />
 
             <div className="mt-6 space-y-4">
-              <h3 className="text-xl text-blue-600">Key DOM Concepts:</h3>
+              <h3 className="text-xl text-emerald-700">Key DOM Concepts:</h3>
               <ul className="list-disc pl-6 text-black">
                 <li>Selection Methods:
                   <ul className="list-disc pl-6 mt-2">
@@ -333,10 +333,10 @@ function logEvent(text) {
           </section>
 
           <section id="arrays" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript Arrays</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript Arrays</h2>
             <p className="text-black mb-4">Arrays are used to store multiple values in a single variable. They can hold different types of data and offer many built-in methods for manipulation.</p>
             
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">1. Array Basics</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">1. Array Basics</h3>
             <LiveHtmlEditor initialCode={`<div id="array-demo">
   <h3>Array Basics</h3>
   <div id="output1"></div>
@@ -365,7 +365,7 @@ document.getElementById("output1").innerHTML = \`
 \`;
 <\/script>`} />
 
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">2. Array Methods</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">2. Array Methods</h3>
             <LiveHtmlEditor initialCode={`<div id="array-methods">
   <h3>Common Array Methods</h3>
   <div id="output2"></div>
@@ -401,7 +401,7 @@ document.getElementById("output2").innerHTML = \`
 \`;
 <\/script>`} />
 
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">3. Array Iteration Methods</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">3. Array Iteration Methods</h3>
             <LiveHtmlEditor initialCode={`<div id="array-iteration">
   <h3>Array Iteration Methods</h3>
   <div id="output3"></div>
@@ -444,7 +444,7 @@ document.getElementById("output3").innerHTML = \`
 \`;
 <\/script>`} />
 
-            <h3 className="text-xl text-blue-600 mt-6 mb-2">4. Advanced Array Operations</h3>
+            <h3 className="text-xl text-emerald-700 mt-6 mb-2">4. Advanced Array Operations</h3>
             <LiveHtmlEditor initialCode={`<div id="advanced-arrays">
   <h3>Advanced Array Operations</h3>
   <div id="output4"></div>
@@ -489,7 +489,7 @@ document.getElementById("output4").innerHTML = \`
 <\/script>`} />
 
             <div className="mt-6 space-y-4">
-              <h3 className="text-xl text-blue-600">Key Array Concepts:</h3>
+              <h3 className="text-xl text-emerald-700">Key Array Concepts:</h3>
               <ul className="list-disc pl-6 text-black">
                 <li>Basic Operations:
                   <ul className="list-disc pl-6 mt-2">
@@ -520,7 +520,7 @@ document.getElementById("output4").innerHTML = \`
           </section>
 
           <section id="objects" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript Objects</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript Objects</h2>
             <p className="text-black mb-4">Objects are containers for named values called properties and methods.</p>
             <LiveHtmlEditor initialCode={`<script>
 // Create an object
@@ -544,7 +544,7 @@ document.body.innerHTML = \`
           </section>
 
           <section id="json" className="mb-10">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-2">JavaScript JSON</h2>
+            <h2 className="text-2xl font-semibold text-emerald-700 mb-2">JavaScript JSON</h2>
             <p className="text-black mb-4">JSON (JavaScript Object Notation) is a lightweight data format used for data exchange.</p>
             <LiveHtmlEditor initialCode={`<script>
 // JSON example
