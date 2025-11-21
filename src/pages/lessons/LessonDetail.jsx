@@ -455,20 +455,7 @@ export default function LessonDetail() {
   // Save progress when video is selected or progress changes
   const handleVideoSelect = async (video) => {
     setSelectedVideo(video);
-    // Auto-mark as started (25% progress)
-    if (user) {
-      try {
-        const ok = await saveLessonProgress(user.uid, category, video.title, 25, false);
-        if (!ok) console.warn('Failed to save lesson start progress for', video.title);
-      } catch (err) {
-        console.error('Error saving lesson start progress:', err);
-      }
-
-      setWatchProgress(prev => ({
-        ...prev,
-        [video.id]: 25
-      }));
-    }
+    // Real progress tracking will be handled by VideoPlayer component
   };
 
   // Mark lesson as completed
