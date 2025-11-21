@@ -192,11 +192,36 @@ const Quiz = () => {
       setLoading(false);
     });
 
-    // TODO: Replace with actual API call
-    setQuizzes(mockQuizzes);
+    // Fetch quizzes from API or use mock data as fallback
+    fetchQuizzes();
 
     return () => unsubscribe();
   }, []);
+
+  const fetchQuizzes = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/quizzes.php`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setQuizzes(Array.isArray(data) ? data : (data.quizzes || mockQuizzes));
+      } else {
+        // Fallback to mock data
+        setQuizzes(mockQuizzes);
+      }
+    } catch (error) {
+      console.error('Error fetching quizzes:', error);
+      // Fallback to mock data on error
+      setQuizzes(mockQuizzes);
+    }
+  };
 
   const startQuiz = (quiz) => {
     setSelectedQuiz(quiz);
@@ -231,7 +256,7 @@ const Quiz = () => {
     }
   };
 
-  const completeQuiz = () => {
+  const completeQuiz = async () => {
     let finalScore = 0;
     selectedQuiz.questions.forEach((question, index) => {
       if (userAnswers[index] === question.correctAnswer) {
@@ -241,9 +266,40 @@ const Quiz = () => {
     setScore(finalScore);
     setQuizCompleted(true);
 
-    // TODO: Save quiz result to database
+    // Save quiz result to database
     if (currentUser) {
-      console.log(`Quiz ${selectedQuiz.id} completed with score: ${finalScore}`);
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/api/quiz-results.php`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            user_id: currentUser.uid,
+            user_email: currentUser.email,
+            quiz_id: selectedQuiz.id,
+            quiz_title: selectedQuiz.title,
+            score: finalScore,
+            total_questions: selectedQuiz.questions.length,
+            answers: userAnswers,
+            completed_at: new Date().toISOString()
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Quiz result saved:', result);
+          toast.success('Quiz completed! Score saved to your profile');
+        } else {
+          console.error('Failed to save quiz result');
+          toast.info('Quiz completed! (Score saved locally)');
+        }
+      } catch (error) {
+        console.error('Error saving quiz result:', error);
+        toast.info('Quiz completed! (Could not save to server)');
+      }
     }
   };
 

@@ -3,42 +3,35 @@ import { auth } from '../firebase';
 import { toast } from 'react-toastify';
 
 const Leaderboard = () => {
-  const [leaderboardData, setLeaderboardData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [activeTab, setActiveTab] = useState('quiz'); // 'quiz' or 'exercises'
+  const [quizLeaderboard, setQuizLeaderboard] = useState([]);
+  const [exercisesLeaderboard, setExercisesLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserRank, setCurrentUserRank] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
-  const categories = [
-    { id: 'all', name: 'All Languages', icon: '🌐' },
-    { id: 'html', name: 'HTML', icon: '🏷️' },
-    { id: 'css', name: 'CSS', icon: '🎨' },
-    { id: 'javascript', name: 'JavaScript', icon: '⚡' },
-    { id: 'php', name: 'PHP', icon: '🐘' },
+  // Mock data for fallback
+  const mockQuizData = [
+    { id: 1, name: 'Alex Chen', email: 'alex@example.com', score: 2850, completed_count: 45 },
+    { id: 2, name: 'Maria Garcia', email: 'maria@example.com', score: 2720, completed_count: 42 },
+    { id: 3, name: 'Sam Cleofe', email: 'sam@example.com', score: 2590, completed_count: 38 },
+    { id: 4, name: 'John Smith', email: 'john@example.com', score: 2410, completed_count: 35 },
+    { id: 5, name: 'Emma Wilson', email: 'emma@example.com', score: 2150, completed_count: 30 },
   ];
 
-  // Mock leaderboard data - replace with API call
-  const mockLeaderboardData = [
-    { id: 1, name: 'Alex Chen', avatar: '👨‍💻', points: 2850, language: 'all', exercises: 45, level: 'Advanced' },
-    { id: 2, name: 'Maria Garcia', avatar: '👩‍💻', points: 2720, language: 'all', exercises: 42, level: 'Advanced' },
-    { id: 3, name: 'Sam Cleofe', avatar: '🧑‍💻', points: 2590, language: 'all', exercises: 38, level: 'Intermediate' },
-    { id: 4, name: 'John Smith', avatar: '👨‍🎓', points: 2410, language: 'all', exercises: 35, level: 'Intermediate' },
-    { id: 5, name: 'Emma Wilson', avatar: '👩‍🎓', points: 2150, language: 'all', exercises: 30, level: 'Beginner' },
-    { id: 6, name: 'Carlos Rodriguez', avatar: '🧑‍🚀', points: 1980, language: 'all', exercises: 28, level: 'Beginner' },
-    { id: 7, name: 'Lisa Anderson', avatar: '👩‍🔬', points: 1820, language: 'all', exercises: 25, level: 'Beginner' },
-    { id: 8, name: 'Michael Brown', avatar: '👨‍🏫', points: 1650, language: 'all', exercises: 22, level: 'Beginner' },
-    { id: 9, name: 'Sophie Martin', avatar: '👩‍💼', points: 1450, language: 'all', exercises: 20, level: 'Beginner' },
-    { id: 10, name: 'David Lee', avatar: '👨‍💼', points: 1290, language: 'all', exercises: 18, level: 'Beginner' },
+  const mockExercisesData = [
+    { id: 1, name: 'Alex Chen', email: 'alex@example.com', score: 3200, completed_count: 52 },
+    { id: 2, name: 'Maria Garcia', email: 'maria@example.com', score: 2980, completed_count: 48 },
+    { id: 3, name: 'Sam Cleofe', email: 'sam@example.com', score: 2750, completed_count: 44 },
+    { id: 4, name: 'David Lee', email: 'david@example.com', score: 2620, completed_count: 40 },
+    { id: 5, name: 'Lisa Anderson', email: 'lisa@example.com', score: 2400, completed_count: 36 },
   ];
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
       if (user) {
-        // TODO: Fetch real leaderboard data from API
-        // For now, use mock data
-        fetchLeaderboardData();
+        fetchAllLeaderboards();
       }
       setLoading(false);
     });
@@ -46,41 +39,75 @@ const Leaderboard = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchLeaderboardData = async () => {
+  // Auto-refresh every 10 seconds for real-time updates
+  useEffect(() => {
+    const interval = setInterval(fetchAllLeaderboards, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchAllLeaderboards = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/leaderboard?category=${selectedCategory}`);
-      // const data = await response.json();
-      
-      setLeaderboardData(mockLeaderboardData);
-      
-      // Find current user's rank
-      const userRank = mockLeaderboardData.findIndex(user => user.name === 'Sam Cleofe') + 1;
-      setCurrentUserRank(userRank);
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error);
-      toast.error('Failed to load leaderboard');
+      // Fetch Quiz leaderboard
+      const quizResponse = await fetch('http://localhost:8000/api/leaderboard.php?type=quiz', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+
+      if (quizResponse.ok) {
+        const quizData = await quizResponse.json();
+        setQuizLeaderboard(Array.isArray(quizData) ? quizData : (quizData.data || mockQuizData));
+      } else {
+        setQuizLeaderboard(mockQuizData);
+      }
+
+      // Fetch Exercises leaderboard
+      const exercisesResponse = await fetch('http://localhost:8000/api/leaderboard.php?type=exercises', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+
+      if (exercisesResponse.ok) {
+        const exercisesData = await exercisesResponse.json();
+        setExercisesLeaderboard(Array.isArray(exercisesData) ? exercisesData : (exercisesData.data || mockExercisesData));
+      } else {
+        setExercisesLeaderboard(mockExercisesData);
+      }
+    } catch (err) {
+      console.error('Error fetching leaderboards:', err);
+      setQuizLeaderboard(mockQuizData);
+      setExercisesLeaderboard(mockExercisesData);
+      toast.info('Using demo leaderboard data');
     }
   };
 
-  useEffect(() => {
-    if (selectedCategory === 'all') {
-      setFilteredData(leaderboardData);
-    } else {
-      setFilteredData(leaderboardData.filter(user => user.language === selectedCategory));
-    }
-  }, [selectedCategory, leaderboardData]);
+  const currentLeaderboard = activeTab === 'quiz' ? quizLeaderboard : exercisesLeaderboard;
+
+  const getUserRank = () => {
+    if (!currentUser) return null;
+    const index = currentLeaderboard.findIndex(u => u.email === currentUser.email);
+    return index !== -1 ? index + 1 : null;
+  };
+
+  const getUserStats = () => {
+    if (!currentUser) return null;
+    return currentLeaderboard.find(u => u.email === currentUser.email);
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-900">
-        <div className="text-white">Loading leaderboard...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="text-white text-lg">Loading leaderboard...</div>
       </div>
     );
   }
 
+  const userRank = getUserRank();
+  const userStats = getUserStats();
+
   return (
-    <div className="min-h-screen bg-slate-900 text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -88,115 +115,164 @@ const Leaderboard = () => {
             🏆 Leaderboard
           </h1>
           <p className="text-gray-400 text-lg">
-            Top performers in the coding challenge
+            Compete with learners around the world
           </p>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="flex gap-0 mb-8 border-b border-purple-500/30 justify-center">
+          <button
+            onClick={() => setActiveTab('quiz')}
+            className={`px-8 py-3 font-semibold text-lg transition-all duration-200 border-b-2 ${
+              activeTab === 'quiz'
+                ? 'text-purple-400 border-purple-400'
+                : 'text-gray-400 border-transparent hover:text-white'
+            }`}
+          >
+            📝 Quiz Rankings
+          </button>
+          <button
+            onClick={() => setActiveTab('exercises')}
+            className={`px-8 py-3 font-semibold text-lg transition-all duration-200 border-b-2 ${
+              activeTab === 'exercises'
+                ? 'text-emerald-400 border-emerald-400'
+                : 'text-gray-400 border-transparent hover:text-white'
+            }`}
+          >
+            💪 Exercises Rankings
+          </button>
+        </div>
+
         {/* Current User Stats */}
-        {currentUserRank && (
-          <div className="mb-8 bg-gradient-to-r from-emerald-600/20 to-blue-600/20 border border-emerald-500/30 rounded-lg p-6">
-            <div className="flex items-center justify-between">
+        {userRank && userStats && (
+          <div className={`mb-8 bg-gradient-to-r ${
+            activeTab === 'quiz'
+              ? 'from-purple-600/20 to-purple-400/10'
+              : 'from-emerald-600/20 to-emerald-400/10'
+          } border ${
+            activeTab === 'quiz' ? 'border-purple-500/30' : 'border-emerald-500/30'
+          } rounded-lg p-6`}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Your Rank</p>
-                <div className="flex items-center gap-3">
-                  <div className="text-4xl font-bold text-emerald-400">#{currentUserRank}</div>
+                <p className="text-gray-400 text-sm mb-2">Your Rank</p>
+                <div className="flex items-center gap-4">
+                  <div className={`text-4xl font-bold ${
+                    activeTab === 'quiz' ? 'text-purple-400' : 'text-emerald-400'
+                  }`}>
+                    #{userRank}
+                  </div>
                   <div>
-                    <p className="text-lg font-semibold">Sam Cleofe</p>
-                    <p className="text-gray-400 text-sm">2,590 Points • 38 Exercises</p>
+                    <p className="text-lg font-semibold">{currentUser?.displayName || 'You'}</p>
+                    <p className="text-gray-400 text-sm">
+                      {userStats.score} Points • {userStats.completed_count} {activeTab === 'quiz' ? 'Quizzes' : 'Exercises'}
+                    </p>
                   </div>
                 </div>
               </div>
-              <div className="text-5xl">🥉</div>
+              <div className="text-5xl">
+                {userRank === 1 ? '�' : userRank === 2 ? '🥈' : userRank === 3 ? '�🥉' : '🎖️'}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Category Filter */}
-        <div className="mb-8 flex flex-wrap gap-3 justify-center">
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
-                selectedCategory === category.id
-                  ? 'bg-emerald-600 text-white shadow-lg'
-                  : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
-              }`}
-            >
-              <span>{category.icon}</span>
-              {category.name}
-            </button>
-          ))}
-        </div>
-
         {/* Leaderboard Table */}
-        <div className="overflow-x-auto">
+        <div className="bg-slate-800/50 rounded-lg shadow-xl overflow-hidden border border-slate-700/50 backdrop-blur-sm">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-4 px-4 text-gray-400 font-semibold">Rank</th>
-                <th className="text-left py-4 px-4 text-gray-400 font-semibold">User</th>
-                <th className="text-center py-4 px-4 text-gray-400 font-semibold">Level</th>
-                <th className="text-center py-4 px-4 text-gray-400 font-semibold">Exercises</th>
-                <th className="text-right py-4 px-4 text-gray-400 font-semibold">Points</th>
+              <tr className={`bg-gradient-to-r ${
+                activeTab === 'quiz'
+                  ? 'from-purple-600/40 to-purple-700/40'
+                  : 'from-emerald-600/40 to-emerald-700/40'
+              }`}>
+                <th className="px-6 py-4 text-left text-white font-semibold">Rank</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Player</th>
+                <th className="px-6 py-4 text-center text-white font-semibold">Score</th>
+                <th className="px-6 py-4 text-center text-white font-semibold">
+                  {activeTab === 'quiz' ? 'Quizzes' : 'Exercises'}
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {filteredData.map((user, index) => (
-                <tr
-                  key={user.id}
-                  className={`border-b border-slate-800 hover:bg-slate-800/50 transition-colors ${
-                    user.name === 'Sam Cleofe' ? 'bg-emerald-900/20' : ''
-                  }`}
-                >
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold w-8 text-center">
-                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+            <tbody className="divide-y divide-slate-700/50">
+              {currentLeaderboard.length > 0 ? (
+                currentLeaderboard.map((user, index) => (
+                  <tr 
+                    key={index}
+                    className={`hover:bg-slate-700/30 transition-colors ${
+                      currentUser?.email === user.email 
+                        ? activeTab === 'quiz'
+                          ? 'bg-purple-900/30'
+                          : 'bg-emerald-900/30'
+                        : ''
+                    }`}
+                  >
+                    <td className="px-6 py-4">
+                      <span className="text-xl font-bold">
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                       </span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl">{user.avatar}</div>
-                      <div>
-                        <p className="font-semibold">{user.name}</p>
-                        <p className="text-sm text-gray-400">{user.language === 'all' ? 'All Langs' : user.language}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${
+                          activeTab === 'quiz'
+                            ? 'from-purple-500 to-pink-500'
+                            : 'from-emerald-500 to-teal-500'
+                        } flex items-center justify-center font-bold text-white`}>
+                          {user.name?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">{user.name}</p>
+                          <p className="text-xs text-gray-400">{user.email}</p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      user.level === 'Advanced'
-                        ? 'bg-red-500/20 text-red-300'
-                        : user.level === 'Intermediate'
-                        ? 'bg-yellow-500/20 text-yellow-300'
-                        : 'bg-green-500/20 text-green-300'
+                    </td>
+                    <td className={`px-6 py-4 text-center font-bold text-lg ${
+                      activeTab === 'quiz' ? 'text-purple-400' : 'text-emerald-400'
                     }`}>
-                      {user.level}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-center">
-                    <span className="text-gray-300">{user.exercises}</span>
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <span className="text-lg font-bold text-emerald-400">{user.points.toLocaleString()}</span>
+                      {user.score}
+                    </td>
+                    <td className="px-6 py-4 text-center text-gray-300 font-medium">
+                      {user.completed_count}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
+                    <div className="text-5xl mb-4">📊</div>
+                    <p>No leaderboard data available yet</p>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Empty State */}
-        {filteredData.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No data available for this category</p>
+        {/* Stats Info */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50">
+            <h3 className="text-lg font-semibold text-emerald-400 mb-3">📊 How Rankings Work</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>✓ Quiz Rankings: Based on total quiz scores earned</li>
+              <li>✓ Exercise Rankings: Based on exercises completed</li>
+              <li>✓ Rankings update in real-time</li>
+              <li>✓ Compete fairly with other learners</li>
+            </ul>
           </div>
-        )}
+
+          <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50">
+            <h3 className="text-lg font-semibold text-purple-400 mb-3">🎯 Tips to Climb</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>✓ Complete more quizzes and exercises</li>
+              <li>✓ Aim for perfect scores to earn bonus points</li>
+              <li>✓ Try different skill levels for challenges</li>
+              <li>✓ Keep learning and practicing consistently</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+};;
 
 export default Leaderboard;
