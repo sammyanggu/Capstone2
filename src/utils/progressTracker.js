@@ -240,7 +240,8 @@ export const saveLessonProgress = async (
   category,
   lessonTitle,
   progressPercent = 0,
-  isCompleted = false
+  isCompleted = false,
+  currentTime = 0
 ) => {
   if (!userId) {
     console.error('User ID is required to save lesson progress');
@@ -257,6 +258,7 @@ export const saveLessonProgress = async (
       category,
       lessonTitle,
       progressPercent: Math.min(100, Math.max(0, progressPercent)),
+      currentTime: Math.max(0, currentTime), // Save resume point (in seconds)
       isCompleted,
       lastModified: Date.now(),
       completedAt: isCompleted ? Date.now() : null

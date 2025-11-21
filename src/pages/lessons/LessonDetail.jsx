@@ -254,7 +254,10 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
   const [currentProgress, setCurrentProgress] = useState(progress);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [savedTime, setSavedTime] = useState(0);
   const lastSavedProgressRef = useRef(0);
+  const lastSavedTimeRef = useRef(0);
+  const saveTimeIntervalRef = useRef(null);
 
   if (!video) return null;
 
@@ -269,6 +272,12 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
       console.log('YouTube player ready');
       if (playerInstance) {
         setDuration(playerInstance.getDuration());
+        
+        // Seek to saved resume point if available
+        if (savedTime > 0) {
+          console.log(`Resuming from ${savedTime} seconds`);
+          playerInstance.seekTo(savedTime);
+        }
       }
     };
 
@@ -290,7 +299,7 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
               // Auto-save progress at milestones: 25%, 50%, 75%, 100%
               if (user && (percent === 25 || percent === 50 || percent === 75 || percent === 100)) {
                 if (percent !== lastSavedProgressRef.current) {
-                  saveLessonProgress(user.uid, category, video.title, percent, false).catch(err => 
+                  saveLessonProgress(user.uid, category, video.title, percent, false, current).catch(err => 
                     console.error('Error saving progress:', err)
                   );
                   lastSavedProgressRef.current = percent;
@@ -299,9 +308,17 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
             }
           }
         }, 1000);
-      } else {
+      } else if (state === window.YT.PlayerState.PAUSED) {
         setIsPlaying(false);
         if (trackingInterval) clearInterval(trackingInterval);
+        
+        // Save current time when user pauses
+        if (playerInstance && user) {
+          const currentTime = playerInstance.getCurrentTime();
+          saveLessonProgress(user.uid, category, video.title, currentProgress, false, currentTime).catch(err =>
+            console.error('Error saving pause point:', err)
+          );
+        }
       }
     };
 
@@ -344,17 +361,40 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
         playerInstance.destroy();
       }
     };
-  }, [video, user, category]);
+  }, [video, user, category, savedTime]);
 
   const handleClose = () => {
     // Save final progress before closing
-    if (user && currentProgress > lastSavedProgressRef.current) {
-      saveLessonProgress(user.uid, category, video.title, currentProgress, false).catch(err =>
+    if (player && user) {
+      const currentTime = player.getCurrentTime();
+      saveLessonProgress(user.uid, category, video.title, currentProgress, false, currentTime).catch(err =>
         console.error('Error saving final progress:', err)
       );
     }
     onClose();
   };
+
+  // Load saved time when video changes
+  useEffect(() => {
+    if (!user || !video) return;
+
+    const loadSavedTime = async () => {
+      try {
+        const savedProgress = await getLessonProgress(user.uid, category, video.title);
+        if (savedProgress && savedProgress.currentTime > 0) {
+          setSavedTime(savedProgress.currentTime);
+          console.log(`Loaded saved time: ${savedProgress.currentTime} seconds`);
+        } else {
+          setSavedTime(0);
+        }
+      } catch (error) {
+        console.error('Error loading saved time:', error);
+        setSavedTime(0);
+      }
+    };
+
+    loadSavedTime();
+  }, [video, user, category]);
 
   return (
     <div 

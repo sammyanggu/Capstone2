@@ -32,6 +32,8 @@ import PhpExercise from './pages/exercises/PhpExercise'
 import Profile from './pages/Profile'
 import Lessons from './pages/lessons'
 import LessonDetail from './pages/lessons/LessonDetail'
+import Leaderboard from './pages/Leaderboard'
+import Quiz from './pages/Quiz'
 // Import React hooks
 import { useEffect, useState } from 'react'
 
@@ -155,6 +157,20 @@ function AppContent() {
         <Route path="/profile" element={
           <PrivateRoute user={currentUser}>
             <Profile />
+          </PrivateRoute>
+        } />
+
+        {/* Leaderboard page, protected */}
+        <Route path="/leaderboard" element={
+          <PrivateRoute user={currentUser}>
+            <Leaderboard />
+          </PrivateRoute>
+        } />
+
+        {/* Quiz page, protected */}
+        <Route path="/quiz" element={
+          <PrivateRoute user={currentUser}>
+            <Quiz />
           </PrivateRoute>
         } />
       </Routes>
