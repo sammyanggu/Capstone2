@@ -164,7 +164,7 @@ const Leaderboard = () => {
                     <div>
                       <p className="text-lg font-semibold text-gray-800">{currentUser?.displayName || 'You'}</p>
                       <p className="text-gray-600 text-sm">
-                        {userStats.score} Points • {userStats.completed_count} {activeTab === 'quiz' ? 'Quizzes' : 'Exercises'}
+                        {userStats.score} Points • {userStats.completed_count} Quizzes
                       </p>
                     </div>
                   </div>
@@ -184,9 +184,7 @@ const Leaderboard = () => {
                 <th className="px-6 py-4 text-left text-gray-700 font-semibold">Rank</th>
                 <th className="px-6 py-4 text-left text-gray-700 font-semibold">Player</th>
                 <th className="px-6 py-4 text-center text-gray-700 font-semibold">Score</th>
-                <th className="px-6 py-4 text-center text-gray-700 font-semibold">
-                  {activeTab === 'quiz' ? 'Quizzes' : 'Exercises'}
-                </th>
+                <th className="px-6 py-4 text-center text-gray-700 font-semibold">Quizzes</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
