@@ -1,8 +1,11 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import Confetti from '../../../components/Confetti';
+import { useAuth } from '../../../AuthContext';
+import { saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 
 export default function JsAdvanced() {
+  const { currentUser } = useAuth();
   const [currentExercise, setCurrentExercise] = React.useState(0);
   const [exerciseStatus, setExerciseStatus] = React.useState({
     0: false,
@@ -24,9 +27,43 @@ export default function JsAdvanced() {
     }
   }, []);
 
+  // Load current exercise index from Firebase
+  React.useEffect(() => {
+    const loadExerciseIndex = async () => {
+      if (currentUser?.uid) {
+        try {
+          const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'advanced');
+          if (savedIndex !== null && savedIndex !== undefined) {
+            setCurrentExercise(savedIndex);
+            console.log(`✅ Resumed from exercise ${savedIndex}`);
+          }
+        } catch (err) {
+          console.error('Error loading JS advanced exercise index:', err);
+        }
+      }
+    };
+
+    loadExerciseIndex();
+  }, [currentUser]);
+
   React.useEffect(() => {
     localStorage.setItem('jsAdvancedStatus', JSON.stringify(exerciseStatus));
   }, [exerciseStatus]);
+
+  // Save current exercise index to Firebase whenever it changes
+  React.useEffect(() => {
+    const saveIndex = async () => {
+      if (currentUser?.uid) {
+        try {
+          await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'advanced', currentExercise);
+        } catch (err) {
+          console.error('Error saving current exercise index:', err);
+        }
+      }
+    };
+
+    saveIndex();
+  }, [currentExercise, currentUser]);
 
   const handleCodeSubmit = () => {
     const cleanCode = (code) => {

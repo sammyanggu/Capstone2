@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import Confetti from '../../../components/Confetti';
+import { useAuth } from '../../../AuthContext';
+import { saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 
 export default function HtmlAdvanced() {
+    const { currentUser } = useAuth();
     const [currentExercise, setCurrentExercise] = useState(0);
     const [exerciseStatus, setExerciseStatus] = useState({
         0: false,
@@ -23,9 +26,43 @@ export default function HtmlAdvanced() {
         }
     }, []);
 
+    // Load current exercise index from Firebase
+    useEffect(() => {
+        const loadExerciseIndex = async () => {
+            if (currentUser?.uid) {
+                try {
+                    const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'advanced');
+                    if (savedIndex !== null && savedIndex !== undefined) {
+                        setCurrentExercise(savedIndex);
+                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+                    }
+                } catch (err) {
+                    console.error('Error loading HTML advanced exercise index:', err);
+                }
+            }
+        };
+
+        loadExerciseIndex();
+    }, [currentUser]);
+
     useEffect(() => {
         localStorage.setItem('htmlAdvancedStatus', JSON.stringify(exerciseStatus));
     }, [exerciseStatus]);
+
+    // Save current exercise index to Firebase whenever it changes
+    useEffect(() => {
+        const saveIndex = async () => {
+            if (currentUser?.uid) {
+                try {
+                    await saveCurrentExerciseIndex(currentUser.uid, 'html', 'advanced', currentExercise);
+                } catch (err) {
+                    console.error('Error saving current exercise index:', err);
+                }
+            }
+        };
+
+        saveIndex();
+    }, [currentExercise, currentUser]);
 
     const exercises = [
         {

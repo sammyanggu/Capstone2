@@ -100,59 +100,60 @@ function Settings() {
 
   return (
     <div className="min-h-screen bg-white pt-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-emerald-600 mb-8">Settings</h1>
 
-        {/* Edit Profile Section */}
-        <div className="bg-slate-900 rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-          <h2 className="text-2xl font-bold text-emerald-600 mb-6">Edit Profile</h2>
-          
-          <form onSubmit={handleSaveProfile} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-emerald-700 mb-2">
-                Display Name
-              </label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
-                placeholder="Enter your display name"
-              />
-            </div>
+        {/* Main Grid Container - Side by side on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Edit Profile Section */}
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 sm:p-8">
+            <h2 className="text-2xl font-bold text-emerald-600 mb-6">Edit Profile</h2>
+            
+            <form onSubmit={handleSaveProfile} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-emerald-700 mb-2">
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
+                  placeholder="Enter your display name"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-emerald-700 mb-2">
-                Email (Read-only)
-              </label>
-              <input
-                type="email"
-                value={email}
-                disabled
-                className="w-full px-4 py-2 bg-slate-800 text-gray-400 border border-slate-700 rounded-lg cursor-not-allowed opacity-50"
-              />
-              <p className="text-xs text-gray-400 mt-2">Email cannot be changed here. Contact support to change your email.</p>
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-emerald-700 mb-2">
+                  Email (Read-only)
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  disabled
+                  className="w-full px-4 py-2 bg-slate-800 text-gray-400 border border-slate-700 rounded-lg cursor-not-allowed opacity-50"
+                />
+                <p className="text-xs text-gray-400 mt-2">Email cannot be changed here. Contact support to change your email.</p>
+              </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Saving..." : "Save Profile"}
-            </button>
-          </form>
-        </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Saving..." : "Save Profile"}
+              </button>
+            </form>
+          </div>
 
-        {/* Reset Progress Section */}
-        <div className="bg-slate-900 rounded-lg shadow-lg p-6 sm:p-8">
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
+          {/* Reset Progress Section */}
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 sm:p-8">
+            <div className="flex flex-col h-full">
               <h2 className="text-2xl font-bold text-orange-600 mb-2">Reset Progress</h2>
               <p className="text-gray-300 mb-4">
                 Reset all your progress to start over. This will:
               </p>
-              <ul className="list-disc list-inside text-gray-300 space-y-1 mb-4 text-sm">
+              <ul className="list-disc list-inside text-gray-300 space-y-1 mb-4 text-sm flex-1">
                 <li>Clear all completed exercises</li>
                 <li>Reset quiz scores</li>
                 <li>Reset points and achievements</li>
@@ -163,7 +164,7 @@ function Settings() {
               </p>
               <button
                 onClick={() => setShowResetModal(true)}
-                className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
               >
                 Reset All Progress
               </button>

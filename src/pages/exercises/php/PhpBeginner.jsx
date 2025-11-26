@@ -2,7 +2,7 @@ import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import '../../exercises/exercises.css';
 import { useAuth } from '../../../AuthContext';
-import { saveExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { saveExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 import Confetti from '../../../components/Confetti';
 import { toast } from 'react-toastify';
 import { phpIcon } from '../../../assets/icons/index.js';
@@ -26,9 +26,43 @@ export default function PhpBeginner() {
     }
   }, []);
 
+  // Load current exercise index from Firebase
+  React.useEffect(() => {
+    const loadExerciseIndex = async () => {
+      if (currentUser?.uid) {
+        try {
+          const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'php', 'beginner');
+          if (savedIndex !== null && savedIndex !== undefined) {
+            setCurrentExercise(savedIndex);
+            console.log(`✅ Resumed from exercise ${savedIndex}`);
+          }
+        } catch (err) {
+          console.error('Error loading PHP beginner exercise index:', err);
+        }
+      }
+    };
+
+    loadExerciseIndex();
+  }, [currentUser]);
+
   React.useEffect(() => {
     localStorage.setItem('phpBeginnerStatus', JSON.stringify(exerciseStatus));
   }, [exerciseStatus]);
+
+  // Save current exercise index to Firebase whenever it changes
+  React.useEffect(() => {
+    const saveIndex = async () => {
+      if (currentUser?.uid) {
+        try {
+          await saveCurrentExerciseIndex(currentUser.uid, 'php', 'beginner', currentExercise);
+        } catch (err) {
+          console.error('Error saving current exercise index:', err);
+        }
+      }
+    };
+
+    saveIndex();
+  }, [currentExercise, currentUser]);
 
   const exercises = [
     {

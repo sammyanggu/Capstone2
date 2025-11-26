@@ -507,3 +507,64 @@ export const saveQuizProgress = async (
     return false;
   }
 };
+
+/**
+ * Save the current exercise index (which exercise user is on)
+ * @param {string} userId - User's Firebase UID
+ * @param {string} exerciseType - Type of exercise (html, css, javascript, php)
+ * @param {string} level - Difficulty level (beginner, intermediate, advanced)
+ * @param {number} currentExerciseIndex - The index of the current exercise
+ */
+export const saveCurrentExerciseIndex = async (userId, exerciseType, level, currentExerciseIndex) => {
+  if (!userId) {
+    console.error('❌ User ID is required to save current exercise index');
+    return false;
+  }
+
+  try {
+    const currentExerciseRef = ref(
+      db,
+      `users/${userId}/progress/exerciseState/${exerciseType}/${level}/currentIndex`
+    );
+
+    await set(currentExerciseRef, currentExerciseIndex);
+    console.log(`📝 Saved current exercise index: ${exerciseType}-${level} => ${currentExerciseIndex}`);
+
+    return true;
+  } catch (error) {
+    console.error('❌ Error saving current exercise index:', error);
+    return false;
+  }
+};
+
+/**
+ * Get the current exercise index for user
+ * @param {string} userId - User's Firebase UID
+ * @param {string} exerciseType - Type of exercise (html, css, javascript, php)
+ * @param {string} level - Difficulty level (beginner, intermediate, advanced)
+ */
+export const getCurrentExerciseIndex = async (userId, exerciseType, level) => {
+  if (!userId) {
+    console.error('❌ User ID is required to fetch current exercise index');
+    return null;
+  }
+
+  try {
+    const currentExerciseRef = ref(
+      db,
+      `users/${userId}/progress/exerciseState/${exerciseType}/${level}/currentIndex`
+    );
+
+    const snapshot = await get(currentExerciseRef);
+
+    if (snapshot.exists()) {
+      console.log(`✅ Loaded current exercise index: ${snapshot.val()}`);
+      return snapshot.val();
+    }
+    return null;
+  } catch (error) {
+    console.error('❌ Error fetching current exercise index:', error);
+    return null;
+  }
+};
+

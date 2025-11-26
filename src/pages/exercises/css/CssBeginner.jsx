@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../AuthContext';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
-import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 import Confetti from '../../../components/Confetti';
 import { toast } from 'react-toastify';
 
@@ -25,7 +25,7 @@ export default function CssBeginner() {
     const saveTimeoutRef = useRef(null);
     const [isSaving, setIsSaving] = useState(false);
     
-    // Load progress from database
+    // Load progress from database and current exercise index
     useEffect(() => {
         const loadProgress = async () => {
             if (currentUser) {
@@ -39,6 +39,13 @@ export default function CssBeginner() {
                             setCodeByExercise(progress.codeByExercise);
                         }
                     }
+                    
+                    // Load current exercise index
+                    const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'css', 'beginner');
+                    if (savedIndex !== null && savedIndex !== undefined) {
+                        setCurrentExercise(savedIndex);
+                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+                    }
                 } catch (error) {
                     console.error('Error loading CSS progress:', error);
                 }
@@ -46,6 +53,21 @@ export default function CssBeginner() {
         };
         loadProgress();
     }, [currentUser]);
+
+    // Save current exercise index whenever it changes
+    useEffect(() => {
+        const saveIndex = async () => {
+            if (currentUser?.uid) {
+                try {
+                    await saveCurrentExerciseIndex(currentUser.uid, 'css', 'beginner', currentExercise);
+                } catch (err) {
+                    console.error('Error saving current exercise index:', err);
+                }
+            }
+        };
+
+        saveIndex();
+    }, [currentExercise, currentUser]);
 
     // Save progress to database when code changes with debouncing
     const saveProgress = (code) => {

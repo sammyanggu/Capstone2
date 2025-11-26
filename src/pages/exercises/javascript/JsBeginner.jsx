@@ -1,7 +1,7 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import { useAuth } from '../../../AuthContext';
-import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 import Confetti from '../../../components/Confetti';
 import { toast } from 'react-toastify';
 
@@ -33,10 +33,32 @@ export default function JsBeginner() {
         if (progress) {
           setUserCode(progress.code || '');
         }
+
+        // Load current exercise index
+        const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner');
+        if (savedIndex !== null && savedIndex !== undefined) {
+          setCurrentExercise(savedIndex);
+          console.log(`✅ Resumed from exercise ${savedIndex}`);
+        }
       }
     };
     loadProgress();
   }, [currentUser]);
+
+  // Save current exercise index to Firebase whenever it changes
+  React.useEffect(() => {
+    const saveIndex = async () => {
+      if (currentUser?.uid) {
+        try {
+          await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner', currentExercise);
+        } catch (err) {
+          console.error('Error saving current exercise index:', err);
+        }
+      }
+    };
+
+    saveIndex();
+  }, [currentExercise, currentUser]);
 
   // Save progress to database when code changes with debouncing
   const saveProgress = (code) => {

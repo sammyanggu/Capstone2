@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import { useAuth } from '../../../AuthContext';
-import { saveExerciseProgress, getExerciseProgress } from '../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../utils/progressTracker';
 import Confetti from '../../../components/Confetti';
 import { toast } from 'react-toastify';
 
@@ -46,6 +46,13 @@ export default function HtmlBeginner() {
                     }
                 }
                 setExerciseStatus(newStatus);
+
+                // Load the current exercise index
+                const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'beginner');
+                if (savedIndex !== null && savedIndex !== undefined) {
+                    setCurrentExercise(savedIndex);
+                    console.log(`✅ Resumed from exercise ${savedIndex}`);
+                }
             } catch (err) {
                 console.error('Error loading HTML beginner progress from Firebase:', err);
             }
@@ -58,6 +65,21 @@ export default function HtmlBeginner() {
     useEffect(() => {
         localStorage.setItem('htmlExerciseStatus', JSON.stringify(exerciseStatus));
     }, [exerciseStatus]);
+
+    // Save current exercise index to Firebase whenever it changes
+    useEffect(() => {
+        const saveIndex = async () => {
+            if (currentUser?.uid) {
+                try {
+                    await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', currentExercise);
+                } catch (err) {
+                    console.error('Error saving current exercise index:', err);
+                }
+            }
+        };
+
+        saveIndex();
+    }, [currentExercise, currentUser]);
 
     const exercises = [
         {
