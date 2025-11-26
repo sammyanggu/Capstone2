@@ -240,7 +240,6 @@ const Leaderboard = () => {
               <h3 className="text-lg font-semibold text-emerald-600 mb-3">📊 How Rankings Work</h3>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li>✓ Quiz Rankings: Based on total quiz scores earned</li>
-                <li>✓ Exercise Rankings: Based on exercises completed</li>
                 <li>✓ Rankings update in real-time</li>
                 <li>✓ Compete fairly with other learners</li>
               </ul>
@@ -249,7 +248,6 @@ const Leaderboard = () => {
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md">
               <h3 className="text-lg font-semibold text-emerald-600 mb-3">🎯 Tips to Climb</h3>
               <ul className="space-y-2 text-sm text-gray-700">
-                <li>✓ Complete more quizzes and exercises</li>
                 <li>✓ Aim for perfect scores to earn bonus points</li>
                 <li>✓ Try different skill levels for challenges</li>
                 <li>✓ Keep learning and practicing consistently</li>
