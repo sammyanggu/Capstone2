@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
+import { phpIcon } from '../../../assets/icons/index.js';
 
 const initialCode = `<?php
 // PHP Advanced Exercises
@@ -83,7 +84,10 @@ const PhpAdvanced = () => {
     return (
         <div className="min-h-screen bg-white pt-20 px-4">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-bold text-emerald-600 mb-8">PHP Exercises - Advanced</h1>
+                <div className="flex items-center gap-3 mb-8">
+                    <img src={phpIcon} alt="PHP Logo" className="w-12 h-12" />
+                    <h1 className="text-3xl font-bold text-emerald-600">PHP Exercises - Advanced</h1>
+                </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Exercise List */}
@@ -107,11 +111,15 @@ const PhpAdvanced = () => {
                     {/* Code Editor */}
                     <div className="bg-gray-100 rounded-xl p-6">
                         <h2 className="text-xl font-semibold text-emerald-600 mb-4">Code Editor</h2>
-                        <LiveHtmlEditor 
-                            code={code}
-                            onChange={handleCodeChange}
-                            language="php"
-                        />
+                        <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
+                            <div>
+                                <LiveHtmlEditor 
+                                    code={code}
+                                    onChange={handleCodeChange}
+                                    language="php"
+                                />
+                            </div>
+                        </div>
                         <div className="mt-4">
                             <h3 className="text-lg font-medium text-emerald-600 mb-2">Output</h3>
                             <div className="bg-white rounded-lg p-4 text-gray-700 border border-gray-300">

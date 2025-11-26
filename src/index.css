@@ -226,3 +226,21 @@ html, body {
 .ddbtn:last-child {
   @apply border-b-0;
 }
+
+/* Animated dots for "AI thinking..." text */
+@keyframes dots-animation {
+  0%, 20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60%, 100% {
+    content: '...';
+  }
+}
+
+.animation-dots {
+  animation: dots-animation 1.4s infinite;
+}
+

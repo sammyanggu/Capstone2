@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { ref, onValue, query, orderByChild } from 'firebase/database';
 import { toast } from 'react-toastify';
 
 const Leaderboard = () => {
@@ -39,48 +40,76 @@ const Leaderboard = () => {
     return () => unsubscribe();
   }, []);
 
-  // Auto-refresh every 10 seconds for real-time updates
-  useEffect(() => {
-    const interval = setInterval(fetchAllLeaderboards, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchAllLeaderboards = async () => {
+  // Realtime Firebase listener
+  const fetchAllLeaderboards = () => {
     try {
-      // Fetch Quiz leaderboard
-      const quizResponse = await fetch('http://localhost:8000/api/leaderboard.php?type=quiz', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
+      // Fetch all users and calculate leaderboards from progress
+      const usersRef = ref(db, 'users');
+      
+      const unsubscribe = onValue(usersRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const allUsers = snapshot.val();
+          const quizData = [];
+          const exercisesData = [];
+
+          Object.entries(allUsers).forEach(([userId, userData]) => {
+            const userInfo = {
+              uid: userId,
+              name: userData.displayName || 'Anonymous',
+              email: userData.email || '',
+              points: userData.points || 0,
+              quizScore: userData.quizScore || 0,
+              quizzesCompleted: userData.quizzesCompleted || 0,
+              exercisesCompleted: userData.exercisesCompleted || 0,
+              lastUpdated: userData.updatedAt || Date.now()
+            };
+
+            // Build quiz leaderboard (sorted by quiz score)
+            if (userInfo.quizScore > 0 || userInfo.email) {
+              quizData.push({
+                ...userInfo,
+                score: userInfo.quizScore,
+                completed_count: userInfo.quizzesCompleted
+              });
+            }
+
+            // Build exercises leaderboard (sorted by total points)
+            if (userInfo.points > 0 || userInfo.email) {
+              exercisesData.push({
+                ...userInfo,
+                score: userInfo.points,
+                completed_count: userInfo.exercisesCompleted
+              });
+            }
+          });
+
+          // Sort by score descending
+          quizData.sort((a, b) => b.score - a.score);
+          exercisesData.sort((a, b) => b.score - a.score);
+
+          setQuizLeaderboard(quizData);
+          setExercisesLeaderboard(exercisesData);
+        } else {
+          // No data yet, show empty leaderboards
+          setQuizLeaderboard([]);
+          setExercisesLeaderboard([]);
+        }
       });
 
-      if (quizResponse.ok) {
-        const quizData = await quizResponse.json();
-        setQuizLeaderboard(Array.isArray(quizData) ? quizData : (quizData.data || mockQuizData));
-      } else {
-        setQuizLeaderboard(mockQuizData);
-      }
-
-      // Fetch Exercises leaderboard
-      const exercisesResponse = await fetch('http://localhost:8000/api/leaderboard.php?type=exercises', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-      });
-
-      if (exercisesResponse.ok) {
-        const exercisesData = await exercisesResponse.json();
-        setExercisesLeaderboard(Array.isArray(exercisesData) ? exercisesData : (exercisesData.data || mockExercisesData));
-      } else {
-        setExercisesLeaderboard(mockExercisesData);
-      }
-    } catch (err) {
-      console.error('Error fetching leaderboards:', err);
-      setQuizLeaderboard(mockQuizData);
-      setExercisesLeaderboard(mockExercisesData);
-      toast.info('Using demo leaderboard data');
+      return unsubscribe;
+    } catch (error) {
+      console.error('Error setting up leaderboard listener:', error);
+      toast.error('Failed to load leaderboard');
     }
   };
+
+  // Remove the interval-based polling
+  useEffect(() => {
+    const unsubscribe = fetchAllLeaderboards();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
 
   const currentLeaderboard = activeTab === 'quiz' ? quizLeaderboard : exercisesLeaderboard;
 
@@ -142,7 +171,7 @@ const Leaderboard = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-              🏆 Leaderboard
+               Leaderboard
             </h1>
             <p className="text-gray-300 text-lg">
               Compete with learners around the world
@@ -159,7 +188,7 @@ const Leaderboard = () => {
                   : 'text-gray-300 border-transparent hover:text-white'
               }`}
             >
-              📝 Quiz Rankings
+               Quiz Rankings
             </button>
             <button
               onClick={() => setActiveTab('exercises')}
@@ -169,7 +198,7 @@ const Leaderboard = () => {
                   : 'text-gray-300 border-transparent hover:text-white'
               }`}
             >
-              💪 Exercises Rankings
+               Exercises Rankings
             </button>
           </div>
 

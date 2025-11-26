@@ -113,18 +113,18 @@ function Nav() {
                             <>
                                 {/* Desktop Navigation */}
                                 <div className="hidden sm:flex items-center gap-4 sm:gap-6 lg:gap-8">
-                                    <Link to="/docs" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-700 hover:text-emerald-700 transition-colors whitespace-nowrap">Docs</Link>
-                                    <Link to="/exercises" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-700 hover:text-emerald-700 transition-colors whitespace-nowrap">Exercises</Link>
-                                    <Link to="/lessons" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-700 hover:text-emerald-700 transition-colors whitespace-nowrap">Lessons</Link>
-                                    <Link to="/leaderboard" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-700 hover:text-emerald-700 transition-colors whitespace-nowrap">Leaderboard</Link>
-                                    <Link to="/quiz" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-700 hover:text-emerald-700 transition-colors whitespace-nowrap">Quiz</Link>
+                                    <Link to="/docs" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Docs</Link>
+                                    <Link to="/exercises" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Exercises</Link>
+                                    <Link to="/lessons" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Lessons</Link>
+                                    <Link to="/leaderboard" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Leaderboard</Link>
+                                    <Link to="/quiz" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Quiz</Link>
                                 </div>
                                 
                                 {/* Mobile Navigation Icons */}
                                 <div className="sm:hidden flex items-center gap-4">
                                     <button 
                                         onClick={() => navigate('/docs')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-700 hover:text-emerald-500 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
                                         title="Documentation"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +133,7 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/exercises')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-700 hover:text-emerald-500 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
                                         title="Exercises"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -142,7 +142,7 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/lessons')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-700 hover:text-emerald-500 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
                                         title="Lessons"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +151,7 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/leaderboard')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-700 hover:text-emerald-500 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
                                         title="Leaderboard"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,7 +160,7 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/quiz')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-700 hover:text-emerald-500 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
                                         title="Quiz"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,7 +176,7 @@ function Nav() {
                                 <div className="relative">
                                     <button 
                                         onClick={handleNotificationsClick}
-                                        className="text-slate-200 hover:text-sky-500 focus:outline-none cursor-pointer"
+                                        className="text-emerald-500 hover:text-emerald-600 focus:outline-none cursor-pointer"
                                     >
                                         <div className="relative">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -194,12 +194,12 @@ function Nav() {
                                             <div className="max-h-[calc(100vh-6rem)] overflow-y-auto">
                                                 {notifications.length > 0 ? (
                                                     notifications.map((notification, index) => (
-                                                        <div key={index} className="p-3 hover:bg-slate-700/50 border-b border-slate-700 last:border-0 text-sm text-emerald-700">
+                                                        <div key={index} className="p-3 hover:bg-slate-700/50 border-b border-slate-700 last:border-0 text-sm text-emerald-500">
                                                             {notification}
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="p-3 text-sm text-emerald-700">No notifications</div>
+                                                    <div className="p-3 text-sm text-emerald-500">No notifications</div>
                                                 )}
                                             </div>
                                         </div>
@@ -222,13 +222,13 @@ function Nav() {
                                                 : 'opacity-0 scale-95 pointer-events-none'
                                         }`}>
                                             <div className="px-4 py-3 border-b border-slate-700">
-                                                <p className="text-sm font-medium text-emerald-700">{currentUser.displayName || 'User'}</p>
-                                                <p className="text-xs text-emerald-700 mt-1 truncate">{currentUser.email}</p>
+                                                <p className="text-sm font-medium text-emerald-500">{currentUser.displayName || 'User'}</p>
+                                                <p className="text-xs text-emerald-500 mt-1 truncate">{currentUser.email}</p>
                                             </div>
                                             <div className="py-2">
                                                 <button
                                                     onClick={() => { setDropdown(false); navigate('/profile'); }}
-                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-700 hover:bg-slate-700/50 hover:text-emerald-700 transition-colors flex items-center gap-2"
+                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -237,7 +237,7 @@ function Nav() {
                                                 </button>
                                                 <button
                                                     onClick={() => { setDropdown(false); navigate('/profile/settings'); }}
-                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-700 hover:bg-slate-700/50 hover:text-emerald-700 transition-colors flex items-center gap-2"
+                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -249,7 +249,7 @@ function Nav() {
                                             <div className="border-t border-slate-700 pt-2">
                                                 <button
                                                     onClick={handleSignOutClick}
-                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-700 hover:bg-slate-700/50 hover:text-emerald-700 transition-colors flex items-center gap-2"
+                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

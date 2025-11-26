@@ -564,11 +564,21 @@ export default function CssAdvanced() {
                             </div>
                             
                             {/* Code Editor */}
-                            <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
-                                <LiveHtmlEditor 
-                                    initialCode={exercises[currentExercise].initialCode}
-                                    onChange={setUserCode}
-                                />
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <div className="lg:col-span-2 bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                    <div className="p-3 flex gap-2 items-center">
+                                        <button
+                                            className="px-3 py-1 bg-slate-600 text-white rounded text-sm"
+                                            onClick={() => setUserCode(exercises[currentExercise].initialCode)}
+                                        >
+                                            Clear Demo
+                                        </button>
+                                    </div>
+                                    <LiveHtmlEditor 
+                                        initialCode={userCode || exercises[currentExercise].initialCode}
+                                        onChange={setUserCode}
+                                    />
+                                </div>
                             </div>
 
                             {/* Submit and Solution Buttons */}

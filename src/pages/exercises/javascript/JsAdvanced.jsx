@@ -643,12 +643,22 @@ export default function JsAdvanced() {
             </div>
 
             {/* Code Editor */}
-            <div className="bg-white rounded-lg border border-gray-300 overflow-hidden mb-4">
-              <LiveHtmlEditor
-                initialCode={exercises[currentExercise].initialCode}
-                solution={exercises[currentExercise].solution}
-                onChange={setUserCode}
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+              <div className="lg:col-span-2 bg-white rounded-lg border border-gray-300 overflow-hidden">
+                <div className="p-3 flex gap-2 items-center">
+                  <button
+                    className="px-3 py-1 bg-slate-600 text-white rounded text-sm"
+                    onClick={() => setUserCode(exercises[currentExercise].initialCode)}
+                  >
+                    Clear Demo
+                  </button>
+                </div>
+                <LiveHtmlEditor
+                  initialCode={userCode || exercises[currentExercise].initialCode}
+                  solution={exercises[currentExercise].solution}
+                  onChange={setUserCode}
+                />
+              </div>
             </div>
 
             {/* Submit Button */}

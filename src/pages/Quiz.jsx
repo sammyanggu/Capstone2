@@ -198,29 +198,9 @@ const Quiz = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchQuizzes = async () => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/quizzes.php`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuizzes(Array.isArray(data) ? data : (data.quizzes || mockQuizzes));
-      } else {
-        // Fallback to mock data
-        setQuizzes(mockQuizzes);
-      }
-    } catch (error) {
-      console.error('Error fetching quizzes:', error);
-      // Fallback to mock data on error
-      setQuizzes(mockQuizzes);
-    }
+  const fetchQuizzes = () => {
+    // Using mock data - Firebase integration to be implemented
+    setQuizzes(mockQuizzes);
   };
 
   const startQuiz = (quiz) => {
@@ -266,39 +246,25 @@ const Quiz = () => {
     setScore(finalScore);
     setQuizCompleted(true);
 
-    // Save quiz result to database
+    // Save quiz result to Firebase
     if (currentUser) {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        const response = await fetch(`${apiUrl}/api/quiz-results.php`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            user_id: currentUser.uid,
-            user_email: currentUser.email,
-            quiz_id: selectedQuiz.id,
-            quiz_title: selectedQuiz.title,
-            score: finalScore,
-            total_questions: selectedQuiz.questions.length,
-            answers: userAnswers,
-            completed_at: new Date().toISOString()
-          })
-        });
+        const { saveQuizProgress } = await import('../utils/progressTracker');
+        const correctCount = userAnswers.filter((answer, index) => 
+          answer === selectedQuiz.questions[index].correctAnswer
+        ).length;
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Quiz result saved:', result);
-          toast.success('Quiz completed! Score saved to your profile');
-        } else {
-          console.error('Failed to save quiz result');
-          toast.info('Quiz completed! (Score saved locally)');
-        }
+        await saveQuizProgress(
+          currentUser.uid,
+          selectedQuiz.title.toLowerCase().replace(/\s+/g, '-'),
+          finalScore,
+          selectedQuiz.questions.length,
+          correctCount
+        );
+
+        toast.success('Quiz completed! Score saved to your profile');
       } catch (error) {
-        console.error('Error saving quiz result:', error);
-        toast.info('Quiz completed! (Could not save to server)');
+        toast.info('Quiz completed! (Score saved locally)');
       }
     }
   };
@@ -551,26 +517,56 @@ const Quiz = () => {
 
             {/* Options */}
             <div className="space-y-4 mb-8">
-              {question.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(index)}
-                  className={`w-full p-4 rounded-lg text-left font-medium transition-all duration-200 border-2 ${
-                    selectedAnswer === index
-                      ? 'border-emerald-500 bg-emerald-100 text-gray-800'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:border-gray-400 hover:bg-gray-100'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                      selectedAnswer === index ? 'border-emerald-500 bg-emerald-500' : 'border-gray-400'
-                    }`}>
-                      {selectedAnswer === index && <span className="text-white text-sm">✓</span>}
+              {question.options.map((option, index) => {
+                // Determine styling based on answer state
+                const isSelected = selectedAnswer === index;
+                const isCorrect = index === question.correctAnswer;
+                const showFeedback = selectedAnswer !== null;
+                
+                let buttonStyle = 'border-gray-300 bg-gray-50 text-gray-700 hover:border-gray-400 hover:bg-gray-100';
+                
+                if (showFeedback) {
+                  if (isCorrect) {
+                    // Correct answer - show in green
+                    buttonStyle = 'border-green-500 bg-green-100 text-gray-800 border-2';
+                  } else if (isSelected && !isCorrect) {
+                    // Wrong answer selected - show in red
+                    buttonStyle = 'border-red-500 bg-red-100 text-gray-800 border-2';
+                  } else {
+                    // Not selected and not correct
+                    buttonStyle = 'border-gray-300 bg-gray-50 text-gray-700';
+                  }
+                } else if (isSelected) {
+                  // Before feedback - just show selection
+                  buttonStyle = 'border-emerald-500 bg-emerald-100 text-gray-800 border-2';
+                }
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerSelect(index)}
+                    disabled={showFeedback}
+                    className={`w-full p-4 rounded-lg text-left font-medium transition-all duration-200 border-2 ${buttonStyle} ${showFeedback ? 'cursor-default' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center flex-1">
+                        <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                          showFeedback && isCorrect ? 'border-green-500 bg-green-500' :
+                          showFeedback && isSelected && !isCorrect ? 'border-red-500 bg-red-500' :
+                          isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-gray-400'
+                        }`}>
+                          {showFeedback && isCorrect && <span className="text-white text-sm">✓</span>}
+                          {showFeedback && isSelected && !isCorrect && <span className="text-white text-sm">✗</span>}
+                          {!showFeedback && isSelected && <span className="text-white text-sm">✓</span>}
+                        </div>
+                        {option}
+                      </div>
+                      {showFeedback && isCorrect && <span className="text-green-600 font-bold text-sm">Correct!</span>}
+                      {showFeedback && isSelected && !isCorrect && <span className="text-red-600 font-bold text-sm">Wrong!</span>}
                     </div>
-                    {option}
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Navigation Buttons */}

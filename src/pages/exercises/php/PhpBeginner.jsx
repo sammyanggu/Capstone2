@@ -4,6 +4,7 @@ import '../../exercises/exercises.css';
 import { useAuth } from '../../../AuthContext';
 import { saveExerciseProgress, completeExercise } from '../../../utils/progressTracker';
 import { toast } from 'react-toastify';
+import { phpIcon } from '../../../assets/icons/index.js';
 
 export default function PhpBeginner() {
   const { currentUser } = useAuth();
@@ -188,9 +189,12 @@ for ($i = 1; $i <= 5; $i++) {
     <div className="min-h-screen bg-white">
       {/* Exercise navigation */}
       <div className="sticky top-16 bg-white/95 backdrop-blur z-10 border-b border-gray-300 pb-3">
-        <h1 className="text-2xl font-bold text-emerald-600 px-4 pt-4 pb-3">
-          PHP Beginner Exercises
-        </h1>
+        <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+          <img src={phpIcon} alt="PHP Logo" className="w-10 h-10" />
+          <h1 className="text-2xl font-bold text-emerald-600">
+            PHP Beginner Exercises
+          </h1>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-2 px-4">
           {exercises.map((_, index) => (
             <button
@@ -256,15 +260,17 @@ for ($i = 1; $i <= 5; $i++) {
             <span className="text-lg mr-2">⌨️</span>
             Code Editor
           </h3>
-          <div className="mb-4">
-            <LiveHtmlEditor
-            initialCode={userCode || exercises[currentExercise].starterCode}
-            onChange={setUserCode}
-            language="php"
-          />
-        </div>
-        
-        <div className="flex items-center justify-between">
+          <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-3">
+              <LiveHtmlEditor
+                initialCode={userCode || exercises[currentExercise].starterCode}
+                onChange={setUserCode}
+                language="php"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
           <button
             onClick={handleSubmitCode}
             className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"

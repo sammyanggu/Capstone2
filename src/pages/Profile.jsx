@@ -30,7 +30,6 @@ function Profile() {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        console.log('Your user ID:', firebaseUser.uid);
         
         try {
           // Fetch user achievements from Realtime Database
@@ -202,39 +201,6 @@ function Profile() {
                   </div>
                 )}
                 {user && <ProgressStats userId={user.uid} />}
-                <div className="mt-4">
-                  <button
-                    className="px-3 py-2 bg-emerald-600 text-white rounded mr-2"
-                    onClick={async () => {
-                      try {
-                        const ex = await getUserExerciseProgress(user.uid);
-                        const les = await getUserLessonProgress(user.uid);
-                        console.log('DEBUG exercises:', ex);
-                        console.log('DEBUG lessons:', les);
-                        setDebugExerciseProgress(ex);
-                        setDebugLessonProgress(les);
-                        toast.info('Fetched raw progress - check console or below.');
-                      } catch (err) {
-                        console.error('Error fetching debug progress:', err);
-                        toast.error('Failed to fetch progress');
-                      }
-                    }}
-                  >
-                    Show raw progress
-                  </button>
-                  {debugExerciseProgress && (
-                    <div className="mt-3 bg-slate-800 p-3 rounded text-sm text-emerald-200 overflow-auto">
-                      <h4 className="font-semibold mb-2">Exercise progress (raw)</h4>
-                      <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(debugExerciseProgress, null, 2)}</pre>
-                    </div>
-                  )}
-                  {debugLessonProgress && (
-                    <div className="mt-3 bg-slate-800 p-3 rounded text-sm text-emerald-200 overflow-auto">
-                      <h4 className="font-semibold mb-2">Lesson progress (raw)</h4>
-                      <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(debugLessonProgress, null, 2)}</pre>
-                    </div>
-                  )}
-                </div>
               </div>
             )}
 

@@ -1,9 +1,10 @@
 // Firebase configuration and authentication setup.
-// Exports auth, provider, and Firestore for use in the app.
+// Exports auth, provider, Firestore, and Cloud Functions for use in the app.
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8gYUFyPu0LOhOIZknbjf4jlZTTrJgNKM",
@@ -19,6 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
+export const functions = getFunctions(app, 'asia-southeast1');
 
 setPersistence(auth, browserLocalPersistence).catch(error => {
   console.error('Failed to set persistence:', error);

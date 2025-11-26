@@ -409,11 +409,13 @@ export default function HtmlIntermediate() {
                             </div>
                             
                             {/* Code Editor */}
-                            <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
-                                <LiveHtmlEditor 
-                                    initialCode={exercises[currentExercise].initialCode}
-                                    onChange={setUserCode}
-                                />
+                            <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
+                                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                    <LiveHtmlEditor 
+                                        initialCode={exercises[currentExercise].initialCode}
+                                        onChange={setUserCode}
+                                    />
+                                </div>
                             </div>
 
                             {/* Submit and Solution Buttons */}

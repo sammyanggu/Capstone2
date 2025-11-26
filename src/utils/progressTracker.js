@@ -86,18 +86,11 @@ export const getExerciseProgress = async (userId, exerciseType, level) => {
       `users/${userId}/progress/exercises/${exerciseType}/${level}`
     );
 
-    console.log('📖 Fetching progress from Firebase:', {
-      path: `users/${userId}/progress/exercises/${exerciseType}/${level}`
-    });
-
     const snapshot = await get(progressRef);
 
     if (snapshot.exists()) {
-      console.log('✅ Progress found:', snapshot.val());
       return snapshot.val();
     }
-
-    console.log('ℹ️ No progress data found');
     return null;
   } catch (error) {
     console.error('❌ Error fetching exercise progress:', error);
@@ -106,7 +99,7 @@ export const getExerciseProgress = async (userId, exerciseType, level) => {
 };
 
 /**
- * Update user's total points
+ * Update user's total points and exercise count
  * @param {string} userId - User's Firebase UID
  * @param {number} pointsToAdd - Points to add
  */
@@ -121,11 +114,14 @@ export const updateUserPoints = async (userId, pointsToAdd) => {
     const userSnapshot = await get(userRef);
 
     if (userSnapshot.exists()) {
-      const currentPoints = userSnapshot.val().points || 0;
+      const currentData = userSnapshot.val();
+      const currentPoints = currentData.points || 0;
+      const currentExercisesCompleted = currentData.exercisesCompleted || 0;
       const newPoints = currentPoints + pointsToAdd;
 
       await update(userRef, {
         points: newPoints,
+        exercisesCompleted: currentExercisesCompleted + 1,
         updatedAt: Date.now()
       });
 
@@ -425,5 +421,89 @@ export const getLessonStats = async (userId) => {
   } catch (error) {
     console.error('Error getting lesson stats:', error);
     return null;
+  }
+};
+
+/**
+ * Update user's quiz score
+ * @param {string} userId - User's Firebase UID
+ * @param {number} scoreToAdd - Quiz score to add
+ */
+export const updateQuizScore = async (userId, scoreToAdd) => {
+  if (!userId) {
+    console.error('User ID is required to update quiz score');
+    return false;
+  }
+
+  try {
+    const userRef = ref(db, `users/${userId}`);
+    const userSnapshot = await get(userRef);
+
+    if (userSnapshot.exists()) {
+      const currentData = userSnapshot.val();
+      const currentQuizScore = currentData.quizScore || 0;
+      const currentQuizzesCompleted = currentData.quizzesCompleted || 0;
+      const newQuizScore = currentQuizScore + scoreToAdd;
+
+      await update(userRef, {
+        quizScore: newQuizScore,
+        quizzesCompleted: currentQuizzesCompleted + 1,
+        updatedAt: Date.now()
+      });
+
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error updating quiz score:', error);
+    return false;
+  }
+};
+
+/**
+ * Save quiz progress
+ * @param {string} userId - User's Firebase UID
+ * @param {string} quizCategory - Quiz category
+ * @param {number} score - Quiz score
+ * @param {number} totalQuestions - Total questions in quiz
+ * @param {number} correctAnswers - Number of correct answers
+ */
+export const saveQuizProgress = async (
+  userId,
+  quizCategory,
+  score,
+  totalQuestions,
+  correctAnswers
+) => {
+  if (!userId) {
+    console.error('User ID is required to save quiz progress');
+    return false;
+  }
+
+  try {
+    const progressRef = ref(
+      db,
+      `users/${userId}/progress/quizzes/${quizCategory}`
+    );
+
+    const progressData = {
+      category: quizCategory,
+      score,
+      totalQuestions,
+      correctAnswers,
+      percentage: Math.round((correctAnswers / totalQuestions) * 100),
+      completedAt: Date.now()
+    };
+
+    await set(progressRef, progressData);
+
+    // Update user's total quiz score
+    await updateQuizScore(userId, score);
+
+    return true;
+  } catch (error) {
+    console.error('Error saving quiz progress:', error);
+    return false;
   }
 };

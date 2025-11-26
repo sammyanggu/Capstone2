@@ -389,15 +389,29 @@ export default function CssBeginner() {
                             </div>
                             
                             {/* Code Editor */}
-                            <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
-                                <LiveHtmlEditor 
-                                    initialCode={codeByExercise[currentExercise] || exercises[currentExercise].initialCode}
-                                    onChange={(code) => {
-                                        setUserCode(code);
-                                        setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
-                                        saveProgress(code);
-                                    }}
-                                />
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <div className="lg:col-span-2 bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                    <div className="p-3 flex gap-2 items-center">
+                                        <button
+                                            className="px-3 py-1 bg-slate-600 text-white rounded text-sm"
+                                            onClick={() => {
+                                                const initial = exercises[currentExercise].initialCode;
+                                                setUserCode(initial);
+                                                setCodeByExercise(prev => ({...prev, [currentExercise]: initial}));
+                                            }}
+                                        >
+                                            Clear Demo
+                                        </button>
+                                    </div>
+                                    <LiveHtmlEditor 
+                                        initialCode={codeByExercise[currentExercise] || exercises[currentExercise].initialCode}
+                                        onChange={(code) => {
+                                            setUserCode(code);
+                                            setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
+                                            saveProgress(code);
+                                        }}
+                                    />
+                                </div>
                             </div>
 
                             {/* Submit and Solution Buttons */}
