@@ -17,6 +17,7 @@ export default function HtmlBeginner() {
     const [showError, setShowError] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
+    const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
     
     // Save progress to localStorage
     useEffect(() => {
@@ -239,6 +240,27 @@ export default function HtmlBeginner() {
                     </div>
                 </div>
             )}
+
+            {/* Exercise Locked Modal */}
+            {lockedExerciseIndex !== null && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl border border-orange-500 max-w-sm">
+                        <div className="text-center">
+                            <h3 className="text-2xl font-bold text-orange-600 mb-2">🔒 Exercise Locked</h3>
+                            <p className="text-gray-700 mb-4">This exercise has already been completed!</p>
+                            <p className="text-gray-600 text-sm mb-4">
+                                You can reset your progress in the Settings page to retry this exercise.
+                            </p>
+                            <button
+                                onClick={() => setLockedExerciseIndex(null)}
+                                className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <div className="container mx-auto px-4 py-4 max-w-4xl">
                 <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
@@ -258,7 +280,13 @@ export default function HtmlBeginner() {
                                         ? 'bg-green-500 text-white hover:bg-green-600'
                                         : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                                 }`}
-                                onClick={() => canAccessExercise(index) && setCurrentExercise(index)}
+                                onClick={() => {
+                                    if (!canAccessExercise(index)) {
+                                        setLockedExerciseIndex(index);
+                                        return;
+                                    }
+                                    setCurrentExercise(index);
+                                }}
                                 disabled={!canAccessExercise(index)}
                             >
                                 Exercise {index + 1}

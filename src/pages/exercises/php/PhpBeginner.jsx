@@ -16,6 +16,7 @@ export default function PhpBeginner() {
   const [showHints, setShowHints] = React.useState(false);
   const [showCongrats, setShowCongrats] = React.useState(false);
   const [showError, setShowError] = React.useState(false);
+  const [lockedExerciseIndex, setLockedExerciseIndex] = React.useState(null);
 
   React.useEffect(() => {
     const savedStatus = localStorage.getItem('phpBeginnerStatus');
@@ -206,6 +207,8 @@ for ($i = 1; $i <= 5; $i++) {
                   setShowHints(false);
                   setShowCongrats(false);
                   setShowError(false);
+                } else {
+                  setLockedExerciseIndex(index);
                 }
               }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -293,6 +296,27 @@ for ($i = 1; $i <= 5; $i++) {
             {currentExercise < exercises.length - 1 && (
               <span> Try Exercise {currentExercise + 2} next!</span>
             )}
+          </div>
+        )}
+
+        {/* Exercise Locked Modal */}
+        {lockedExerciseIndex !== null && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+            <div className="bg-white p-6 rounded-lg shadow-xl border border-orange-500 max-w-sm">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-orange-600 mb-2">🔒 Exercise Locked</h3>
+                <p className="text-gray-700 mb-4">This exercise has already been completed!</p>
+                <p className="text-gray-600 text-sm mb-4">
+                  You can reset your progress in the Settings page to retry this exercise.
+                </p>
+                <button
+                  onClick={() => setLockedExerciseIndex(null)}
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

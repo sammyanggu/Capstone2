@@ -4,28 +4,9 @@ import { ref, onValue, query, orderByChild } from 'firebase/database';
 import { toast } from 'react-toastify';
 
 const Leaderboard = () => {
-  const [activeTab, setActiveTab] = useState('quiz'); // 'quiz' or 'exercises'
   const [quizLeaderboard, setQuizLeaderboard] = useState([]);
-  const [exercisesLeaderboard, setExercisesLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-
-  // Mock data for fallback
-  const mockQuizData = [
-    { id: 1, name: 'Alex Chen', email: 'alex@example.com', score: 2850, completed_count: 45 },
-    { id: 2, name: 'Maria Garcia', email: 'maria@example.com', score: 2720, completed_count: 42 },
-    { id: 3, name: 'Sam Cleofe', email: 'sam@example.com', score: 2590, completed_count: 38 },
-    { id: 4, name: 'John Smith', email: 'john@example.com', score: 2410, completed_count: 35 },
-    { id: 5, name: 'Emma Wilson', email: 'emma@example.com', score: 2150, completed_count: 30 },
-  ];
-
-  const mockExercisesData = [
-    { id: 1, name: 'Alex Chen', email: 'alex@example.com', score: 3200, completed_count: 52 },
-    { id: 2, name: 'Maria Garcia', email: 'maria@example.com', score: 2980, completed_count: 48 },
-    { id: 3, name: 'Sam Cleofe', email: 'sam@example.com', score: 2750, completed_count: 44 },
-    { id: 4, name: 'David Lee', email: 'david@example.com', score: 2620, completed_count: 40 },
-    { id: 5, name: 'Lisa Anderson', email: 'lisa@example.com', score: 2400, completed_count: 36 },
-  ];
 
 
   useEffect(() => {
@@ -50,17 +31,14 @@ const Leaderboard = () => {
         if (snapshot.exists()) {
           const allUsers = snapshot.val();
           const quizData = [];
-          const exercisesData = [];
 
           Object.entries(allUsers).forEach(([userId, userData]) => {
             const userInfo = {
               uid: userId,
               name: userData.displayName || 'Anonymous',
               email: userData.email || '',
-              points: userData.points || 0,
               quizScore: userData.quizScore || 0,
               quizzesCompleted: userData.quizzesCompleted || 0,
-              exercisesCompleted: userData.exercisesCompleted || 0,
               lastUpdated: userData.updatedAt || Date.now()
             };
 
@@ -72,27 +50,15 @@ const Leaderboard = () => {
                 completed_count: userInfo.quizzesCompleted
               });
             }
-
-            // Build exercises leaderboard (sorted by total points)
-            if (userInfo.points > 0 || userInfo.email) {
-              exercisesData.push({
-                ...userInfo,
-                score: userInfo.points,
-                completed_count: userInfo.exercisesCompleted
-              });
-            }
           });
 
           // Sort by score descending
           quizData.sort((a, b) => b.score - a.score);
-          exercisesData.sort((a, b) => b.score - a.score);
 
           setQuizLeaderboard(quizData);
-          setExercisesLeaderboard(exercisesData);
         } else {
           // No data yet, show empty leaderboards
           setQuizLeaderboard([]);
-          setExercisesLeaderboard([]);
         }
       });
 
@@ -111,7 +77,7 @@ const Leaderboard = () => {
     };
   }, []);
 
-  const currentLeaderboard = activeTab === 'quiz' ? quizLeaderboard : exercisesLeaderboard;
+  const currentLeaderboard = quizLeaderboard;
 
   const getUserRank = () => {
     if (!currentUser) return null;
@@ -178,28 +144,11 @@ const Leaderboard = () => {
             </p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex gap-0 mb-8 border-b border-gray-600 justify-center">
-            <button
-              onClick={() => setActiveTab('quiz')}
-              className={`px-8 py-3 font-semibold text-lg transition-all duration-200 border-b-2 ${
-                activeTab === 'quiz'
-                  ? 'text-emerald-400 border-emerald-400'
-                  : 'text-gray-300 border-transparent hover:text-white'
-              }`}
-            >
-               Quiz Rankings
-            </button>
-            <button
-              onClick={() => setActiveTab('exercises')}
-              className={`px-8 py-3 font-semibold text-lg transition-all duration-200 border-b-2 ${
-                activeTab === 'exercises'
-                  ? 'text-emerald-400 border-emerald-400'
-                  : 'text-gray-300 border-transparent hover:text-white'
-              }`}
-            >
-               Exercises Rankings
-            </button>
+          {/* Tab Navigation - Removed, showing only Quiz */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-emerald-400 text-center">
+              🏆 Quiz Rankings
+            </h2>
           </div>
 
           {/* Current User Stats */}
