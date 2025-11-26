@@ -2,6 +2,7 @@ import React from 'react';
 import LiveHtmlEditor from '../../../components/LiveHtmlEditor';
 import { useAuth } from '../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../../utils/progressTracker';
+import Confetti from '../../../components/Confetti';
 import { toast } from 'react-toastify';
 
 export default function JsBeginner() {
@@ -380,22 +381,22 @@ export default function JsBeginner() {
 
   return (
     <div className="min-h-screen bg-white pt-16">
-      {/* Congratulations Modal */}
-      {showCongrats && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-xl border border-emerald-500 animate-bounce">
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-emerald-500 mb-2">🎉 Congratulations! 🎉</h3>
-              <p className="text-gray-700">You've completed this exercise!</p>
-              {currentExercise < exercises.length - 1 && (
-                <p className="text-gray-600 text-sm mt-2">Moving to next exercise...</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Exercise Locked Modal */}
+            {/* Congratulations Celebration */}
+            {showCongrats && (
+                <>
+                    <Confetti duration={3000} />
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 pointer-events-none" />
+                    <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
+                        <div className="text-center">
+                            <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
+                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            {currentExercise < exercises.length - 1 && (
+                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}      {/* Exercise Locked Modal */}
       {lockedExerciseIndex !== null && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded-lg shadow-xl border border-orange-500 max-w-sm">

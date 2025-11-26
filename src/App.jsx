@@ -30,6 +30,7 @@ import CssExercise from './pages/exercises/CssExercise'
 import JavascriptExercise from './pages/exercises/JavascriptExercise'
 import PhpExercise from './pages/exercises/PhpExercise'
 import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import Lessons from './pages/lessons'
 import LessonDetail from './pages/lessons/LessonDetail'
 import Leaderboard from './pages/Leaderboard'
@@ -157,6 +158,13 @@ function AppContent() {
         <Route path="/profile" element={
           <PrivateRoute user={currentUser}>
             <Profile />
+          </PrivateRoute>
+        } />
+
+        {/* Settings page, protected */}
+        <Route path="/profile/settings" element={
+          <PrivateRoute user={currentUser}>
+            <Settings />
           </PrivateRoute>
         } />
 

@@ -9,7 +9,6 @@ const sections = [
   { key: "progress", label: "Progress" },
   { key: "achievements", label: "Achievements" },
   { key: "badges", label: "Badges" },
-  { key: "edit", label: "Edit Profile" },
 ];
 
 function Profile() {
@@ -201,15 +200,6 @@ function Profile() {
                   </div>
                 )}
                 {user && <ProgressStats userId={user.uid} />}
-              </div>
-            )}
-
-            {active === "edit" && (
-              <div>
-                <h2 className="text-2xl font-bold text-emerald-700 mb-4">
-                  Edit Profile
-                </h2>
-                <p className="text-emerald-700">Profile editing form goes here.</p>
               </div>
             )}
 
