@@ -66,22 +66,15 @@ export default function LiveHtmlEditor({ initialCode = '', onChange, solution })
                 <head>
                   <style>
                     body {
-                      background: #1e293b;
-                      color: #e2e8f0;
+                      background: #ffffff;
+                      color: #000000;
                       margin: 0;
                       padding: 16px;
                       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
                     }
-                    pre {
-                      white-space: pre-wrap;
-                      word-wrap: break-word;
-                      margin: 0;
-                      font-family: ui-monospace, monospace;
-                      font-size: 14px;
-                    }
                   </style>
                 </head>
-                <body><pre>${code}</pre></body>
+                <body>${code}</body>
               </html>
             `}
             sandbox="allow-scripts allow-same-origin"

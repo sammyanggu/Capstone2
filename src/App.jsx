@@ -4,37 +4,53 @@
 // Import global styles
 import './index.css'
 // Import routing components from React Router
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom'
 // Import Toast notifications
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 // Import Auth Provider
 import { AuthProvider, useAuth } from './AuthContext'
-// Import navigation bar component
+// Import Theme Provider
+import { ThemeProvider, useTheme } from './ThemeContext'
+// Import navigation bar components
 import Nav from './Nav'
+import GameNav from './GameNav'
+import LearningNav from './LearningNav'
 // Import page components
 import Home from './pages/Home'
-import Docs from './pages/Docs'
-import Exercises from './pages/Exercises'
-import HtmlTutorial from './pages/docs/HtmlTutorial'
-import CssTutorial from './pages/docs/CssTutorial'
-import JavascriptTutorial from './pages/docs/JavascriptTutorial'
-import PhpTutorial from './pages/docs/PhpTutorial'
-import BootstrapTutorial from './pages/docs/BootstrapTutorial'
-import TailwindTutorial from './pages/docs/TailwindTutorial'
+import Docs from './pages/learning/Docs'
+import Exercises from './pages/learning/Exercises'
+import HtmlTutorial from './pages/learning/docs/HtmlTutorial'
+import CssTutorial from './pages/learning/docs/CssTutorial'
+import JavascriptTutorial from './pages/learning/docs/JavascriptTutorial'
+import PhpTutorial from './pages/learning/docs/PhpTutorial'
+import BootstrapTutorial from './pages/learning/docs/BootstrapTutorial'
+import TailwindTutorial from './pages/learning/docs/TailwindTutorial'
 
-import HtmlBeginner from './pages/exercises/html/HtmlBeginner'
-import HtmlIntermediate from './pages/exercises/html/HtmlIntermediate'
-import HtmlAdvanced from './pages/exercises/html/HtmlAdvanced'
-import CssExercise from './pages/exercises/CssExercise'
-import JavascriptExercise from './pages/exercises/JavascriptExercise'
-import PhpExercise from './pages/exercises/PhpExercise'
+import HtmlBeginner from './pages/learning/exercises/html/HtmlBeginner'
+import HtmlIntermediate from './pages/learning/exercises/html/HtmlIntermediate'
+import HtmlAdvanced from './pages/learning/exercises/html/HtmlAdvanced'
+import CssExercise from './pages/learning/exercises/CssExercise'
+import JavascriptExercise from './pages/learning/exercises/JavascriptExercise'
+import PhpExercise from './pages/learning/exercises/PhpExercise'
+import BootstrapBeginner from './pages/learning/exercises/bootstrap/BootstrapBeginner'
+import BootstrapIntermediate from './pages/learning/exercises/bootstrap/BootstrapIntermediate'
+import BootstrapAdvanced from './pages/learning/exercises/bootstrap/BootstrapAdvanced'
+import TailwindBeginner from './pages/learning/exercises/tailwind/TailwindBeginner'
+import TailwindIntermediate from './pages/learning/exercises/tailwind/TailwindIntermediate'
+import TailwindAdvanced from './pages/learning/exercises/tailwind/TailwindAdvanced'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
-import Lessons from './pages/lessons'
-import LessonDetail from './pages/lessons/LessonDetail'
-import Leaderboard from './pages/Leaderboard'
-import Quiz from './pages/Quiz'
+import Notifications from './pages/Notifications'
+import Lessons from './pages/learning/lessons'
+import LessonDetail from './pages/learning/lessons/LessonDetail'
+import Leaderboard from './pages/games/Leaderboard'
+import Quiz from './pages/games/Quiz'
+import GamesHub from './pages/games/GamesHub'
+import LearningHub from './pages/games/LearningHub'
+import Achievements from './pages/games/Achievements'
+import Badges from './pages/games/Badges'
+import GameProfile from './pages/games/Profile'
 // Import React hooks
 import { useEffect, useState } from 'react'
 
@@ -48,9 +64,69 @@ function PrivateRoute({ user, children }) {
   return children
 }
 
+// HTML Exercise Router: Routes to the correct level component
+function HtmlExerciseRouter() {
+  const { level } = useParams();
+  
+  switch(level) {
+    case 'beginner':
+      return <HtmlBeginner />;
+    case 'intermediate':
+      return <HtmlIntermediate />;
+    case 'advanced':
+      return <HtmlAdvanced />;
+    default:
+      return <HtmlBeginner />;
+  }
+}
+
+// Bootstrap Exercise Router: Routes to the correct level component
+function BootstrapExerciseRouter() {
+  const { level } = useParams();
+  
+  switch(level) {
+    case 'beginner':
+      return <BootstrapBeginner />;
+    case 'intermediate':
+      return <BootstrapIntermediate />;
+    case 'advanced':
+      return <BootstrapAdvanced />;
+    default:
+      return <BootstrapBeginner />;
+  }
+}
+
+// Tailwind Exercise Router: Routes to the correct level component
+function TailwindExerciseRouter() {
+  const { level } = useParams();
+  
+  switch(level) {
+    case 'beginner':
+      return <TailwindBeginner />;
+    case 'intermediate':
+      return <TailwindIntermediate />;
+    case 'advanced':
+      return <TailwindAdvanced />;
+    default:
+      return <TailwindBeginner />;
+  }
+}
+
 function AppContent() {
   const { currentUser, loading } = useAuth();
-
+  const location = useLocation();
+  const { theme } = useTheme ? useTheme() : { theme: 'dark' };
+  
+  // Determine which nav to show based on current route
+  const isGamesSection = location.pathname.startsWith('/games');
+  const isLearningSection = location.pathname.startsWith('/learning') || 
+                            location.pathname.startsWith('/docs') || 
+                            location.pathname.startsWith('/exercises') ||
+                            location.pathname.startsWith('/lessons') ||
+                            location.pathname.startsWith('/profile') ||
+                            location.pathname.startsWith('/settings') ||
+                            location.pathname.startsWith('/notifications');
+  const isHome = location.pathname === '/';
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
@@ -59,10 +135,25 @@ function AppContent() {
   // Render navigation and routes
   return (
     <>
-      <Nav user={currentUser} />
+      {!isHome && isGamesSection && <GameNav user={currentUser} />}
+      {!isHome && isLearningSection && <LearningNav user={currentUser} />}
       <Routes>
         {/* Public Home route */}
         <Route path="/" element={<Home />} />
+        
+        {/* Learning Hub - Gateway to all learning resources */}
+        <Route path="/learning" element={
+          <PrivateRoute user={currentUser}>
+            <LearningHub />
+          </PrivateRoute>
+        } />
+        
+        {/* Games Hub - Gateway to all game features */}
+        <Route path="/games" element={
+          <PrivateRoute user={currentUser}>
+            <GamesHub />
+          </PrivateRoute>
+        } />
         {/* Lessons route, protected */}
         <Route path="/lessons" element={
           <PrivateRoute user={currentUser}>
@@ -125,7 +216,7 @@ function AppContent() {
         } />
         <Route path="/exercises/html/:level" element={
           <PrivateRoute user={currentUser}>
-            <HtmlBeginner />
+            <HtmlExerciseRouter />
           </PrivateRoute>
         } />
         <Route path="/exercises/css/:level" element={
@@ -145,12 +236,12 @@ function AppContent() {
         } />
         <Route path="/exercises/bootstrap/:level" element={
           <PrivateRoute user={currentUser}>
-            <HtmlBeginner />
+            <BootstrapExerciseRouter />
           </PrivateRoute>
         } />
         <Route path="/exercises/tailwind/:level" element={
           <PrivateRoute user={currentUser}>
-            <HtmlBeginner />
+            <TailwindExerciseRouter />
           </PrivateRoute>
         } />
 
@@ -168,17 +259,45 @@ function AppContent() {
           </PrivateRoute>
         } />
 
+        {/* Notifications page, protected */}
+        <Route path="/notifications" element={
+          <PrivateRoute user={currentUser}>
+            <Notifications />
+          </PrivateRoute>
+        } />
+
         {/* Leaderboard page, protected */}
-        <Route path="/leaderboard" element={
+        <Route path="/games/leaderboard" element={
           <PrivateRoute user={currentUser}>
             <Leaderboard />
           </PrivateRoute>
         } />
 
         {/* Quiz page, protected */}
-        <Route path="/quiz" element={
+        <Route path="/games/quiz" element={
           <PrivateRoute user={currentUser}>
             <Quiz />
+          </PrivateRoute>
+        } />
+
+        {/* Achievements page, protected */}
+        <Route path="/games/achievements" element={
+          <PrivateRoute user={currentUser}>
+            <Achievements />
+          </PrivateRoute>
+        } />
+
+        {/* Badges page, protected */}
+        <Route path="/games/badges" element={
+          <PrivateRoute user={currentUser}>
+            <Badges />
+          </PrivateRoute>
+        } />
+
+        {/* Game Profile page, protected */}
+        <Route path="/games/profile" element={
+          <PrivateRoute user={currentUser}>
+            <GameProfile />
           </PrivateRoute>
         } />
       </Routes>
@@ -192,7 +311,7 @@ function AppContent() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme={theme || 'dark'}
       />
     </>
   )
@@ -200,9 +319,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

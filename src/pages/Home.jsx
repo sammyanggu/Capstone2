@@ -12,12 +12,8 @@ function Home() {
     const navigate = useNavigate();
     const { currentUser, loading } = useAuth();
 
-    // Redirect to profile if user is already logged in
-    useEffect(() => {
-        if (!loading && currentUser) {
-            navigate('/profile');
-        }
-    }, [currentUser, loading, navigate]);
+    // Don't redirect logged-in users - let them stay on home to choose learn/play
+    // This allows them to switch between sections from the home page
 
     useEffect(() => {
         // Load particles.js library
@@ -65,12 +61,26 @@ function Home() {
         };
     }, []);
 
-    const handleYesClick = () => {
-        setIsZooming(true);
-        // Show auth modal after zoom animation completes
-        setTimeout(() => {
-            setShowAuthModal(true);
-        }, 1000);
+    const handleLearnClick = () => {
+        if (currentUser) {
+            navigate('/learning');
+        } else {
+            setIsZooming(true);
+            setTimeout(() => {
+                setShowAuthModal(true);
+            }, 1000);
+        }
+    };
+
+    const handlePlayClick = () => {
+        if (currentUser) {
+            navigate('/games');
+        } else {
+            setIsZooming(true);
+            setTimeout(() => {
+                setShowAuthModal(true);
+            }, 1000);
+        }
     };
 
     // Render the homepage layout
@@ -97,10 +107,11 @@ function Home() {
                         Ready to start your journey?
                     </h1>
                     
-                    {/* Interactive Element */}
-                    <div className="flex gap-6 mt-12">
+                    {/* Interactive Buttons */}
+                    <div className="flex gap-6 mt-12 flex-wrap justify-center">
+                        {/* Learn Button */}
                         <div
-                            onClick={handleYesClick}
+                            onClick={handleLearnClick}
                             className="group relative cursor-pointer flex items-center gap-3 px-8 py-4 text-white font-bold text-lg transition-all duration-500 transform hover:scale-110"
                             style={{
                                 background: 'rgba(16, 185, 129, 0.1)',
@@ -120,7 +131,35 @@ function Home() {
                                 e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
                             }}
                         >
-                            <span className="group-hover:opacity-100 opacity-70 transition-opacity">Let's Go</span>
+                            <span className="text-xl">📚</span>
+                            <span className="group-hover:opacity-100 opacity-70 transition-opacity">I want to learn</span>
+                            <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+
+                        {/* Play Button */}
+                        <div
+                            onClick={handlePlayClick}
+                            className="group relative cursor-pointer flex items-center gap-3 px-8 py-4 text-white font-bold text-lg transition-all duration-500 transform hover:scale-110"
+                            style={{
+                                background: 'rgba(168, 85, 247, 0.1)',
+                                border: '2px solid rgba(168, 85, 247, 0.4)',
+                                backdropFilter: 'blur(10px)',
+                                borderRadius: '50px',
+                                boxShadow: '0 0 40px rgba(168, 85, 247, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.boxShadow = '0 0 60px rgba(168, 85, 247, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.1)';
+                                e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.8)';
+                                e.currentTarget.style.background = 'rgba(168, 85, 247, 0.2)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.boxShadow = '0 0 40px rgba(168, 85, 247, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+                                e.currentTarget.style.background = 'rgba(168, 85, 247, 0.1)';
+                            }}
+                        >
+                            <span className="text-xl">🎮</span>
+                            <span className="group-hover:opacity-100 opacity-70 transition-opacity">I want to play</span>
                             <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
                         </div>
                     </div>

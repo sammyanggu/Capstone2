@@ -12,6 +12,17 @@ import './index.css'
 // Import the main App component
 import App from './App.jsx'
 
+// Apply initial theme from localStorage
+const theme = localStorage.getItem('appTheme') || 'dark';
+const root = document.documentElement;
+if (theme === 'dark') {
+  root.classList.add('dark');
+  root.style.backgroundColor = '#0f172a';
+} else {
+  root.style.backgroundColor = '#ffffff';
+}
+document.body.style.backgroundColor = theme === 'dark' ? '#0f172a' : '#ffffff';
+
 // Render the App component inside the root element
 createRoot(document.getElementById('root')).render(
   <StrictMode>

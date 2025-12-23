@@ -93,38 +93,35 @@ function Nav() {
 
     return (
         <nav className="bg-slate-900 fixed top-0 left-0 right-0 shadow-lg z-[100]">
-            <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-2 py-2">
+            <div className="w-full px-3 sm:px-4 lg:px-8 py-2">
                 <div className="flex items-center justify-between h-14 sm:h-16">
-                    {/* Logo */}
-                    <div className="flex-1 flex items-center justify-start">
-                        <div className="flex items-center gap-4">
-                            <Link to="/" className="flex items-center mr-4 sm:mr-6 lg:mr-8">
-                                <span className="text-lg sm:text-xl lg:text-2xl font-bold tracking-wide bg-gradient-to-r from-emerald-700 to-emerald-400 bg-clip-text text-transparent">
-                                    <span className="hidden sm:inline">Learn<span className="text-emerald-500">Dev</span></span>
-                                    <span className="sm:hidden">L<span className="text-emerald-500">D</span></span>
-                                </span>
-                            </Link>
-                        </div>
-                    </div>
+                    {/* Logo - Left Side */}
+                    <Link to="/" className="flex items-center flex-shrink-0">
+                        <span className="text-lg sm:text-xl lg:text-2xl font-bold tracking-wide bg-gradient-to-r from-emerald-700 to-emerald-400 bg-clip-text text-transparent">
+                            <span className="hidden sm:inline">Learn<span className="text-emerald-500">Dev</span></span>
+                            <span className="sm:hidden">L<span className="text-emerald-500">D</span></span>
+                        </span>
+                    </Link>
 
-                    {/* Navigation Links and Controls */}
-                    <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
+                    {/* Navigation Links and Controls - Right Side */}
+                    <div className="flex items-center gap-4 sm:gap-6 lg:gap-8 flex-shrink-0">
                         {currentUser && (
                             <>
                                 {/* Desktop Navigation */}
-                                <div className="hidden sm:flex items-center gap-4 sm:gap-6 lg:gap-8">
-                                    <Link to="/docs" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Docs</Link>
-                                    <Link to="/exercises" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Exercises</Link>
-                                    <Link to="/lessons" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Lessons</Link>
-                                    <Link to="/leaderboard" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Leaderboard</Link>
-                                    <Link to="/quiz" className="text-lg sm:text-sm lg:text-lg font-bold text-emerald-500 hover:text-emerald-700 transition-colors whitespace-nowrap">Quiz</Link>
+                                <div className="hidden lg:flex items-center gap-8">
+                                    {/* Learning Section */}
+                                    <div className="flex items-center gap-6">
+                                        <Link to="/docs" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">📚 Docs</Link>
+                                        <Link to="/exercises" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">💪 Exercises</Link>
+                                        <Link to="/lessons" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">🎓 Lessons</Link>
+                                    </div>
                                 </div>
                                 
-                                {/* Mobile Navigation Icons */}
-                                <div className="sm:hidden flex items-center gap-4">
+                                {/* Mobile/Tablet Navigation Icons */}
+                                <div className="lg:hidden flex items-center gap-3">
                                     <button 
                                         onClick={() => navigate('/docs')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-400 hover:text-emerald-300 transition-colors"
                                         title="Documentation"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +130,7 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/exercises')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-400 hover:text-emerald-300 transition-colors"
                                         title="Exercises"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -142,29 +139,11 @@ function Nav() {
                                     </button>
                                     <button 
                                         onClick={() => navigate('/lessons')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-400 hover:text-emerald-300 transition-colors"
                                         title="Lessons"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                        </svg>
-                                    </button>
-                                    <button 
-                                        onClick={() => navigate('/leaderboard')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
-                                        title="Leaderboard"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                    </button>
-                                    <button 
-                                        onClick={() => navigate('/quiz')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-emerald-500 hover:text-emerald-600 transition-colors"
-                                        title="Quiz"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -172,40 +151,6 @@ function Nav() {
                         )}
                         {currentUser && (
                             <>
-                                {/* Notifications */}
-                                <div className="relative">
-                                    <button 
-                                        onClick={handleNotificationsClick}
-                                        className="text-emerald-500 hover:text-emerald-600 focus:outline-none cursor-pointer"
-                                    >
-                                        <div className="relative">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                            </svg>
-                                            {unreadNotifications > 0 && (
-                                                <span className="absolute -top-1 -right-1 bg-red-500 rounded-full w-4 h-4 text-xs flex items-center justify-center text-white">
-                                                    {unreadNotifications}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </button>
-                                    {showNotifications && (
-                                        <div className="absolute right-0 mt-2 w-72 md:w-96 bg-slate-800 rounded-lg shadow-xl py-2 border border-slate-700 z-[110]">
-                                            <div className="max-h-[calc(100vh-6rem)] overflow-y-auto">
-                                                {notifications.length > 0 ? (
-                                                    notifications.map((notification, index) => (
-                                                        <div key={index} className="p-3 hover:bg-slate-700/50 border-b border-slate-700 last:border-0 text-sm text-emerald-500">
-                                                            {notification}
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="p-3 text-sm text-emerald-500">No notifications</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
                                 {/* User Profile */}
                                 <div className="relative">
                                     <button onClick={handleProfileClick} className="flex items-center focus:outline-none cursor-pointer">
@@ -236,7 +181,32 @@ function Nav() {
                                                     My Profile
                                                 </button>
                                                 <button
-                                                    onClick={() => { setDropdown(false); navigate('/profile/settings'); }}
+                                                    onClick={() => { setDropdown(false); navigate('/notifications'); }}
+                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                                    </svg>
+                                                    Notifications
+                                                    {unreadNotifications > 0 && (
+                                                        <span className="ml-auto bg-red-500 rounded-full w-5 h-5 text-xs flex items-center justify-center text-white font-bold">
+                                                            {unreadNotifications}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            </div>
+                                            <div className="border-t border-slate-700 py-2">
+                                                <button
+                                                    onClick={() => { setDropdown(false); navigate('/profile'); }}
+                                                    className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                    </svg>
+                                                    My Profile
+                                                </button>
+                                                <button
+                                                    onClick={() => { setDropdown(false); navigate('/profile'); }}
                                                     className="w-full px-4 py-2 text-sm text-left text-emerald-500 hover:bg-slate-700/50 hover:text-emerald-600 transition-colors flex items-center gap-2"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

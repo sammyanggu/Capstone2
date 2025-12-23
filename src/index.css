@@ -21,10 +21,22 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   background-color: white;
+  color: #000;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark, html.dark body {
+  background-color: #0f172a !important;
+  color: #f1f5f9;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 #root {
-  @apply w-full block bg-white;
+  @apply w-full block;
+  background-color: inherit;
 }
 
 .btn1 {
