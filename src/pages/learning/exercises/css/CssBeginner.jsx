@@ -22,6 +22,7 @@ export default function CssBeginner() {
     const [codeByExercise, setCodeByExercise] = useState({
       0: '', 1: '', 2: '', 3: ''
     });
+    const isInitialLoadRef = useRef(true);
     const saveTimeoutRef = useRef(null);
     const [isSaving, setIsSaving] = useState(false);
     
@@ -30,44 +31,58 @@ export default function CssBeginner() {
         const loadProgress = async () => {
             if (currentUser) {
                 try {
-                    const progress = await getExerciseProgress(currentUser.uid, 'css', 'beginner');
-                    console.log('Loaded CSS progress:', progress);
-                    if (progress && progress.code) {
-                        setUserCode(progress.code);
-                        // Restore per-exercise code tracking if available
-                        if (progress.codeByExercise) {
-                            setCodeByExercise(progress.codeByExercise);
+                    // Load completion status for each exercise
+                    const newStatus = { ...exerciseStatus };
+                    for (let i = 0; i < 4; i++) {
+                        const progress = await getExerciseProgress(currentUser.uid, 'css', `beginner-${i}`);
+                        if (progress && progress.isCompleted) {
+                            newStatus[i] = true;
                         }
                     }
+                    setExerciseStatus(newStatus);
+                    console.log('Loaded CSS exercise statuses:', newStatus);
                     
                     // Load current exercise index
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'css', 'beginner');
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
                         console.log(`✅ Resumed from exercise ${savedIndex}`);
+                    } else {
+                        // If no saved index, start from first uncompleted exercise
+                        setCurrentExercise(0);
                     }
                 } catch (error) {
                     console.error('Error loading CSS progress:', error);
+                } finally {
+                    isInitialLoadRef.current = false;
                 }
+            } else {
+                isInitialLoadRef.current = false;
             }
         };
         loadProgress();
     }, [currentUser]);
 
-    // Save current exercise index whenever it changes
+    // Save current exercise index to Firebase whenever it changes (but not during initial load)
     useEffect(() => {
         const saveIndex = async () => {
-            if (currentUser?.uid) {
+            if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
+                    console.log(`💾 Saving exercise index ${currentExercise} to Firebase`);
                     await saveCurrentExerciseIndex(currentUser.uid, 'css', 'beginner', currentExercise);
+                    console.log(`✅ Saved exercise index ${currentExercise}`);
                 } catch (err) {
                     console.error('Error saving current exercise index:', err);
                 }
             }
         };
-
         saveIndex();
     }, [currentExercise, currentUser]);
+
+    // Reset userCode when exercise changes
+    useEffect(() => {
+        setUserCode('');
+    }, [currentExercise]);
 
     // Save progress to database when code changes with debouncing
     const saveProgress = (code) => {
@@ -81,7 +96,8 @@ export default function CssBeginner() {
         // Set new timeout for auto-save (debounce for 1 second)
         saveTimeoutRef.current = setTimeout(() => {
             setIsSaving(true);
-            saveExerciseProgress(currentUser.uid, 'css', 'beginner', code, false, 0)
+            const levelKey = `beginner-${currentExercise}`;
+            saveExerciseProgress(currentUser.uid, 'css', levelKey, code, false, 0)
                 .then((success) => {
                     if (success) {
                         console.log('CSS progress saved successfully');
@@ -310,18 +326,36 @@ export default function CssBeginner() {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
             setShowCongrats(true);
             
-            // If this is the last exercise, save completion to database
-            if (currentExercise === exercises.length - 1) {
-                if (currentUser) {
-                    completeExercise(currentUser.uid, 'css', 'beginner', 10);
-                    toast.success('CSS Beginner completed! 🎉');
-                }
-            }
-            
-            setTimeout(() => {
+            setTimeout(async () => {
                 setShowCongrats(false);
+                
+                // Save exercise completion to Firebase for every exercise with unique levelKey
+                if (currentUser?.uid) {
+                    try {
+                        const levelKey = `beginner-${currentExercise}`;
+                        await saveExerciseProgress(currentUser.uid, 'css', levelKey, userCode, true, 10);
+                        console.log(`✅ Saved CSS exercise ${levelKey} completion`);
+                    } catch (err) {
+                        console.error('Error saving exercise completion:', err);
+                    }
+                }
+                
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    
+                    // Save the new index to Firebase
+                    if (currentUser?.uid) {
+                        try {
+                            await saveCurrentExerciseIndex(currentUser.uid, 'css', 'beginner', nextIndex);
+                            console.log(`✅ Saved CSS beginner index: ${nextIndex}`);
+                        } catch (err) {
+                            console.error('Error saving new index:', err);
+                        }
+                    }
+                } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
+                    // Save toast notification when all exercises are done
+                    toast.success('CSS Beginner completed! 🎉');
                 }
             }, 2000);
         } else {
@@ -345,9 +379,9 @@ export default function CssBeginner() {
                     <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <div className="text-center">
                             <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            <p className="text-3xl text-white">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                                <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -477,7 +511,7 @@ export default function CssBeginner() {
                                 </button>
 
                                 <button 
-                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2"
+                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2 px-4 py-1.5 border border-emerald-400 rounded bg-white"
                                     onClick={() => document.getElementById('solution').classList.toggle('hidden')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

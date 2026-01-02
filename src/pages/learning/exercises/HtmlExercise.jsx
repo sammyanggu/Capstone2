@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../AuthContext';
 import LiveHtmlEditor from '../../components/LiveHtmlEditor';
-import { saveExerciseProgress, getExerciseProgress, completeExercise } from '../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex } from '../../utils/progressTracker';
 import { toast } from 'react-toastify';
 
 // HTML Exercise component that handles different difficulty levels
@@ -229,6 +229,21 @@ function HtmlExercise() {
       toast.error('Error submitting exercise');
     }
   };
+
+  // Track current exercise index for resume functionality
+  useEffect(() => {
+    const trackIndex = async () => {
+      if (currentUser?.uid && level) {
+        try {
+          // Save that the user is on this exercise type/level (index 0 for single-exercise pages)
+          await saveCurrentExerciseIndex(currentUser.uid, 'html', level, 0);
+        } catch (err) {
+          console.warn('Could not save exercise index:', err);
+        }
+      }
+    };
+    trackIndex();
+  }, [currentUser?.uid, level]);
 
   return (
     <div className="container mx-auto px-4 py-8">

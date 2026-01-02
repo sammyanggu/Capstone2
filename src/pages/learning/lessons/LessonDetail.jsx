@@ -500,7 +500,35 @@ export default function LessonDetail() {
       }
     });
 
-    return () => unsubscribe();
+    // Listen for progress updates dispatched globally so UI reflects milestone saves immediately
+    const onProgressUpdated = async (e) => {
+      try {
+        const detail = e?.detail || {};
+        // Only respond to lesson progress updates for this category and the same user
+        if (detail.type !== 'lesson') return;
+        const firebaseUser = auth.currentUser;
+        if (!firebaseUser) return;
+        if (detail.userId && detail.userId !== firebaseUser.uid) return;
+        if (detail.category && detail.category !== category) return;
+
+        // Re-load progress for the videos in this category
+        const progressData = {};
+        for (const video of lesson.videos) {
+          const progress = await getLessonProgress(firebaseUser.uid, category, video.title);
+          progressData[video.id] = (progress && progress.progressPercent) ? progress.progressPercent : 0;
+        }
+        setWatchProgress(progressData);
+      } catch (err) {
+        console.error('Error handling progress-updated event in LessonDetail:', err);
+      }
+    };
+
+    window.addEventListener('progress-updated', onProgressUpdated);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('progress-updated', onProgressUpdated);
+    };
   }, [category, lesson]);
 
   // Save progress when video is selected or progress changes

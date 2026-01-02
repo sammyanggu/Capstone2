@@ -24,29 +24,48 @@ export default function JsBeginner() {
   const saveTimeoutRef = React.useRef(null);
   const [isSaving, setIsSaving] = React.useState(false);
   const [lockedExerciseIndex, setLockedExerciseIndex] = React.useState(null);
+  const isInitialLoadRef = React.useRef(true);
 
   // Load progress from database
   React.useEffect(() => {
     const loadProgress = async () => {
       if (currentUser) {
-        const progress = await getExerciseProgress(currentUser.uid, 'javascript', 'beginner');
-        if (progress) {
-          setUserCode(progress.code || '');
-        }
+        try {
+          // Load completion status for each exercise (5 exercises for JS)
+          const newStatus = { ...exerciseStatus };
+          for (let i = 0; i < 5; i++) {
+            const progress = await getExerciseProgress(currentUser.uid, 'javascript', `beginner-${i}`);
+            if (progress && progress.isCompleted) {
+              newStatus[i] = true;
+            }
+          }
+          setExerciseStatus(newStatus);
+          console.log('Loaded JavaScript beginner exercise statuses:', newStatus);
 
-        // Load current exercise index
-        const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner');
-        if (savedIndex !== null && savedIndex !== undefined) {
-          setCurrentExercise(savedIndex);
-          console.log(`✅ Resumed from exercise ${savedIndex}`);
+          // Load current exercise index
+          const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner');
+          if (savedIndex !== null && savedIndex !== undefined) {
+            setCurrentExercise(savedIndex);
+            console.log(`✅ Resumed from exercise ${savedIndex}`);
+          } else {
+            setCurrentExercise(0);
+          }
+          isInitialLoadRef.current = false;
+        } catch (error) {
+          console.error('Error loading JavaScript beginner progress:', error);
+          isInitialLoadRef.current = false;
         }
+      } else {
+        isInitialLoadRef.current = false;
       }
     };
     loadProgress();
   }, [currentUser]);
 
-  // Save current exercise index to Firebase whenever it changes
+  // Save current exercise index to Firebase whenever it changes (but not during initial load)
   React.useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    
     const saveIndex = async () => {
       if (currentUser?.uid) {
         try {
@@ -60,6 +79,11 @@ export default function JsBeginner() {
     saveIndex();
   }, [currentExercise, currentUser]);
 
+  // Reset userCode when exercise changes
+  React.useEffect(() => {
+    setUserCode('');
+  }, [currentExercise]);
+
   // Save progress to database when code changes with debouncing
   const saveProgress = (code) => {
     if (!currentUser) return;
@@ -72,7 +96,8 @@ export default function JsBeginner() {
     // Set new timeout for auto-save (debounce for 1 second)
     saveTimeoutRef.current = setTimeout(() => {
       setIsSaving(true);
-      saveExerciseProgress(currentUser.uid, 'javascript', 'beginner', code, false, 0)
+      const levelKey = `beginner-${currentExercise}`;
+      saveExerciseProgress(currentUser.uid, 'javascript', levelKey, code, false, 0)
         .then((success) => {
           if (success) {
             console.log('JS progress saved successfully');
@@ -144,18 +169,36 @@ export default function JsBeginner() {
       setShowError(false);
       setShowCongrats(true);
       
-      // If this is the last exercise, save completion to database
-      if (currentExercise === exercises.length - 1) {
-        if (currentUser) {
-          completeExercise(currentUser.uid, 'javascript', 'beginner', 10);
-          toast.success('JavaScript Beginner completed! 🎉');
-        }
-      }
-      
-      setTimeout(() => {
+      setTimeout(async () => {
         setShowCongrats(false);
+        
+        // Save exercise completion to Firebase with unique levelKey
+        if (currentUser?.uid) {
+          try {
+            const levelKey = `beginner-${currentExercise}`;
+            await saveExerciseProgress(currentUser.uid, 'javascript', levelKey, userCode, true, 10);
+            console.log(`✅ Saved JavaScript exercise ${levelKey} completion`);
+          } catch (err) {
+            console.error('Error saving exercise completion:', err);
+          }
+        }
+        
         if (currentExercise < exercises.length - 1) {
-          setCurrentExercise(currentExercise + 1);
+          const nextIndex = currentExercise + 1;
+          setCurrentExercise(nextIndex);
+          
+          // Save the new index to Firebase
+          if (currentUser?.uid) {
+            try {
+              await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner', nextIndex);
+              console.log(`✅ Saved JavaScript beginner index: ${nextIndex}`);
+            } catch (err) {
+              console.error('Error saving new index:', err);
+            }
+          }
+        } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
+          // Save toast notification when all exercises are done
+          toast.success('JavaScript Beginner completed! 🎉');
         }
       }, 2000);
     } else {
@@ -411,9 +454,9 @@ export default function JsBeginner() {
                     <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <div className="text-center">
                             <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            <p className="text-3xl text-white">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                                <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -526,13 +569,25 @@ export default function JsBeginner() {
               </div>
             </div>
 
-            {/* Submit Button */}
-            <button
-              onClick={handleCodeSubmit}
-              className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
-            >
-              Submit Code
-            </button>
+            {/* Submit Button and Show Solution */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCodeSubmit}
+                className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
+              >
+                Submit Code
+              </button>
+
+              <button 
+                className="px-4 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded text-sm font-medium flex items-center gap-2 border border-emerald-600 bg-white"
+                onClick={() => document.getElementById('solution').classList.toggle('hidden')}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                Show Solution
+              </button>
+            </div>
 
             {/* Error Message */}
             {showError && (
@@ -540,6 +595,13 @@ export default function JsBeginner() {
                 <p>Not quite right! Check the requirements and try again.</p>
               </div>
             )}
+
+            {/* Solution Box */}
+            <div id="solution" className="hidden mt-4 bg-white rounded p-4 border border-gray-300">
+              <pre className="text-gray-800 text-sm overflow-x-auto">
+                <code>{exercises[currentExercise].solution}</code>
+              </pre>
+            </div>
           </div>
         </div>
       </div>

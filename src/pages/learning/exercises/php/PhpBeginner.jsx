@@ -2,7 +2,7 @@ import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import '../exercises.css';
 import { useAuth } from '../../../../AuthContext';
-import { saveExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
 import { toast } from 'react-toastify';
 import { phpIcon } from '../../../../assets/icons/index.js';
@@ -18,39 +18,46 @@ export default function PhpBeginner() {
   const [showCongrats, setShowCongrats] = React.useState(false);
   const [showError, setShowError] = React.useState(false);
   const [lockedExerciseIndex, setLockedExerciseIndex] = React.useState(null);
-
-  React.useEffect(() => {
-    const savedStatus = localStorage.getItem('phpBeginnerStatus');
-    if (savedStatus) {
-      setExerciseStatus(JSON.parse(savedStatus));
-    }
-  }, []);
+  const isInitialLoadRef = React.useRef(true);
 
   // Load current exercise index from Firebase
   React.useEffect(() => {
     const loadExerciseIndex = async () => {
       if (currentUser?.uid) {
         try {
+          // Load completion status for each exercise (4 exercises for PHP)
+          const newStatus = { ...exerciseStatus };
+          for (let i = 0; i < 4; i++) {
+            const progress = await getExerciseProgress(currentUser.uid, 'php', `beginner-${i}`);
+            if (progress && progress.isCompleted) {
+              newStatus[i] = true;
+            }
+          }
+          setExerciseStatus(newStatus);
+          console.log('Loaded PHP beginner exercise statuses:', newStatus);
+
           const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'php', 'beginner');
           if (savedIndex !== null && savedIndex !== undefined) {
             setCurrentExercise(savedIndex);
             console.log(`✅ Resumed from exercise ${savedIndex}`);
           }
+          isInitialLoadRef.current = false;
         } catch (err) {
           console.error('Error loading PHP beginner exercise index:', err);
+          isInitialLoadRef.current = false;
         }
+      } else {
+        isInitialLoadRef.current = false;
       }
     };
 
     loadExerciseIndex();
   }, [currentUser]);
 
+  // Save current exercise index to Firebase whenever it changes (but not during initial load)
   React.useEffect(() => {
-    localStorage.setItem('phpBeginnerStatus', JSON.stringify(exerciseStatus));
-  }, [exerciseStatus]);
-
-  // Save current exercise index to Firebase whenever it changes
-  React.useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    
     const saveIndex = async () => {
       if (currentUser?.uid) {
         try {
@@ -63,6 +70,11 @@ export default function PhpBeginner() {
 
     saveIndex();
   }, [currentExercise, currentUser]);
+
+  // Reset userCode when exercise changes
+  React.useEffect(() => {
+    setUserCode('');
+  }, [currentExercise]);
 
   const exercises = [
     {
@@ -195,22 +207,39 @@ for ($i = 1; $i <= 5; $i++) {
       }));
       setShowCongrats(true);
       setShowError(false);
-      // Persist completion to database when signed in
-      if (currentUser && currentUser.uid) {
-        const levelKey = `beginner/${currentExercise}`;
-        saveExerciseProgress(currentUser.uid, 'php', levelKey, userCode || '', true, 10)
-          .then((ok) => {
-            if (ok) {
-              completeExercise(currentUser.uid, 'php', levelKey, 10).catch(() => {});
-              toast.success('Saved progress to your account.');
-            } else {
-              console.warn('Failed to save PHP exercise progress to Firebase');
+      
+      setTimeout(async () => {
+        setShowCongrats(false);
+        
+        // Save exercise completion to Firebase with unique levelKey
+        if (currentUser?.uid) {
+          try {
+            const levelKey = `beginner-${currentExercise}`;
+            await saveExerciseProgress(currentUser.uid, 'php', levelKey, userCode, true, 10);
+            console.log(`✅ Saved PHP exercise ${levelKey} completion`);
+          } catch (err) {
+            console.error('Error saving exercise completion:', err);
+          }
+        }
+        
+        if (currentExercise < exercises.length - 1) {
+          const nextIndex = currentExercise + 1;
+          setCurrentExercise(nextIndex);
+          
+          // Save the new index to Firebase
+          if (currentUser?.uid) {
+            try {
+              await saveCurrentExerciseIndex(currentUser.uid, 'php', 'beginner', nextIndex);
+              console.log(`✅ Saved PHP beginner index: ${nextIndex}`);
+            } catch (err) {
+              console.error('Error saving new index:', err);
             }
-          })
-          .catch((err) => {
-            console.error('Error saving PHP exercise progress:', err);
-          });
-      }
+          }
+        } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
+          // Save toast notification when all exercises are done
+          toast.success('PHP Beginner completed! 🎉');
+        }
+      }, 2000);
     } else {
       setShowError(true);
       setShowCongrats(false);
@@ -308,16 +337,22 @@ for ($i = 1; $i <= 5; $i++) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
           <button
             onClick={handleSubmitCode}
             className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
           >
             Submit
           </button>
-          {exerciseStatus[currentExercise] && (
-            <span className="text-green-500 text-sm">✓ Completed</span>
-          )}
+          <button 
+            className="px-4 py-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded text-sm font-medium flex items-center gap-2 border border-emerald-600 bg-white"
+            onClick={() => document.getElementById('solution').classList.toggle('hidden')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Show Solution
+          </button>
         </div>
 
         {showError && (
@@ -325,6 +360,14 @@ for ($i = 1; $i <= 5; $i++) {
             Not quite right. Try again!
           </div>
         )}
+
+        {/* Solution Box */}
+        <div id="solution" className="hidden mt-4 bg-white rounded p-4 border border-gray-300">
+          <pre className="text-gray-800 text-sm overflow-x-auto">
+            <code>{exercises[currentExercise].solution}</code>
+          </pre>
+        </div>
+
         {showCongrats && (
           <>
             <Confetti duration={3000} />
@@ -332,9 +375,9 @@ for ($i = 1; $i <= 5; $i++) {
             <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
               <div className="text-center">
                 <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                <p className="text-3xl text-white">You've completed this exercise!</p>
                 {currentExercise < exercises.length - 1 && (
-                  <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                  <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                 )}
               </div>
             </div>

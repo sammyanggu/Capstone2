@@ -61,6 +61,30 @@ export const saveExerciseProgress = async (
       // ignore dispatch errors in non-browser environments
     }
 
+    // Recompute and persist hub summary so all pages have up-to-date aggregate stats
+    try {
+      const lessonProgress = await getUserLessonProgress(userId);
+      const exerciseProgress = await getUserExerciseProgress(userId);
+
+      const lessonsCompleted = Object.values(lessonProgress || {}).filter(l => l.isCompleted || l.completed).length;
+      const exercisesCompleted = Object.values(exerciseProgress || {}).reduce((acc, curr) => {
+        // curr may be map of levels; count completed across levels
+        if (typeof curr === 'object') {
+          return acc + Object.values(curr).filter(l => l.isCompleted || l.completed).length;
+        }
+        return acc;
+      }, 0);
+
+      const totalProgress = Math.round(((lessonsCompleted + exercisesCompleted) / 20) * 100);
+      const hoursLearned = Math.floor((Object.values(lessonProgress || {}).length * 1.5) + (Object.values(exerciseProgress || {}).length * 0.5));
+
+      const summary = { lessonsCompleted, exercisesCompleted, totalProgress, hoursLearned };
+      await saveHubSummary(userId, summary);
+    } catch (e) {
+      // don't fail the save if hub summary update fails
+      console.warn('Could not update hub summary after exercise save', e);
+    }
+
     return true;
   } catch (error) {
     console.error('❌ Error saving exercise progress:', error);
@@ -270,6 +294,34 @@ export const saveLessonProgress = async (
       // ignore dispatch errors in non-browser environments
     }
 
+    // Recompute and persist hub summary so all pages have up-to-date aggregate stats
+    try {
+      const lessonProgress = await getUserLessonProgress(userId);
+      const exerciseProgress = await getUserExerciseProgress(userId);
+
+      const lessonsCompleted = Object.values(lessonProgress || {}).reduce((acc, curr) => {
+        if (typeof curr === 'object') {
+          return acc + Object.values(curr).filter(l => l.isCompleted || l.completed).length;
+        }
+        return acc;
+      }, 0);
+
+      const exercisesCompleted = Object.values(exerciseProgress || {}).reduce((acc, curr) => {
+        if (typeof curr === 'object') {
+          return acc + Object.values(curr).filter(e => e.isCompleted || e.completed).length;
+        }
+        return acc;
+      }, 0);
+
+      const totalProgress = Math.round(((lessonsCompleted + exercisesCompleted) / 20) * 100);
+      const hoursLearned = Math.floor((Object.values(lessonProgress || {}).length * 1.5) + (Object.values(exerciseProgress || {}).length * 0.5));
+
+      const summary = { lessonsCompleted, exercisesCompleted, totalProgress, hoursLearned };
+      await saveHubSummary(userId, summary);
+    } catch (e) {
+      console.warn('Could not update hub summary after lesson save', e);
+    }
+
     return true;
   } catch (error) {
     console.error('Error saving lesson progress:', error);
@@ -429,9 +481,9 @@ export const getLessonStats = async (userId) => {
  * @param {string} userId - User's Firebase UID
  * @param {number} scoreToAdd - Quiz score to add
  */
-export const updateQuizScore = async (userId, scoreToAdd) => {
+export const updateQuizScore = async (userId, scoreToAdd, quizCategory = null) => {
   if (!userId) {
-    console.error('User ID is required to update quiz score');
+    console.error('❌ User ID is required to update quiz score');
     return false;
   }
 
@@ -445,19 +497,97 @@ export const updateQuizScore = async (userId, scoreToAdd) => {
       const currentQuizzesCompleted = currentData.quizzesCompleted || 0;
       const newQuizScore = currentQuizScore + scoreToAdd;
 
-      await update(userRef, {
+      const updateData = {
         quizScore: newQuizScore,
         quizzesCompleted: currentQuizzesCompleted + 1,
         updatedAt: Date.now()
-      });
+      };
+
+      // Track best scores for specific quiz categories to enable badge conditions
+      if (quizCategory) {
+        const categoryKey = quizCategory.toLowerCase();
+        
+        if (categoryKey.includes('html')) {
+          const currentBest = currentData.htmlBestScore || 0;
+          updateData.htmlBestScore = Math.max(currentBest, scoreToAdd);
+        } else if (categoryKey.includes('css')) {
+          const currentBest = currentData.cssBestScore || 0;
+          updateData.cssBestScore = Math.max(currentBest, scoreToAdd);
+        } else if (categoryKey.includes('javascript') || categoryKey.includes('js')) {
+          const currentBest = currentData.jsBestScore || 0;
+          updateData.jsBestScore = Math.max(currentBest, scoreToAdd);
+        }
+
+        // Track high scores for badge condition
+        if (scoreToAdd >= 90) {
+          const highScoresCount = currentData.highScoresCount || 0;
+          updateData.highScoresCount = highScoresCount + 1;
+        }
+      }
+
+      await update(userRef, updateData);
+      console.log(`✅ Updated quiz score for user ${userId}: +${scoreToAdd} points (now ${newQuizScore})`);
+
+      // Rank is calculated dynamically in the Leaderboard component
+      // No need to persist to database - it's computed from quiz scores
 
       return true;
+    } else {
+      console.error(`❌ User document doesn't exist for ${userId}. User may not be properly initialized in Firebase.`);
+      return false;
     }
-
-    return false;
   } catch (error) {
-    console.error('Error updating quiz score:', error);
+    console.error('❌ Error updating quiz score:', error);
     return false;
+  }
+};
+
+/**
+ * Save a hub-level summary for quick access in the UI
+ * @param {string} userId
+ * @param {object} summary - arbitrary summary object to store (lessonsCompleted, exercisesCompleted, totalPoints, hoursLearned, etc)
+ */
+export const saveHubSummary = async (userId, summary = {}) => {
+  if (!userId) {
+    console.error('User ID is required to save hub summary');
+    return false;
+  }
+
+  try {
+    const hubRef = ref(db, `users/${userId}/hubSummary`);
+    await set(hubRef, { ...summary, updatedAt: Date.now() });
+    // notify UI listeners
+    try {
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('hub-summary-updated', { detail: { userId, summary } }));
+      }
+    } catch (e) {}
+
+    return true;
+  } catch (error) {
+    console.error('Error saving hub summary:', error);
+    return false;
+  }
+};
+
+/**
+ * Get hub summary for user
+ * @param {string} userId
+ */
+export const getHubSummary = async (userId) => {
+  if (!userId) {
+    console.error('User ID is required to fetch hub summary');
+    return null;
+  }
+
+  try {
+    const hubRef = ref(db, `users/${userId}/hubSummary`);
+    const snapshot = await get(hubRef);
+    if (snapshot.exists()) return snapshot.val();
+    return null;
+  } catch (error) {
+    console.error('Error fetching hub summary:', error);
+    return null;
   }
 };
 
@@ -498,8 +628,8 @@ export const saveQuizProgress = async (
 
     await set(progressRef, progressData);
 
-    // Update user's total quiz score
-    await updateQuizScore(userId, score);
+    // Update user's total quiz score and track category-specific best scores
+    await updateQuizScore(userId, score, quizCategory);
 
     return true;
   } catch (error) {
@@ -565,6 +695,101 @@ export const getCurrentExerciseIndex = async (userId, exerciseType, level) => {
   } catch (error) {
     console.error('❌ Error fetching current exercise index:', error);
     return null;
+  }
+};
+
+/**
+ * Calculate and update user's rank based on quiz scores
+ * Rank is based on position in the leaderboard (sorted by quiz score descending)
+ * @param {string} userId - User's Firebase UID
+ */
+export const updateUserRank = async (userId) => {
+  if (!userId) {
+    console.error('❌ User ID is required to update rank');
+    return false;
+  }
+
+  try {
+    const usersRef = ref(db, 'users');
+    const usersSnapshot = await get(usersRef);
+
+    if (usersSnapshot.exists()) {
+      const allUsers = usersSnapshot.val();
+      
+      // Create array of users with their quiz scores
+      const usersWithScores = Object.entries(allUsers)
+        .map(([uid, userData]) => ({
+          uid,
+          quizScore: userData.quizScore || 0,
+          email: userData.email || ''
+        }))
+        .filter(user => user.email) // Only consider users with email (actual users)
+        .sort((a, b) => b.quizScore - a.quizScore); // Sort by score descending
+
+      // Find user's rank (1-based index)
+      const userRankIndex = usersWithScores.findIndex(u => u.uid === userId);
+      const userRank = userRankIndex !== -1 ? userRankIndex + 1 : 0;
+
+      // Update user's rank in database
+      const userRef = ref(db, `users/${userId}`);
+      await update(userRef, {
+        rank: userRank,
+        updatedAt: Date.now()
+      });
+
+      console.log(`✅ Updated rank for user ${userId}: Rank #${userRank}`);
+      return true;
+    } else {
+      console.error('❌ No users found in database');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error updating user rank:', error);
+    return false;
+  }
+};
+
+/**
+ * Update ranks for all users in the database
+ * This should be called periodically or after quiz/points updates
+ */
+export const updateAllUserRanks = async () => {
+  try {
+    const usersRef = ref(db, 'users');
+    const usersSnapshot = await get(usersRef);
+
+    if (usersSnapshot.exists()) {
+      const allUsers = usersSnapshot.val();
+      
+      // Create array of users with their quiz scores
+      const usersWithScores = Object.entries(allUsers)
+        .map(([uid, userData]) => ({
+          uid,
+          quizScore: userData.quizScore || 0,
+          email: userData.email || ''
+        }))
+        .filter(user => user.email) // Only consider users with email (actual users)
+        .sort((a, b) => b.quizScore - a.quizScore); // Sort by score descending
+
+      // Update rank for each user
+      const updatePromises = usersWithScores.map((user, index) => {
+        const userRef = ref(db, `users/${user.uid}`);
+        return update(userRef, {
+          rank: index + 1,
+          updatedAt: Date.now()
+        });
+      });
+
+      await Promise.all(updatePromises);
+      console.log(`✅ Updated ranks for all ${usersWithScores.length} users`);
+      return true;
+    } else {
+      console.error('❌ No users found in database');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error updating all user ranks:', error);
+    return false;
   }
 };
 

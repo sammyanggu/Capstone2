@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import Confetti from '../../../../components/Confetti';
 import { useAuth } from '../../../../AuthContext';
-import { saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
+import { saveCurrentExerciseIndex, getCurrentExerciseIndex, saveExerciseProgress, getExerciseProgress } from '../../../../utils/progressTracker';
 import { toast } from 'react-toastify';
 
 export default function HtmlIntermediate() {
@@ -19,26 +19,38 @@ export default function HtmlIntermediate() {
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
     const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
+    const isInitialLoadRef = useRef(true);
     
-    useEffect(() => {
-        const savedStatus = localStorage.getItem('htmlIntermediateStatus');
-        if (savedStatus) {
-            setExerciseStatus(JSON.parse(savedStatus));
-        }
-    }, []);
-
     // Load current exercise index from Firebase
     useEffect(() => {
         const loadExerciseIndex = async () => {
             if (currentUser?.uid) {
                 try {
+                    // Load completion status from Firebase
+                    const newStatus = { ...exerciseStatus };
+                    for (let i = 0; i < 4; i++) {
+                        const progress = await getExerciseProgress(currentUser.uid, 'html', `intermediate-${i}`);
+                        if (progress && progress.isCompleted) {
+                            newStatus[i] = true;
+                        }
+                    }
+                    setExerciseStatus(newStatus);
+                    console.log(`✅ [HtmlIntermediate] Loaded completion status from Firebase:`, newStatus);
+                    
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate');
+                    console.log(`🔍 [HtmlIntermediate] Firebase returned savedIndex: ${savedIndex} (type: ${typeof savedIndex})`);
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
-                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+                        console.log(`✅ [HtmlIntermediate] Set currentExercise to Firebase value: ${savedIndex}`);
+                    } else {
+                        setCurrentExercise(0);
+                        console.log(`✅ [HtmlIntermediate] No saved index found, defaulting to 0`);
                     }
                 } catch (err) {
                     console.error('Error loading HTML intermediate exercise index:', err);
+                } finally {
+                    isInitialLoadRef.current = false;
+                    console.log(`✅ [HtmlIntermediate] Completed initial load`);
                 }
             }
         };
@@ -46,24 +58,30 @@ export default function HtmlIntermediate() {
         loadExerciseIndex();
     }, [currentUser]);
 
-    useEffect(() => {
-        localStorage.setItem('htmlIntermediateStatus', JSON.stringify(exerciseStatus));
-    }, [exerciseStatus]);
-
     // Save current exercise index to Firebase whenever it changes
     useEffect(() => {
         const saveIndex = async () => {
-            if (currentUser?.uid) {
+            // Always save after initial load is complete
+            if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
+                    console.log(`💾 [HtmlIntermediate] About to save exercise index: ${currentExercise}`);
                     await saveCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate', currentExercise);
+                    console.log(`✅ [HtmlIntermediate] Successfully saved exercise index: ${currentExercise}`);
                 } catch (err) {
                     console.error('Error saving current exercise index:', err);
                 }
+            } else if (isInitialLoadRef.current) {
+                console.log(`⏭️ [HtmlIntermediate] Save skipped - initial load in progress`);
             }
         };
 
         saveIndex();
     }, [currentExercise, currentUser]);
+
+    // Reset userCode when exercise changes
+    useEffect(() => {
+        setUserCode('');
+    }, [currentExercise]);
 
     const exercises = [
         {
@@ -272,11 +290,30 @@ export default function HtmlIntermediate() {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
             setShowError(false);
             setSelectedAnswer('');
+            
+            // Save completion to Firebase
+            if (currentUser?.uid) {
+                saveExerciseProgress(
+                    currentUser.uid,
+                    'html',
+                    `intermediate-${currentExercise}`,
+                    '',
+                    true,
+                    10
+                ).catch(err => console.error('Error saving exercise completion:', err));
+            }
+            
             setShowCongrats(true);
             setTimeout(() => {
                 setShowCongrats(false);
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    // Also save the new index to Firebase immediately
+                    if (currentUser?.uid) {
+                        saveCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate', nextIndex)
+                            .catch(err => console.error('Error saving new index:', err));
+                    }
                 }
             }, 2000);
         } else {
@@ -353,11 +390,30 @@ export default function HtmlIntermediate() {
         
         if (correct) {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
+            
+            // Save completion to Firebase
+            if (currentUser?.uid) {
+                saveExerciseProgress(
+                    currentUser.uid,
+                    'html',
+                    `intermediate-${currentExercise}`,
+                    userCode,
+                    true,
+                    10
+                ).catch(err => console.error('Error saving exercise completion:', err));
+            }
+            
             setShowCongrats(true);
             setTimeout(() => {
                 setShowCongrats(false);
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    // Also save the new index to Firebase immediately
+                    if (currentUser?.uid) {
+                        saveCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate', nextIndex)
+                            .catch(err => console.error('Error saving new index:', err));
+                    }
                 }
             }, 2000);
         } else {
@@ -497,7 +553,7 @@ export default function HtmlIntermediate() {
                                 </button>
 
                                 <button 
-                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2"
+                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2 px-4 py-1.5 border border-emerald-400 rounded bg-white"
                                     onClick={() => document.getElementById('solution').classList.toggle('hidden')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

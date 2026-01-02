@@ -2,7 +2,7 @@ import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import Confetti from '../../../../components/Confetti';
 import { useAuth } from '../../../../AuthContext';
-import { saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
+import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 
 export default function JsAdvanced() {
   const { currentUser } = useAuth();
@@ -18,40 +18,46 @@ export default function JsAdvanced() {
   const [showCongrats, setShowCongrats] = React.useState(false);
   const [userCode, setUserCode] = React.useState('');
   const [lockedExerciseIndex, setLockedExerciseIndex] = React.useState(null);
-
-  // Save progress to localStorage
-  React.useEffect(() => {
-    const savedStatus = localStorage.getItem('jsAdvancedStatus');
-    if (savedStatus) {
-      setExerciseStatus(JSON.parse(savedStatus));
-    }
-  }, []);
+  const isInitialLoadRef = React.useRef(true);
 
   // Load current exercise index from Firebase
   React.useEffect(() => {
     const loadExerciseIndex = async () => {
       if (currentUser?.uid) {
         try {
+          // Load completion status for each exercise (5 exercises for JS)
+          const newStatus = { ...exerciseStatus };
+          for (let i = 0; i < 5; i++) {
+            const progress = await getExerciseProgress(currentUser.uid, 'javascript', `advanced-${i}`);
+            if (progress && progress.isCompleted) {
+              newStatus[i] = true;
+            }
+          }
+          setExerciseStatus(newStatus);
+          console.log('Loaded JavaScript advanced exercise statuses:', newStatus);
+
           const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'advanced');
           if (savedIndex !== null && savedIndex !== undefined) {
             setCurrentExercise(savedIndex);
             console.log(`✅ Resumed from exercise ${savedIndex}`);
           }
+          isInitialLoadRef.current = false;
         } catch (err) {
           console.error('Error loading JS advanced exercise index:', err);
+          isInitialLoadRef.current = false;
         }
+      } else {
+        isInitialLoadRef.current = false;
       }
     };
 
     loadExerciseIndex();
   }, [currentUser]);
 
+  // Save current exercise index to Firebase whenever it changes (but not during initial load)
   React.useEffect(() => {
-    localStorage.setItem('jsAdvancedStatus', JSON.stringify(exerciseStatus));
-  }, [exerciseStatus]);
-
-  // Save current exercise index to Firebase whenever it changes
-  React.useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    
     const saveIndex = async () => {
       if (currentUser?.uid) {
         try {
@@ -64,6 +70,11 @@ export default function JsAdvanced() {
 
     saveIndex();
   }, [currentExercise, currentUser]);
+
+  // Reset userCode when exercise changes
+  React.useEffect(() => {
+    setUserCode('');
+  }, [currentExercise]);
 
   const handleCodeSubmit = () => {
     const cleanCode = (code) => {
@@ -87,15 +98,15 @@ export default function JsAdvanced() {
       case 1: // Promises and Chaining
         const hasPromiseChain = /\.then\s*\(.*?\).*?\.then\s*\(/.test(userClean);
         const hasCatchHandler = /\.catch\s*\(/.test(userClean);
-        const hasPromiseAll = /promise\.all\s*\(/.test(userClean);
-        correct = hasPromiseChain && hasCatchHandler && hasPromiseAll;
+        const hasPromiseOrThen = /promise\.(resolve|all|race)|(string\(.*?\)\.split)/.test(userClean);
+        correct = hasPromiseChain && hasCatchHandler && hasPromiseOrThen;
         break;
 
-      case 2: // DOM Manipulation
-        const hasDragEvents = /draggable=["']true/.test(userClean);
-        const hasDragHandlers = /ondragstart.*?ondrop/.test(userClean);
+      case 2: // Drag and Drop
+        const hasDragAttribute = /draggable\s*=\s*["']?true|setattribute\s*\(\s*["']draggable/.test(userClean);
+        const hasDragListeners = /addeventlistener\s*\(\s*["']drag(start|over|drop)/.test(userClean);
         const hasPreventDefault = /preventdefault/.test(userClean);
-        correct = hasDragEvents && hasDragHandlers && hasPreventDefault;
+        correct = hasDragAttribute && hasDragListeners && hasPreventDefault;
         break;
 
       case 3: // Classes and Inheritance
@@ -117,10 +128,33 @@ export default function JsAdvanced() {
       setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
       setShowError(false);
       setShowCongrats(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setShowCongrats(false);
+        
+        // Save exercise completion to Firebase with unique levelKey
+        if (currentUser?.uid) {
+          try {
+            const levelKey = `advanced-${currentExercise}`;
+            await saveExerciseProgress(currentUser.uid, 'javascript', levelKey, userCode, true, 10);
+            console.log(`✅ Saved JavaScript exercise ${levelKey} completion`);
+          } catch (err) {
+            console.error('Error saving exercise completion:', err);
+          }
+        }
+        
         if (currentExercise < exercises.length - 1) {
-          setCurrentExercise(currentExercise + 1);
+          const nextIndex = currentExercise + 1;
+          setCurrentExercise(nextIndex);
+          
+          // Save the new index to Firebase
+          if (currentUser?.uid) {
+            try {
+              await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'advanced', nextIndex);
+              console.log(`✅ Saved JavaScript advanced index: ${nextIndex}`);
+            } catch (err) {
+              console.error('Error saving new index:', err);
+            }
+          }
         }
       }, 2000);
     } else {
@@ -620,9 +654,9 @@ export default function JsAdvanced() {
                     <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <div className="text-center">
                             <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            <p className="text-3xl text-white">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                                <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -727,13 +761,25 @@ export default function JsAdvanced() {
               </div>
             </div>
 
-            {/* Submit Button */}
-            <button
-              onClick={handleCodeSubmit}
-              className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
-            >
-              Submit Code
-            </button>
+            {/* Submit Button and Show Solution */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCodeSubmit}
+                className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
+              >
+                Submit Code
+              </button>
+
+              <button 
+                className="px-4 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded text-sm font-medium flex items-center gap-2 border border-emerald-600 bg-white"
+                onClick={() => document.getElementById('solution').classList.toggle('hidden')}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                Show Solution
+              </button>
+            </div>
 
             {/* Error Message */}
             {showError && (
@@ -741,6 +787,13 @@ export default function JsAdvanced() {
                 <p>Not quite right! Check the requirements and try again.</p>
               </div>
             )}
+
+            {/* Solution Box */}
+            <div id="solution" className="hidden mt-4 bg-white rounded p-4 border border-gray-300">
+              <pre className="text-gray-800 text-sm overflow-x-auto">
+                <code>{exercises[currentExercise].solution}</code>
+              </pre>
+            </div>
           </div>
         </div>
       </div>

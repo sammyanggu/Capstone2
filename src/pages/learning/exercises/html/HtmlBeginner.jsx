@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
@@ -18,20 +18,16 @@ export default function HtmlBeginner() {
     const [showError, setShowError] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
-    const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
+    const isInitialLoadRef = useRef(true);
+    const [isLoading, setIsLoading] = useState(true);
     
-    // Save progress to localStorage
-    useEffect(() => {
-        const savedStatus = localStorage.getItem('htmlExerciseStatus');
-        if (savedStatus) {
-            setExerciseStatus(JSON.parse(savedStatus));
-        }
-    }, []);
-
     // Load saved progress from Firebase for signed-in users
     useEffect(() => {
         const loadFirebaseProgress = async () => {
-            if (!currentUser?.uid) return;
+            if (!currentUser?.uid) {
+                isInitialLoadRef.current = false;
+                return;
+            }
             try {
                 const newStatus = { ...exerciseStatus };
                 for (let i = 0; i < exercises.length; i++) {
@@ -49,12 +45,22 @@ export default function HtmlBeginner() {
 
                 // Load the current exercise index
                 const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'beginner');
+                console.log(`📖 Firebase returned savedIndex: ${savedIndex}`);
                 if (savedIndex !== null && savedIndex !== undefined) {
                     setCurrentExercise(savedIndex);
                     console.log(`✅ Resumed from exercise ${savedIndex}`);
+                } else {
+                    // If no saved index, find first uncompleted exercise
+                    const firstIncomplete = Object.keys(newStatus).findIndex(key => !newStatus[key]);
+                    if (firstIncomplete >= 0) {
+                        console.log(`📖 No saved index, starting from first incomplete: ${firstIncomplete}`);
+                        setCurrentExercise(firstIncomplete);
+                    }
                 }
+                isInitialLoadRef.current = false;
             } catch (err) {
                 console.error('Error loading HTML beginner progress from Firebase:', err);
+                isInitialLoadRef.current = false;
             }
         };
 
@@ -62,16 +68,14 @@ export default function HtmlBeginner() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
-    useEffect(() => {
-        localStorage.setItem('htmlExerciseStatus', JSON.stringify(exerciseStatus));
-    }, [exerciseStatus]);
-
-    // Save current exercise index to Firebase whenever it changes
+    // Save current exercise index to Firebase whenever it changes (but not during initial load)
     useEffect(() => {
         const saveIndex = async () => {
-            if (currentUser?.uid) {
+            if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
+                    console.log(`💾 Saving exercise index ${currentExercise} to Firebase`);
                     await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', currentExercise);
+                    console.log(`✅ Saved exercise index ${currentExercise}`);
                 } catch (err) {
                     console.error('Error saving current exercise index:', err);
                 }
@@ -80,6 +84,11 @@ export default function HtmlBeginner() {
 
         saveIndex();
     }, [currentExercise, currentUser]);
+
+    // Reset userCode when exercise changes
+    useEffect(() => {
+        setUserCode('');
+    }, [currentExercise]);
 
     const exercises = [
         {
@@ -176,7 +185,17 @@ export default function HtmlBeginner() {
                 }
 
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    // Save the new index to Firebase immediately
+                    if (currentUser?.uid) {
+                        try {
+                            await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', nextIndex);
+                            console.log(`✅ Saved new index ${nextIndex} to Firebase`);
+                        } catch (err) {
+                            console.error('Error saving new index:', err);
+                        }
+                    }
                 }
             }, 2000);
         } else {
@@ -233,7 +252,17 @@ export default function HtmlBeginner() {
                 }
 
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    // Save the new index to Firebase immediately
+                    if (currentUser?.uid) {
+                        try {
+                            await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', nextIndex);
+                            console.log(`✅ Saved new index ${nextIndex} to Firebase`);
+                        } catch (err) {
+                            console.error('Error saving new index:', err);
+                        }
+                    }
                 }
             }, 2000);
         } else {
@@ -257,9 +286,9 @@ export default function HtmlBeginner() {
                     <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <div className="text-center">
                             <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            <p className="text-3xl text-white">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                                <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -443,7 +472,7 @@ export default function HtmlBeginner() {
                                     </button>
 
                                     <button 
-                                        className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-2"
+                                        className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-2 px-4 py-1.5 border border-emerald-600 rounded bg-white"
                                         onClick={() => document.getElementById('solution').classList.toggle('hidden')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import { useAuth } from '../../../../AuthContext';
-import { saveCurrentExerciseIndex, getCurrentExerciseIndex, completeExercise } from '../../../../utils/progressTracker';
+import { saveCurrentExerciseIndex, getCurrentExerciseIndex, saveExerciseProgress, getExerciseProgress } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
 
 export default function TailwindIntermediate() {
@@ -17,24 +17,33 @@ export default function TailwindIntermediate() {
     const [showError, setShowError] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
-
-    useEffect(() => {
-        const savedStatus = localStorage.getItem('tailwindIntermediateStatus');
-        if (savedStatus) {
-            setExerciseStatus(JSON.parse(savedStatus));
-        }
-    }, []);
+    const isInitialLoadRef = useRef(true);
 
     useEffect(() => {
         const loadExerciseIndex = async () => {
             if (currentUser?.uid) {
                 try {
+                    // Load completion status for each exercise
+                    const newStatus = { ...exerciseStatus };
+                    for (let i = 0; i < 4; i++) {
+                        const progress = await getExerciseProgress(currentUser.uid, 'tailwind', `intermediate-${i}`);
+                        if (progress && progress.isCompleted) {
+                            newStatus[i] = true;
+                        }
+                    }
+                    setExerciseStatus(newStatus);
+                    console.log('Loaded Tailwind intermediate exercise statuses:', newStatus);
+                    
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate');
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
+                    } else {
+                        setCurrentExercise(0);
                     }
                 } catch (err) {
                     console.error('Error loading Tailwind intermediate exercise index:', err);
+                } finally {
+                    isInitialLoadRef.current = false;
                 }
             }
         };
@@ -42,12 +51,8 @@ export default function TailwindIntermediate() {
     }, [currentUser]);
 
     useEffect(() => {
-        localStorage.setItem('tailwindIntermediateStatus', JSON.stringify(exerciseStatus));
-    }, [exerciseStatus]);
-
-    useEffect(() => {
         const saveIndex = async () => {
-            if (currentUser?.uid) {
+            if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate', currentExercise);
                 } catch (err) {
@@ -57,6 +62,11 @@ export default function TailwindIntermediate() {
         };
         saveIndex();
     }, [currentExercise, currentUser]);
+
+    // Reset userCode when exercise changes
+    useEffect(() => {
+        setUserCode('');
+    }, [currentExercise]);
 
     const exercises = [
         {
@@ -295,16 +305,33 @@ export default function TailwindIntermediate() {
         if (correct) {
             setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
             setShowCongrats(true);
-            
-            // Save progress to Firebase
-            if (currentUser?.uid) {
-                completeExercise(currentUser.uid, 'tailwind', 'intermediate', 10);
-            }
-            
-            setTimeout(() => {
+            setTimeout(async () => {
                 setShowCongrats(false);
+                
+                // Save exercise completion to Firebase
+                if (currentUser?.uid) {
+                    try {
+                        const levelKey = `intermediate-${currentExercise}`;
+                        await saveExerciseProgress(currentUser.uid, 'tailwind', levelKey, userCode, true, 10);
+                        console.log(`✅ Saved Tailwind intermediate exercise completion`);
+                    } catch (err) {
+                        console.error('Error saving exercise completion:', err);
+                    }
+                }
+                
                 if (currentExercise < exercises.length - 1) {
-                    setCurrentExercise(currentExercise + 1);
+                    const nextIndex = currentExercise + 1;
+                    setCurrentExercise(nextIndex);
+                    
+                    // Save the new index to Firebase
+                    if (currentUser?.uid) {
+                        try {
+                            await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate', nextIndex);
+                            console.log(`✅ Saved Tailwind intermediate index: ${nextIndex}`);
+                        } catch (err) {
+                            console.error('Error saving new index:', err);
+                        }
+                    }
                 }
             }, 2000);
         } else {
@@ -327,9 +354,9 @@ export default function TailwindIntermediate() {
                     <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
                         <div className="text-center">
                             <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                            <p className="text-3xl text-gray-800">You've completed this exercise!</p>
+                            <p className="text-3xl text-white">You've completed this exercise!</p>
                             {currentExercise < exercises.length - 1 && (
-                                <p className="text-xl text-gray-600 mt-4">Moving to next exercise...</p>
+                                <p className="text-xl text-white mt-4">Moving to next exercise...</p>
                             )}
                         </div>
                     </div>
@@ -432,7 +459,7 @@ export default function TailwindIntermediate() {
                                 </button>
 
                                 <button 
-                                    className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-2"
+                                    className="text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center gap-2 px-4 py-1.5 border border-emerald-400 rounded bg-white"
                                     onClick={() => document.getElementById('solution').classList.toggle('hidden')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

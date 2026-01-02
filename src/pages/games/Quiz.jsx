@@ -65,6 +65,95 @@ const Quiz = () => {
           ],
           correctAnswer: 0,
           explanation: 'The <meta> tag is used to specify metadata about an HTML document, such as character set and viewport.'
+        },
+        {
+          id: 6,
+          question: 'Which tag defines a paragraph?',
+          options: ['<para>', '<p>', '<paragraph>', '<text>'],
+          correctAnswer: 1,
+          explanation: 'The <p> tag is used to define a paragraph in HTML.'
+        },
+        {
+          id: 7,
+          question: 'What is the purpose of the <form> tag?',
+          options: [
+            'To create a visual form layout',
+            'To collect user input',
+            'To validate data',
+            'To style form elements'
+          ],
+          correctAnswer: 1,
+          explanation: 'The <form> tag is used to create a form for user input on a web page.'
+        },
+        {
+          id: 8,
+          question: 'Which attribute specifies the destination URL in a link?',
+          options: ['url', 'link', 'href', 'destination'],
+          correctAnswer: 2,
+          explanation: 'The href attribute specifies the URL that the link points to.'
+        }
+      ]
+    },
+    {
+      id: 'html-advanced',
+      title: 'HTML Advanced Quiz',
+      description: 'Advanced HTML concepts and semantics',
+      difficulty: 'Advanced',
+      questions: [
+        {
+          id: 1,
+          question: 'What is semantic HTML?',
+          options: [
+            'HTML that looks good',
+            'HTML that gives meaning to content',
+            'HTML that uses only div tags',
+            'HTML that is fast to load'
+          ],
+          correctAnswer: 1,
+          explanation: 'Semantic HTML uses tags that clearly describe the meaning of the content, like <header>, <nav>, <article>, etc.'
+        },
+        {
+          id: 2,
+          question: 'Which of these is a semantic HTML5 tag?',
+          options: ['<div>', '<span>', '<article>', '<container>'],
+          correctAnswer: 2,
+          explanation: 'The <article> tag is a semantic HTML5 tag used to define independent, self-contained content.'
+        },
+        {
+          id: 3,
+          question: 'What is the purpose of the <canvas> element?',
+          options: [
+            'To display images',
+            'To draw graphics via JavaScript',
+            'To create backgrounds',
+            'To display text'
+          ],
+          correctAnswer: 1,
+          explanation: 'The <canvas> element is used to draw graphics on a web page using JavaScript.'
+        },
+        {
+          id: 4,
+          question: 'What does the data attribute allow?',
+          options: [
+            'Storing data in databases',
+            'Storing custom data on HTML elements',
+            'Creating forms',
+            'Validating input'
+          ],
+          correctAnswer: 1,
+          explanation: 'Data attributes (data-*) allow you to store custom data on HTML elements.'
+        },
+        {
+          id: 5,
+          question: 'What is the <picture> element used for?',
+          options: [
+            'Displaying images only',
+            'Creating responsive images',
+            'Inserting photos',
+            'Drawing pictures'
+          ],
+          correctAnswer: 1,
+          explanation: 'The <picture> element allows you to provide multiple image sources for responsive design.'
         }
       ]
     },
@@ -118,6 +207,93 @@ const Quiz = () => {
           ],
           correctAnswer: 0,
           explanation: 'The box-shadow property is used to add shadow effects around an element\'s frame.'
+        },
+        {
+          id: 6,
+          question: 'Which selector selects elements with a specific ID?',
+          options: ['.id', '#id', ':id', '$id'],
+          correctAnswer: 1,
+          explanation: 'The # (hash) selector is used to select elements with a specific ID.'
+        },
+        {
+          id: 7,
+          question: 'What is the margin property used for?',
+          options: [
+            'Border around element',
+            'Space inside element',
+            'Space outside element',
+            'Element width'
+          ],
+          correctAnswer: 2,
+          explanation: 'The margin property creates space outside of an element\'s border.'
+        }
+      ]
+    },
+    {
+      id: 'css-advanced',
+      title: 'CSS Advanced Quiz',
+      description: 'Advanced CSS techniques and properties',
+      difficulty: 'Advanced',
+      questions: [
+        {
+          id: 1,
+          question: 'What is specificity in CSS?',
+          options: [
+            'How fast CSS loads',
+            'The rule that determines which style is applied',
+            'CSS file size',
+            'CSS syntax rules'
+          ],
+          correctAnswer: 1,
+          explanation: 'Specificity is a set of rules that determine which CSS styles are applied when multiple rules target the same element.'
+        },
+        {
+          id: 2,
+          question: 'What is the CSS Box Model?',
+          options: [
+            'A model car for CSS',
+            'Content, padding, border, and margin',
+            'A type of selector',
+            'A CSS animation'
+          ],
+          correctAnswer: 1,
+          explanation: 'The CSS Box Model consists of content, padding, border, and margin.'
+        },
+        {
+          id: 3,
+          question: 'What does the z-index property do?',
+          options: [
+            'Determines text size',
+            'Sets element stacking order',
+            'Changes element color',
+            'Adds animation'
+          ],
+          correctAnswer: 1,
+          explanation: 'The z-index property determines the stacking order of positioned elements.'
+        },
+        {
+          id: 4,
+          question: 'What is a CSS pseudo-class?',
+          options: [
+            'A class that doesn\'t work',
+            'A keyword that defines a state of an element',
+            'A class inside another class',
+            'A temporary class'
+          ],
+          correctAnswer: 1,
+          explanation: 'Pseudo-classes are keywords that define a state of an element, like :hover, :focus, :active.'
+        },
+        {
+          id: 5,
+          question: 'What is Flexbox used for?',
+          options: [
+            'Making elements flexible',
+            'Creating flexible layouts',
+            'Bending elements',
+            'Flexible animations'
+          ],
+          correctAnswer: 1,
+          explanation: 'Flexbox is a CSS layout module used for creating flexible and efficient layouts.'
         }
       ]
     },
@@ -181,6 +357,98 @@ const Quiz = () => {
           ],
           correctAnswer: 0,
           explanation: 'The addEventListener method is used to attach event listeners to elements in JavaScript.'
+        },
+        {
+          id: 6,
+          question: 'What is the difference between var, let, and const?',
+          options: [
+            'There is no difference',
+            'var is global, let is block-scoped, const is constant',
+            'They are the same',
+            'const is faster'
+          ],
+          correctAnswer: 1,
+          explanation: 'var is function-scoped, let is block-scoped, and const is block-scoped and cannot be reassigned.'
+        },
+        {
+          id: 7,
+          question: 'What does console.log() do?',
+          options: [
+            'Logs into a user account',
+            'Prints output to the console',
+            'Creates a log file',
+            'Logs errors'
+          ],
+          correctAnswer: 1,
+          explanation: 'console.log() prints output to the browser console for debugging.'
+        }
+      ]
+    },
+    {
+      id: 'js-advanced',
+      title: 'JavaScript Advanced Quiz',
+      description: 'Advanced JavaScript concepts',
+      difficulty: 'Advanced',
+      questions: [
+        {
+          id: 1,
+          question: 'What is a closure in JavaScript?',
+          options: [
+            'A closed function',
+            'A function that has access to variables from another function\'s scope',
+            'A type of loop',
+            'A way to close connections'
+          ],
+          correctAnswer: 1,
+          explanation: 'A closure is a function that has access to variables from another function\'s scope.'
+        },
+        {
+          id: 2,
+          question: 'What is async/await?',
+          options: [
+            'Waiting for a function',
+            'A way to handle asynchronous operations',
+            'A type of variable',
+            'A loop construct'
+          ],
+          correctAnswer: 1,
+          explanation: 'async/await is a way to handle asynchronous operations in JavaScript more cleanly.'
+        },
+        {
+          id: 3,
+          question: 'What is the spread operator (...) used for?',
+          options: [
+            'Creating spaces',
+            'Spreading elements of an array or object',
+            'Decorating code',
+            'Adding numbers'
+          ],
+          correctAnswer: 1,
+          explanation: 'The spread operator (...) is used to spread elements of an array or object.'
+        },
+        {
+          id: 4,
+          question: 'What is destructuring?',
+          options: [
+            'Breaking things',
+            'Extracting values from objects or arrays',
+            'Destroying variables',
+            'A type of error'
+          ],
+          correctAnswer: 1,
+          explanation: 'Destructuring is a way to extract values from objects or arrays into separate variables.'
+        },
+        {
+          id: 5,
+          question: 'What is a Promise in JavaScript?',
+          options: [
+            'A guarantee',
+            'An object representing a value that may not be available yet',
+            'A promise to learn JavaScript',
+            'A type of variable'
+          ],
+          correctAnswer: 1,
+          explanation: 'A Promise is an object that represents a value that may not be available yet but will be resolved eventually.'
         }
       ]
     }
@@ -237,22 +505,20 @@ const Quiz = () => {
   };
 
   const completeQuiz = async () => {
-    let finalScore = 0;
+    let correctCount = 0;
     selectedQuiz.questions.forEach((question, index) => {
       if (userAnswers[index] === question.correctAnswer) {
-        finalScore += 20; // 5 questions = 100 points
+        correctCount++;
       }
     });
-    setScore(finalScore);
-    setQuizCompleted(true);
-
-    // Save quiz result to Firebase
+    
+    // Calculate score: (correct answers / total questions) * 100
+    const finalScore = Math.round((correctCount / selectedQuiz.questions.length) * 100);
+    
+    // Save quiz result to Firebase FIRST, then show completion screen
     if (currentUser) {
       try {
         const { saveQuizProgress } = await import('../../utils/progressTracker');
-        const correctCount = userAnswers.filter((answer, index) => 
-          answer === selectedQuiz.questions[index].correctAnswer
-        ).length;
 
         await saveQuizProgress(
           currentUser.uid,
@@ -262,11 +528,18 @@ const Quiz = () => {
           correctCount
         );
 
+        console.log('✅ Quiz progress saved to Firebase');
         toast.success('Quiz completed! Score saved to your profile');
       } catch (error) {
-        toast.info('Quiz completed! (Score saved locally)');
+        console.error('Error saving quiz progress:', error);
+        toast.warning('Quiz completed but score save failed - retrying...');
+        // Still continue and show results
       }
     }
+    
+    // Now update state to show completion screen
+    setScore(finalScore);
+    setQuizCompleted(true);
   };
 
   const restartQuiz = () => {
@@ -384,7 +657,7 @@ const Quiz = () => {
     const correctCount = userAnswers.filter(
       (answer, index) => answer === selectedQuiz.questions[index].correctAnswer
     ).length;
-    const percentage = (score / 100) * 100;
+    const percentage = score; // score is already calculated as percentage
 
     return (
       <div className="relative w-full min-h-screen overflow-hidden bg-slate-900">
@@ -442,7 +715,10 @@ const Quiz = () => {
               {/* Review Button */}
               <div className="space-y-4">
                 <button
-                  onClick={() => setCurrentQuestion(0) || setQuizCompleted(false)}
+                  onClick={() => {
+                    setQuizCompleted(false);
+                    setCurrentQuestion(0);
+                  }}
                   className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-all"
                 >
                   📖 Review Answers
