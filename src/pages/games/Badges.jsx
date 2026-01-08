@@ -183,36 +183,60 @@ function Badges() {
               return (
                 <div
                   key={badge.id}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-lg transition-all duration-300 group ${
-                    isUnlocked
-                      ? theme === 'dark'
-                        ? 'bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/20'
-                        : 'bg-purple-100 border border-purple-300 hover:shadow-lg'
-                      : theme === 'dark'
-                      ? 'bg-slate-800/40 border border-slate-700/30 opacity-50'
-                      : 'bg-gray-200 border border-gray-300 opacity-50'
-                  }`}
-                  title={badge.description}
+                  className="relative group"
                 >
-                  <div className={`relative w-16 h-16 overflow-hidden rounded-lg group-hover:scale-110 transition-transform ${!isUnlocked && 'grayscale'}`}>
-                    <img 
-                      src={badge.image} 
-                      alt={badge.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/assets/badges/placeholder.svg';
-                      }}
-                    />
+                  <div
+                    className={`flex flex-col items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isUnlocked
+                        ? theme === 'dark'
+                          ? 'bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/20'
+                          : 'bg-purple-100 border border-purple-300 hover:shadow-lg'
+                        : theme === 'dark'
+                        ? 'bg-slate-800/40 border border-slate-700/30 opacity-50'
+                        : 'bg-gray-200 border border-gray-300 opacity-50'
+                    }`}
+                  >
+                    <div className={`relative w-16 h-16 overflow-hidden rounded-lg group-hover:scale-110 transition-transform ${!isUnlocked && 'grayscale'}`}>
+                      <img 
+                        src={badge.image} 
+                        alt={badge.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = '/assets/badges/placeholder.svg';
+                        }}
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p className={`text-sm font-bold ${isUnlocked ? (theme === 'dark' ? 'text-purple-400' : 'text-purple-700') : (theme === 'dark' ? 'text-gray-500' : 'text-gray-600')}`}>
+                        {badge.name}
+                      </p>
+                      {!isUnlocked && (
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          🔒 Locked
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className={`text-sm font-bold ${isUnlocked ? (theme === 'dark' ? 'text-purple-400' : 'text-purple-700') : (theme === 'dark' ? 'text-gray-500' : 'text-gray-600')}`}>
+                  
+                  {/* Tooltip with description */}
+                  <div className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-48 p-3 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50 ${
+                    theme === 'dark'
+                      ? 'bg-slate-800 border border-purple-500/30'
+                      : 'bg-white border border-purple-300 shadow-lg'
+                  }`}>
+                    <p className={`text-xs font-semibold mb-2 ${theme === 'dark' ? 'text-purple-300' : 'text-purple-700'}`}>
                       {badge.name}
                     </p>
-                    {!isUnlocked && (
-                      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        🔒 Locked
-                      </p>
-                    )}
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {badge.description}
+                    </p>
+                    <div className={`text-xs mt-2 pt-2 border-t ${theme === 'dark' ? 'border-slate-700 text-gray-400' : 'border-gray-200 text-gray-600'}`}>
+                      {isUnlocked ? (
+                        <span className="text-green-400">✓ Unlocked</span>
+                      ) : (
+                        <span>How to unlock: {badge.description}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
