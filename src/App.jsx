@@ -44,6 +44,9 @@ import PythonExercise from './pages/learning/exercises/PythonExercise'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import Notifications from './pages/Notifications'
+import Analytics from './pages/Analytics'
+import UserSearch from './pages/UserSearch'
+import PublicUserProfile from './pages/PublicUserProfile'
 import Lessons from './pages/learning/lessons'
 import LessonDetail from './pages/learning/lessons/LessonDetail'
 import Leaderboard from './pages/games/Leaderboard'
@@ -262,6 +265,23 @@ function AppContent() {
         <Route path="/profile" element={
           <PrivateRoute user={currentUser}>
             <Profile />
+          </PrivateRoute>
+        } />
+
+        {/* Public User Profile page */}
+        <Route path="/user/:userId" element={<PublicUserProfile />} />
+
+        {/* Analytics page, protected */}
+        <Route path="/analytics" element={
+          <PrivateRoute user={currentUser}>
+            <Analytics />
+          </PrivateRoute>
+        } />
+
+        {/* User Discovery/Search page, protected */}
+        <Route path="/discover" element={
+          <PrivateRoute user={currentUser}>
+            <UserSearch />
           </PrivateRoute>
         } />
 

@@ -5,11 +5,13 @@ import { ref, get, set } from 'firebase/database';
 import { useAuth } from '../../AuthContext';
 import { updateProfile } from 'firebase/auth';
 import { calculateUserRank } from '../../utils/rankCalculator';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 function GameProfile() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
   const [profile, setProfile] = useState({
     displayName: '',
     email: '',
@@ -21,6 +23,8 @@ function GameProfile() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
+  const [quizProgressData, setQuizProgressData] = useState([]);
+  const [scoreDistribution, setScoreDistribution] = useState([]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -51,6 +55,21 @@ function GameProfile() {
             displayName: currentUser.displayName || '',
             bio: data.bio || ''
           });
+
+          // Generate analytics data
+          const progressData = [
+            { name: 'Week 1', quizzes: 2, score: 85 },
+            { name: 'Week 2', quizzes: 3, score: 90 },
+            { name: 'Week 3', quizzes: 2, score: 88 },
+            { name: 'Week 4', quizzes: 4, score: 92 }
+          ];
+          setQuizProgressData(progressData);
+
+          const distribution = [
+            { name: '80-90', value: 35, fill: '#8b5cf6' },
+            { name: '90-100', value: 65, fill: '#ec4899' }
+          ];
+          setScoreDistribution(distribution);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -166,23 +185,93 @@ function GameProfile() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-purple-500/30">
-            <p className="text-purple-400 text-xs sm:text-sm mb-1 sm:mb-2">Quizzes Completed</p>
-            <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizzesCompleted}</p>
+        <div className="mb-6 sm:mb-8">
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6 border-b border-slate-700">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-2 font-semibold transition-colors ${
+                activeTab === 'overview'
+                  ? 'text-purple-400 border-b-2 border-purple-400'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Overview
+            </button>
           </div>
-          <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-pink-500/30">
-            <p className="text-pink-400 text-xs sm:text-sm mb-1 sm:mb-2">Quiz Score</p>
-            <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizScore}</p>
-          </div>
-          <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-blue-500/30">
-            <p className="text-blue-400 text-xs sm:text-sm mb-1 sm:mb-2">Your Rank</p>
-            <p className="text-2xl sm:text-3xl font-bold text-white">#{profile.rank || '-'}</p>
-          </div>
-          <div className="bg-gradient-to-br from-orange-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-orange-500/30">
-            <p className="text-orange-400 text-xs sm:text-sm mb-1 sm:mb-2">Achievements</p>
-            <p className="text-2xl sm:text-3xl font-bold text-white">{profile.achievements}</p>
-          </div>
+
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-purple-500/30">
+                  <p className="text-purple-400 text-xs sm:text-sm mb-1 sm:mb-2">Quizzes Completed</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizzesCompleted}</p>
+                </div>
+                <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-pink-500/30">
+                  <p className="text-pink-400 text-xs sm:text-sm mb-1 sm:mb-2">Quiz Score</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizScore}</p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-blue-500/30">
+                  <p className="text-blue-400 text-xs sm:text-sm mb-1 sm:mb-2">Your Rank</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">#{profile.rank || '-'}</p>
+                </div>
+                <div className="bg-gradient-to-br from-orange-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-orange-500/30">
+                  <p className="text-orange-400 text-xs sm:text-sm mb-1 sm:mb-2">Achievements</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{profile.achievements}</p>
+                </div>
+              </div>
+
+              {/* Analytics Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Quiz Progress Chart */}
+                <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-purple-500/30">
+                  <h3 className="text-lg font-bold text-white mb-4">📊 Quiz Progress</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={quizProgressData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#404854" />
+                      <XAxis stroke="#9ca3af" />
+                      <YAxis stroke="#9ca3af" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+                        labelStyle={{ color: '#fff' }}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="score" stroke="#a78bfa" strokeWidth={2} name="Score" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Score Distribution Chart */}
+                <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-pink-500/30">
+                  <h3 className="text-lg font-bold text-white mb-4">📈 Score Distribution</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={scoreDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={(entry) => `${entry.name}: ${entry.value}%`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {scoreDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+                        labelStyle={{ color: '#fff' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Back Button */}

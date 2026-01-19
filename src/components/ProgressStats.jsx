@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getCompletionStats, getLessonStats } from '../utils/progressTracker';
 
 const ProgressStats = ({ userId }) => {
@@ -142,6 +143,39 @@ const ProgressStats = ({ userId }) => {
       {/* Exercise Breakdown */}
       <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
         <h3 className="text-lg font-semibold text-emerald-400 mb-4">Exercises by Category</h3>
+        
+        {/* Bar Chart for Exercise Completion */}
+        <div className="mb-8 bg-slate-700/50 rounded-lg p-4 border border-slate-600">
+          <h4 className="text-slate-300 font-semibold mb-4">Exercise Completion Rate</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={
+              exerciseTypes.map(type => ({
+                name: exerciseLabels[type],
+                completed: exerciseStats?.byType?.[type]?.completed || 0,
+                total: exerciseStats?.byType?.[type]?.total || 0,
+                percentage: exerciseStats?.byType?.[type]?.total > 0 
+                  ? Math.round((exerciseStats?.byType?.[type]?.completed / exerciseStats?.byType?.[type]?.total) * 100)
+                  : 0
+              }))
+            }>
+              <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+              <XAxis dataKey="name" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
+                formatter={(value, name) => {
+                  if (name === 'percentage') return [`${value}%`, 'Completion Rate'];
+                  return [value, name === 'completed' ? 'Completed' : 'Total'];
+                }}
+              />
+              <Legend />
+              <Bar dataKey="completed" fill="#10b981" name="Completed" />
+              <Bar dataKey="total" fill="#64748b" name="Total" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Category Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {exerciseTypes.map((type) => {
             const stats = exerciseStats?.byType?.[type];
@@ -176,6 +210,46 @@ const ProgressStats = ({ userId }) => {
       {lessonStats?.byCategory && Object.keys(lessonStats.byCategory).length > 0 && (
         <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
           <h3 className="text-lg font-semibold text-emerald-400 mb-4">Lessons by Category</h3>
+          
+          {/* Pie Chart for Lesson Distribution */}
+          <div className="mb-8 bg-slate-700/50 rounded-lg p-4 border border-slate-600">
+            <h4 className="text-slate-300 font-semibold mb-4">Lesson Completion Distribution</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={Object.entries(lessonStats.byCategory).map(([category, stats]) => ({
+                    name: {
+                      html: 'HTML',
+                      css: 'CSS',
+                      javascript: 'JavaScript',
+                      php: 'PHP',
+                      bootstrap: 'Bootstrap',
+                      tailwind: 'Tailwind'
+                    }[category] || category,
+                    value: stats.completed,
+                    total: stats.total
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value, total }) => `${name}: ${value}/${total}`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {['#10b981', '#3b82f6', '#fbbf24', '#a855f7', '#6366f1', '#06b6d4'].map((color, index) => (
+                    <Cell key={`cell-${index}`} fill={color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
+                  formatter={(value) => [value, 'Completed']}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Category Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(lessonStats.byCategory).map(([category, stats]) => {
               const displayLabel = {
