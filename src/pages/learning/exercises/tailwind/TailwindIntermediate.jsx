@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveCurrentExerciseIndex, getCurrentExerciseIndex, saveExerciseProgress, getExerciseProgress } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -442,10 +443,19 @@ export default function TailwindIntermediate() {
                             </div>
                             
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                                <div className="lg:col-span-3 bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div className="lg:col-span-2 bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
                                     <LiveHtmlEditor 
                                         initialCode={exercises[currentExercise].initialCode}
                                         onChange={setUserCode}
+                                    />
+                                </div>
+                                <div className="lg:col-span-1">
+                                    <CodeFeedback 
+                                        code={userCode}
+                                        language="html"
+                                        task={exercises[currentExercise].task}
+                                        exerciseId={`tailwind-intermediate-${currentExercise}`}
+                                        level="intermediate"
                                     />
                                 </div>
                             </div>

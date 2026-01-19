@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -402,11 +403,20 @@ echo "File operations example";
                         Code Editor
                     </h3>
                     <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div className="lg:col-span-3">
+                        <div className="lg:col-span-2">
                             <LiveHtmlEditor
                                 initialCode={code || exercises[currentExercise]?.starterCode || initialCode}
                                 onChange={setCode}
                                 language="php"
+                            />
+                        </div>
+                        <div className="lg:col-span-1">
+                            <CodeFeedback 
+                                code={code}
+                                language="php"
+                                task={exercises[currentExercise]?.task}
+                                exerciseId={`php-intermediate-${currentExercise}`}
+                                level="intermediate"
                             />
                         </div>
                     </div>

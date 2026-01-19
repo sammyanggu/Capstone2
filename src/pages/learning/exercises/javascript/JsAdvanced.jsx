@@ -1,5 +1,6 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import Confetti from '../../../../components/Confetti';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
@@ -757,6 +758,15 @@ export default function JsAdvanced() {
                   initialCode={userCode || exercises[currentExercise].initialCode}
                   solution={exercises[currentExercise].solution}
                   onChange={setUserCode}
+                />
+              </div>
+              <div className="lg:col-span-1">
+                <CodeFeedback 
+                  code={userCode}
+                  language="javascript"
+                  task={exercises[currentExercise].task}
+                  exerciseId={`javascript-advanced-${currentExercise}`}
+                  level="advanced"
                 />
               </div>
             </div>

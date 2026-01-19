@@ -1,5 +1,6 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -565,6 +566,15 @@ export default function JsBeginner() {
                     setCodeByExercise(prev => ({...prev, [currentExercise]: code}));
                     saveProgress(code);
                   }}
+                />
+              </div>
+              <div className="lg:col-span-1">
+                <CodeFeedback 
+                  code={userCode}
+                  language="javascript"
+                  task={exercises[currentExercise].task}
+                  exerciseId={`javascript-beginner-${currentExercise}`}
+                  level="beginner"
                 />
               </div>
             </div>
