@@ -20,7 +20,7 @@ function GameNav() {
 
     return (
         <nav className="bg-slate-900 fixed top-0 left-0 right-0 shadow-lg z-[100]">
-            <div className="w-full px-3 sm:px-4 lg:px-8 py-2">
+            <div className="w-full px-3 sm:px-4 lg:px-8 py-2 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between h-14 sm:h-16">
                     {/* Logo - Left Side */}
                     <button onClick={() => navigate('/')} className="flex items-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
@@ -48,52 +48,47 @@ function GameNav() {
                                     </button>
                                 </div>
 
-                                {/* Mobile Navigation Icons */}
-                                <div className="lg:hidden flex items-center gap-3">
+                                {/* Mobile Navigation Icons with Labels */}
+                                <div className="lg:hidden flex items-center gap-2 overflow-x-auto">
                                     <button 
                                         onClick={() => navigate('/games/quiz')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors"
+                                        className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap text-sm group"
                                         title="Quiz"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                        <div className="text-cyan-400 text-lg flex items-center justify-center flex-shrink-0">📝</div>
+                                        <span className="hidden sm:inline text-cyan-400 group-hover:text-cyan-300">Quiz</span>
                                     </button>
                                     <button 
                                         onClick={() => navigate('/games/leaderboard')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors"
+                                        className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap text-sm group"
                                         title="Leaderboard"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
+                                        <div className="w-5 h-5 text-orange-400 text-xl flex items-center justify-center flex-shrink-0">🏆</div>
+                                        <span className="hidden sm:inline text-orange-400 group-hover:text-orange-300">Rank</span>
                                     </button>
                                     <button 
                                         onClick={() => navigate('/games/achievements')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors"
+                                        className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap text-sm group"
                                         title="Achievements"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm6 6h-1v8H7v-8h-1v10h12v-10z" />
-                                        </svg>
+                                        <div className="w-5 h-5 text-pink-400 text-xl flex items-center justify-center flex-shrink-0">⭐</div>
+                                        <span className="hidden sm:inline text-yellow-400 group-hover:text-yellow-300">Achieve</span>
                                     </button>
                                     <button 
                                         onClick={() => navigate('/games/badges')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors"
+                                        className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap text-sm group"
                                         title="Badges"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                        <div className="w-5 h-5 text-pink-400 text-lg flex items-center justify-center flex-shrink-0">🎖️</div>
+                                        <span className="hidden sm:inline text-pink-400 group-hover:text-pink-300">Badges</span>
                                     </button>
                                     <button 
                                         onClick={() => navigate('/games')}
-                                        className="p-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors"
+                                        className="flex items-center gap-1 px-3 py-2 hover:bg-slate-800 rounded-lg text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap text-sm"
                                         title="Back to Games Hub"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                        </svg>
+                                        <span className="text-lg">←</span>
+                                        <span className="hidden sm:inline">Back</span>
                                     </button>
                                 </div>
 

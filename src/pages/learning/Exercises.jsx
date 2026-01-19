@@ -1,10 +1,11 @@
+
 // Coding Exercises page. Lets users pick a language and level.
 // Shows cards for HTML, CSS, and JavaScript exercises.
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LevelModal from "../../components/LevelModal";
 import LoadingScreen from "../../components/LoadingScreen";
-import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../../assets/icons/index.js';
+import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon, pythonIcon } from '../../assets/icons/index.js';
 
 function Exercises() {
 	// Mock progress data - replace with actual progress from backend
@@ -19,6 +20,7 @@ function Exercises() {
 	const [levelphp, setlevelphp] = useState(false);
 	const [levelbootstrap, setlevelbootstrap] = useState(false);
 	const [leveltailwind, setleveltailwind] = useState(false);
+	const [levelpython, setlevelpython] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	// Navigation function
 	const navigate = useNavigate();
@@ -109,7 +111,7 @@ function Exercises() {
 					</button>
 				</div>
 
-				{/* Second Row - PHP, Bootstrap, Tailwind */}
+				{/* Second Row - PHP, Bootstrap, Tailwind, Python */}
 				<div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16">
 					{/* PHP */}
 					<button
@@ -121,6 +123,7 @@ function Exercises() {
 							setleveljavascript(false);
 							setlevelbootstrap(false);
 							setleveltailwind(false);
+							setlevelpython(false);
 						}}
 					>
 						<img
@@ -144,6 +147,7 @@ function Exercises() {
 							setleveljavascript(false);
 							setlevelphp(false);
 							setleveltailwind(false);
+							setlevelpython(false);
 						}}
 					>
 						<img
@@ -167,6 +171,7 @@ function Exercises() {
 							setleveljavascript(false);
 							setlevelphp(false);
 							setlevelbootstrap(false);
+							setlevelpython(false);
 						}}
 					>
 						<img
@@ -178,6 +183,30 @@ function Exercises() {
 							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(34,197,94,0))'}
 						/>
 						<span className="mt-4 font-bold text-cyan-500 text-sm sm:text-base md:text-lg lg:text-xl">Tailwind</span>
+					</button>
+
+					{/* Python */}
+					<button
+						className="flex flex-col items-center hover:scale-125 transition-transform duration-300 cursor-pointer group"
+						onClick={() => {
+							setlevelpython((v) => !v);
+							setlevelhtml(false);
+							setlevelcss(false);
+							setleveljavascript(false);
+							setlevelphp(false);
+							setlevelbootstrap(false);
+							setleveltailwind(false);
+						}}
+					>
+						<img
+							src={pythonIcon}
+							alt="Python Logo"
+							className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 transition-all duration-300"
+							style={{filter: 'drop-shadow(0 0 0px rgba(55,118,171,0))'}}
+							onMouseEnter={(e) => e.target.style.filter = 'drop-shadow(0 0 25px rgba(55,118,171,0.7))'}
+							onMouseLeave={(e) => e.target.style.filter = 'drop-shadow(0 0 0px rgba(55,118,171,0))'}
+						/>
+						<span className="mt-4 font-bold text-blue-600 text-sm sm:text-base md:text-lg lg:text-xl">Python</span>
 					</button>
 				</div>
 			</div>
@@ -218,7 +247,7 @@ function Exercises() {
 				)}
 				
 			{/* Modal Backdrop */}
-			{(levelhtml || levelcss || leveljavascript || levelphp || levelbootstrap || leveltailwind) && (
+			{(levelhtml || levelcss || leveljavascript || levelphp || levelbootstrap || leveltailwind || levelpython) && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
 					{/* HTML Levels Modal */}
 					{levelhtml && (
@@ -424,6 +453,41 @@ function Exercises() {
 							<button
 								className="mt-6 text-slate-400 hover:text-cyan-400 transition-colors text-sm font-medium"
 								onClick={() => setleveltailwind(false)}
+							>
+								Close
+							</button>
+						</div>
+					)}
+
+					{/* Python Levels Modal */}
+					{levelpython && (
+						<div className="bg-slate-800 p-6 rounded-xl shadow-2xl transform transition-all duration-300 ease-in-out scale-100">
+							<div className="flex justify-center mb-6">
+								<img src={pythonIcon} alt="Python" className="w-16 h-16 drop-shadow-lg" />
+							</div>
+							<div className="flex flex-col gap-3 items-center">
+								<button 
+									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-600"
+									onClick={() => handleNavigateWithLoading('/exercises/python/beginner')}
+								>
+									Beginner
+								</button>
+								<button 
+									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-600"
+									onClick={() => handleNavigateWithLoading('/exercises/python/intermediate')}
+								>
+									Intermediate
+								</button>
+								<button 
+									className="btn1h w-48 py-2 text-white font-bold hover:bg-blue-600"
+									onClick={() => handleNavigateWithLoading('/exercises/python/advanced')}
+								>
+									Advanced
+								</button>
+							</div>
+							<button
+								className="mt-6 text-slate-400 hover:text-blue-400 transition-colors text-sm font-medium"
+								onClick={() => setlevelpython(false)}
 							>
 								Close
 							</button>

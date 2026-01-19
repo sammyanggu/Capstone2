@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../../AuthContext';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
 import { toast } from 'react-toastify';
@@ -499,6 +500,17 @@ export default function CssBeginner() {
                                         }}
                                     />
                                 </div>
+                            </div>
+
+                            {/* AI Feedback */}
+                            <div className="mt-4">
+                                <CodeFeedback 
+                                    code={userCode} 
+                                    language="css" 
+                                    exerciseId={currentExercise}
+                                    level="beginner"
+                                    task={exercises[currentExercise].task}
+                                />
                             </div>
 
                             {/* Submit and Solution Buttons */}

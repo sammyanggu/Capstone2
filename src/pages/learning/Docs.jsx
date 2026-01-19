@@ -3,11 +3,12 @@
 
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon } from '../../assets/icons/index.js';
+import { htmlIcon, cssIcon, jsIcon, phpIcon, bootstrapIcon, tailwindIcon, pythonIcon } from '../../assets/icons/index.js';
 
 function Tutorials() {
     const [progress, setProgress] = useState(() => {
-      // Example: load from localStorage or default
+      // Example: load from localStor
+      // age or default
       return JSON.parse(localStorage.getItem('htmlProgress') || '{"beginner":false,"intermediate":false,"advanced":false}')
     });
 
@@ -88,7 +89,19 @@ function Tutorials() {
                                 Learn More →
                             </button>
                         </Link>
-                        </div>
+                    </div>
+
+                    {/* Python */}
+                    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-400 transform hover:scale-[1.02] border border-gray-200">
+                        <img src={pythonIcon} alt="Python Logo" className="w-16 h-16 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold text-center text-blue-600 mb-3">Python</h3>
+                        <p className="text-blue-600 text-center mb-6">Complete guide to Python programming, from basics to advanced OOP concepts.</p>
+                        <Link to="/docs/python" className="block text-center">
+                            <button className="px-6 py-2 text-blue-600 hover:text-white border-2 border-blue-600 hover:bg-blue-600 rounded-full transition-colors font-bold">
+                                Learn More →
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

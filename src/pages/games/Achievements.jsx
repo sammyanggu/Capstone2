@@ -221,7 +221,7 @@ function Achievements() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              🏅 Achievements
+              ⭐ Achievements
             </h1>
             <p className="text-gray-300 text-lg md:text-xl">
               Unlock special achievements by completing challenges!

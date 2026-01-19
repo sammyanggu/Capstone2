@@ -19,5 +19,19 @@ export default defineConfig({
       }
     }
   },
-  base: '/'
+  base: '/',
+  // --- DAGDAG NA SETTINGS MULA DITO ---
+  build: {
+  // Pinapababa ang load sa memory sa pamamagitan ng pag-disable ng features na hindi kailangan sa dev build
+  minify: 'esbuild', // Mas mabilis at mas tipid sa RAM kaysa terser
+  cssCodeSplit: true,
+  rollupOptions: {
+    output: {
+      // Pinaghihiwalay ang malalaking chunks
+      manualChunks: (id) => {
+        if (id.includes('node_modules')) return 'vendor';
+      }
+    }
+  }
+}
 })

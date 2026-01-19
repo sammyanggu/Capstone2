@@ -26,6 +26,7 @@ import JavascriptTutorial from './pages/learning/docs/JavascriptTutorial'
 import PhpTutorial from './pages/learning/docs/PhpTutorial'
 import BootstrapTutorial from './pages/learning/docs/BootstrapTutorial'
 import TailwindTutorial from './pages/learning/docs/TailwindTutorial'
+import PythonTutorial from './pages/learning/docs/PythonTutorial'
 
 import HtmlBeginner from './pages/learning/exercises/html/HtmlBeginner'
 import HtmlIntermediate from './pages/learning/exercises/html/HtmlIntermediate'
@@ -39,6 +40,7 @@ import BootstrapAdvanced from './pages/learning/exercises/bootstrap/BootstrapAdv
 import TailwindBeginner from './pages/learning/exercises/tailwind/TailwindBeginner'
 import TailwindIntermediate from './pages/learning/exercises/tailwind/TailwindIntermediate'
 import TailwindAdvanced from './pages/learning/exercises/tailwind/TailwindAdvanced'
+import PythonExercise from './pages/learning/exercises/PythonExercise'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import Notifications from './pages/Notifications'
@@ -208,6 +210,12 @@ function AppContent() {
             <TailwindTutorial />
           </PrivateRoute>
         } />
+        {/* Python Documentation route, protected */}
+        <Route path="/docs/python" element={
+          <PrivateRoute user={currentUser}>
+            <PythonTutorial />
+          </PrivateRoute>
+        } />
         {/* Exercises routes, protected */}
         <Route path="/exercises" element={
           <PrivateRoute user={currentUser}>
@@ -242,6 +250,11 @@ function AppContent() {
         <Route path="/exercises/tailwind/:level" element={
           <PrivateRoute user={currentUser}>
             <TailwindExerciseRouter />
+          </PrivateRoute>
+        } />
+        <Route path="/exercises/python/:level" element={
+          <PrivateRoute user={currentUser}>
+            <PythonExercise />
           </PrivateRoute>
         } />
 

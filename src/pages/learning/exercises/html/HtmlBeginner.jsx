@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -18,6 +19,7 @@ export default function HtmlBeginner() {
     const [showError, setShowError] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [userCode, setUserCode] = useState('');
+    const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
     const isInitialLoadRef = useRef(true);
     const [isLoading, setIsLoading] = useState(true);
     
@@ -204,68 +206,66 @@ export default function HtmlBeginner() {
         }
     };
 
-    const handleCodeSubmit = () => {
-        // Clean up the code for comparison by removing whitespace and converting to lowercase
-        const cleanCode = (code) => {
-            return code.toLowerCase()
-                      .replace(/[\n\t\r]/g, '')
-                      .replace(/\s+/g, ' ')
-                      .trim();
-        };
+    const handleCodeSubmit = async () => {
+        const currentEx = exercises[currentExercise];
+        setShowError(false);
 
-        const userClean = cleanCode(userCode);
-        
-        // Check for required elements
-        const hasH1 = /<h1[^>]*>my\s*first\s*web\s*page<\/h1>/i.test(userClean);
-        const hasP = /<p[^>]*>welcome\s*to\s*my\s*website!?<\/p>/i.test(userClean);
-        const hasDocType = userClean.includes('<!doctype html>') || userClean.includes('<!DOCTYPE html>');
-        const hasHtmlStructure = userClean.includes('<html') && userClean.includes('</html>');
-        
-        // More lenient check if the strict check fails
-        const hasH1Lenient = userClean.includes('<h1') && userClean.includes('</h1') && 
-                            userClean.toLowerCase().includes('first') && userClean.toLowerCase().includes('web page');
-        const hasPLenient = userClean.includes('<p') && userClean.includes('</p') && 
-                           userClean.toLowerCase().includes('welcome') && userClean.toLowerCase().includes('website');
+        // Check if code is valid (contains required elements from task)
+        const codeContainsH1 = userCode.includes('<h1>') || userCode.includes('<H1>');
+        const codeContainsParagraph = userCode.includes('<p>') || userCode.includes('<P>');
+        const isValid = codeContainsH1 && codeContainsParagraph;
 
-        const correct = (hasH1 && hasP) || (hasH1Lenient && hasPLenient);
-
-        if (correct) {
-            setExerciseStatus(prev => ({...prev, [currentExercise]: true}));
+        if (isValid) {
+            // Code is correct
+            setExerciseStatus((prev) => ({ ...prev, [currentExercise]: true }));
             setShowCongrats(true);
+
             setTimeout(async () => {
                 setShowCongrats(false);
-                // Save code completion to Firebase when signed in
+
+                // Save to Firebase
                 if (currentUser?.uid) {
                     try {
                         const levelKey = `beginner-${currentExercise}`;
-                        const ok = await saveExerciseProgress(currentUser.uid, 'html', levelKey, userCode || '', true, 10);
+                        const ok = await saveExerciseProgress(
+                            currentUser.uid,
+                            'html',
+                            levelKey,
+                            userCode || '',
+                            true,
+                            10
+                        );
                         if (ok) {
-                            console.log('Saved code completion to Firebase for', levelKey);
-                            toast.success('Progress saved to your account.');
-                        } else {
-                            console.warn('Failed to save code completion to Firebase for', levelKey);
+                            console.log('Saved code completion for', levelKey);
+                            toast.success('Progress saved! 🎉');
                         }
                     } catch (err) {
-                        console.error('Error saving code completion to Firebase:', err);
-                        toast.error('Error saving progress to server');
+                        console.error('Error saving:', err);
+                        toast.error('Error saving progress');
                     }
                 }
 
+                // Move to next exercise
                 if (currentExercise < exercises.length - 1) {
                     const nextIndex = currentExercise + 1;
                     setCurrentExercise(nextIndex);
-                    // Save the new index to Firebase immediately
+
                     if (currentUser?.uid) {
                         try {
-                            await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', nextIndex);
-                            console.log(`✅ Saved new index ${nextIndex} to Firebase`);
+                            await saveCurrentExerciseIndex(
+                                currentUser.uid,
+                                'html',
+                                'beginner',
+                                nextIndex
+                            );
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+                            console.error('Error saving index:', err);
                         }
                     }
                 }
             }, 2000);
         } else {
+            // Code has issues - show error
             setShowError(true);
             setTimeout(() => setShowError(false), 2000);
         }
@@ -460,6 +460,15 @@ export default function HtmlBeginner() {
                                             onChange={setUserCode}
                                         />
                                     </div>
+                                    <div className="lg:col-span-1">
+                                        <CodeFeedback 
+                                            code={userCode}
+                                            language="html"
+                                            task={exercises[currentExercise].task}
+                                            exerciseId={`html-beginner-${currentExercise}`}
+                                            level="beginner"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Submit and Solution Buttons */}
@@ -481,12 +490,6 @@ export default function HtmlBeginner() {
                                         Show Solution
                                     </button>
                                 </div>
-
-                                {showError && (
-                                    <div className="mt-4 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded animate-shake">
-                                        <p>Not quite right! Make sure you've added both the heading and paragraph.</p>
-                                    </div>
-                                )}
 
                                 <div id="solution" className="hidden mt-4 bg-white rounded p-4 border border-gray-300">
                                     <pre className="text-gray-800 text-sm overflow-x-auto">

@@ -12,6 +12,7 @@ function HtmlExercise() {
   const [userCode, setUserCode] = useState(null);
   const saveTimeoutRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
   
   // Exercise content for different levels
   const exercises = {

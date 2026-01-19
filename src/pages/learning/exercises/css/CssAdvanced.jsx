@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
+import CodeFeedback from '../../../../components/CodeFeedback';
 import Confetti from '../../../../components/Confetti';
 import { useAuth } from '../../../../AuthContext';
 import { saveCurrentExerciseIndex, getCurrentExerciseIndex, saveExerciseProgress, getExerciseProgress } from '../../../../utils/progressTracker';
@@ -680,6 +681,17 @@ export default function CssAdvanced() {
                                         onChange={setUserCode}
                                     />
                                 </div>
+                            </div>
+
+                            {/* AI Feedback */}
+                            <div className="mt-4">
+                                <CodeFeedback 
+                                    code={userCode} 
+                                    language="css" 
+                                    exerciseId={currentExercise}
+                                    level="advanced"
+                                    task={exercises[currentExercise].task}
+                                />
                             </div>
 
                             {/* Submit and Solution Buttons */}

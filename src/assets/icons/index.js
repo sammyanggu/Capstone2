@@ -5,6 +5,7 @@ import js from './javascript.svg';
 import php from './php.svg';
 import bootstrap from './bootstrap.svg';
 import tailwind from './tailwindcss.svg';
+import python from './python.svg';
 
 // Export icons
 export const htmlIcon = html;
@@ -13,3 +14,4 @@ export const jsIcon = js;
 export const phpIcon = php;
 export const bootstrapIcon = bootstrap;
 export const tailwindIcon = tailwind;
+export const pythonIcon = python;
