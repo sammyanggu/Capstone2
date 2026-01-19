@@ -254,8 +254,8 @@ export default function PythonBeginner() {
           </div>
         </div>
       )}
-      
-      <div className="container mx-auto px-4 py-4 max-w-4xl">
+
+      <div className="container mx-auto px-4 py-4 max-w-7xl">
         <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
           <h1 className="text-xl font-bold text-emerald-600 mb-3">Python Beginner Exercises</h1>
           
@@ -300,56 +300,62 @@ export default function PythonBeginner() {
                   <h3 className="text-lg font-semibold text-emerald-600 mb-3">Your Task:</h3>
                   <p className="text-gray-700 mb-4">{currentExerciseData.task}</p>
                   
-                  {/* Code Editor */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden">
-                      <div className="p-3 flex gap-2 items-center bg-slate-800 border-b border-slate-700/50">
-                        <button
-                          className="px-3 py-1 bg-slate-600 text-white rounded text-sm hover:bg-slate-700 transition-colors"
-                          onClick={() => setUserCode('')}
-                        >
-                          Clear Code
-                        </button>
+                  {/* Code Editor and Output with AI Feedback */}
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    {/* Left Column: Code Editor */}
+                    <div className="lg:col-span-2">
+                      <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 overflow-hidden h-full flex flex-col">
+                        <div className="p-3 flex gap-2 items-center bg-slate-800 border-b border-slate-700/50">
+                          <button
+                            className="px-3 py-1 bg-slate-600 text-white rounded text-sm hover:bg-slate-700 transition-colors"
+                            onClick={() => setUserCode('')}
+                          >
+                            Clear Code
+                          </button>
+                        </div>
+                        {/* Code Editor Header */}
+                        <div className="bg-slate-800 px-4 py-2 text-slate-300 text-sm border-b border-slate-700 flex justify-between items-center">
+                          <span>Code Editor</span>
+                        </div>
+                        {/* Code Editor Area */}
+                        <textarea
+                          value={userCode || currentExerciseData.initialCode}
+                          onChange={(e) => {
+                            setUserCode(e.target.value);
+                            setShowError(false);
+                          }}
+                          className="flex-1 p-4 font-mono text-sm bg-slate-800 text-white border-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          style={{
+                            resize: 'none',
+                            overflowY: 'auto',
+                            maxWidth: '100%',
+                            whiteSpace: 'pre',
+                            wordWrap: 'normal',
+                            overflowX: 'auto',
+                            minHeight: '400px'
+                          }}
+                          spellCheck="false"
+                        />
                       </div>
-                      {/* Code Editor Header */}
-                      <div className="bg-slate-800 px-4 py-2 text-slate-300 text-sm border-b border-slate-700 flex justify-between items-center">
-                        <span>Code Editor</span>
+                    </div>
+
+                    {/* Middle Column: Output Display */}
+                    <div className="lg:col-span-1">
+                      <div className="h-full flex flex-col">
+                        <PythonCodeExecutor code={userCode} />
                       </div>
-                      {/* Code Editor Area */}
-                      <textarea
-                        value={userCode || currentExerciseData.initialCode}
-                        onChange={(e) => {
-                          setUserCode(e.target.value);
-                          setShowError(false);
-                        }}
-                        className="w-full h-64 p-3 font-mono text-sm bg-slate-800 text-white border-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        style={{
-                          resize: 'none',
-                          overflowY: 'auto',
-                          maxWidth: '100%',
-                          whiteSpace: 'pre',
-                          wordWrap: 'normal',
-                          overflowX: 'auto'
-                        }}
-                        spellCheck="false"
+                    </div>
+
+                    {/* Right Column: AI Feedback */}
+                    <div className="lg:col-span-1">
+                      <CodeFeedback 
+                        code={userCode} 
+                        language="python" 
+                        task={currentExerciseData.task}
+                        exerciseId={currentExercise}
+                        level="beginner"
                       />
                     </div>
-
-                    {/* Output Display */}
-                    <div>
-                      <PythonCodeExecutor code={userCode} />
-                    </div>
-                  </div>
-
-                  {/* AI Feedback Component */}
-                  <div className="mt-4">
-                    <CodeFeedback 
-                      code={userCode} 
-                      language="python" 
-                      task={currentExerciseData.task}
-                      exerciseId={currentExercise}
-                      level="beginner"
-                    />
                   </div>
 
                   {/* Submit and Solution Buttons */}
