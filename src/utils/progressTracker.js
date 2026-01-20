@@ -437,7 +437,6 @@ export const getLessonStats = async (userId) => {
     const allProgress = snapshot.val();
     let totalLessons = 0;
     let completedLessons = 0;
-    let totalProgress = 0;
     const byCategory = {};
 
     Object.keys(allProgress).forEach(category => {
@@ -451,23 +450,27 @@ export const getLessonStats = async (userId) => {
       Object.values(lessons).forEach(lessonData => {
         totalLessons++;
         byCategory[category].total++;
-        totalProgress += lessonData.progressPercent || 0;
 
         if (lessonData.isCompleted) {
           completedLessons++;
           byCategory[category].completed++;
         }
-
-        byCategory[category].averageProgress =
-          (byCategory[category].averageProgress + (lessonData.progressPercent || 0)) /
-          (byCategory[category].total || 1);
       });
+
+      // Calculate category progress based on percentage of lessons completed
+      byCategory[category].averageProgress = 
+        byCategory[category].total > 0 
+          ? Math.round((byCategory[category].completed / byCategory[category].total) * 100)
+          : 0;
     });
+
+    // Calculate overall progress based on percentage of lessons completed (not average of progress)
+    const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
     return {
       totalLessons,
       completedLessons,
-      averageProgress: totalLessons > 0 ? Math.round(totalProgress / totalLessons) : 0,
+      averageProgress: overallProgress,
       byCategory
     };
   } catch (error) {

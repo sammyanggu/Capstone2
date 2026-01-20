@@ -10,7 +10,8 @@ const Confetti = ({ duration = 3000 }) => {
     canvas.height = window.innerHeight;
 
     const confetti = [];
-    const confettiPieces = 100;
+    // Reduce confetti pieces on small screens for better performance
+    const confettiPieces = window.innerWidth < 768 ? 50 : 100;
 
     // Create confetti pieces
     for (let i = 0; i < confettiPieces; i++) {

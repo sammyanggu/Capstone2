@@ -329,6 +329,13 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
         height: '100%',
         width: '100%',
         videoId: video.videoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 1,
+          'modestbranding': 1,
+          'rel': 0,
+          'fs': 1
+        },
         events: {
           onReady: onPlayerReady,
           onStateChange: onPlayerStateChange
@@ -347,6 +354,13 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
           height: '100%',
           width: '100%',
           videoId: video.videoId,
+          playerVars: {
+            'autoplay': 0,
+            'controls': 1,
+            'modestbranding': 1,
+            'rel': 0,
+            'fs': 1
+          },
           events: {
             onReady: onPlayerReady,
             onStateChange: onPlayerStateChange
@@ -409,30 +423,30 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
 
   return (
     <div 
-      className="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-2 sm:p-4"
       onClick={handleClose}
     >
       {/* Close button - positioned fixed to viewport, not relative to modal */}
       <button 
         onClick={handleClose}
-        className="fixed top-4 right-4 z-[250] text-white/80 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all"
+        className="fixed top-2 right-2 sm:top-4 sm:right-4 z-[250] text-white/80 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
       <div 
-        className="relative w-full max-w-3xl bg-slate-900 rounded-lg overflow-hidden"
+        className="relative w-full max-w-4xl bg-slate-900 rounded-lg overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="aspect-video w-full">
+        <div className="aspect-video w-full flex-shrink-0">
           <div ref={iframeRef} className="w-full h-full"></div>
         </div>
         
         {/* Video Info and Complete Button */}
-        <div className="bg-slate-800 p-4 border-t border-slate-700">
-          <h3 className="text-white font-semibold mb-2">{video.title}</h3>
-          <p className="text-gray-300 text-sm mb-4">{video.description}</p>
+        <div className="bg-slate-800 p-3 sm:p-4 border-t border-slate-700 overflow-y-auto flex-1">
+          <h3 className="text-white font-semibold mb-2 text-base sm:text-lg">{video.title}</h3>
+          <p className="text-gray-300 text-xs sm:text-sm mb-4">{video.description}</p>
           
           {/* Progress Bar */}
           <div className="mb-4">
@@ -452,14 +466,14 @@ function VideoPlayer({ video, onClose, onComplete, progress = 0, user, category 
           {currentProgress < 100 && (
             <button
               onClick={() => onComplete(video.id, video.title)}
-              className="w-full py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all"
+              className="w-full py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all text-sm sm:text-base"
             >
               ✓ Mark as Complete
             </button>
           )}
           
           {currentProgress >= 100 && (
-            <div className="w-full py-2 bg-emerald-600 text-white font-semibold rounded-lg text-center">
+            <div className="w-full py-2 bg-emerald-600 text-white font-semibold rounded-lg text-center text-sm sm:text-base">
               ✓ Completed ({currentProgress}%)
             </div>
           )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../../../firebase';
+import { auth, db } from '../../../firebase';
 import { Link } from 'react-router-dom';
+import { ref, onValue } from 'firebase/database';
 import { getCategoryLessonProgress } from '../../../utils/progressTracker';
 
 // Import SVG assets
@@ -195,24 +196,43 @@ function Lessons() {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Load progress for all categories
-        try {
-          const progressData = {};
-          const categoryKeys = ['html', 'css', 'javascript', 'php', 'bootstrap', 'tailwind'];
-          
-          for (const category of categoryKeys) {
-            const progress = await getCategoryLessonProgress(firebaseUser.uid, category);
-            if (progress) {
-              progressData[category] = progress;
+        // Function to load progress
+        const loadProgress = async () => {
+          try {
+            const progressData = {};
+            const categoryKeys = ['html', 'css', 'javascript', 'php', 'bootstrap', 'tailwind'];
+            
+            for (const category of categoryKeys) {
+              const progress = await getCategoryLessonProgress(firebaseUser.uid, category);
+              console.log(`📂 Fetching progress for ${category}:`, progress);
+              if (progress) {
+                progressData[category] = progress;
+                console.log(`✅ ${category} progress loaded:`, progress);
+              } else {
+                console.log(`⚠️ ${category} has no progress data`);
+              }
             }
+            
+            console.log('📊 All category progress:', progressData);
+            setCategoryProgress(progressData);
+          } catch (error) {
+            console.error('Error loading progress:', error);
           }
-          
-          setCategoryProgress(progressData);
-        } catch (error) {
-          console.error('Error loading progress:', error);
-        }
+        };
+
+        // Initial load
+        await loadProgress();
         
+        // Set up real-time listener for lesson progress changes
+        const lessonsRef = ref(db, `users/${firebaseUser.uid}/progress/lessons`);
+        const unsubscribeListener = onValue(lessonsRef, (snapshot) => {
+          console.log('Lessons data updated from Firebase');
+          loadProgress();
+        });
+
         setLoading(false);
+        
+        return () => unsubscribeListener();
       }
     });
     return () => unsubscribe();
@@ -264,15 +284,24 @@ function Lessons() {
                     <div className="flex-1 h-2.5 bg-gray-300 rounded-full overflow-hidden">
                       {(() => {
                         const progress = categoryProgress[key];
-                        let avgProgress = 0;
+                        const categoryTotals = { html: 3, css: 3, javascript: 3, php: 3, bootstrap: 3, tailwind: 3 };
+                        const totalVideos = categoryTotals[key] || 3;
+                        let averageProgress = 0;
+                        
                         if (progress) {
-                          const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
-                          avgProgress = Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length);
+                          // Calculate sum of all tracked lesson progress
+                          const lessonArray = Object.values(progress);
+                          const totalProgress = lessonArray.reduce((sum, lesson) => sum + (lesson.progressPercent || 0), 0);
+                          
+                          // Divide by TOTAL videos in category, not just tracked ones
+                          // Untracked videos count as 0%
+                          averageProgress = Math.round(totalProgress / totalVideos);
                         }
+                        
                         return (
                           <div 
                             className={`h-full ${category.color.replace('text', 'bg')}`} 
-                            style={{ width: `${avgProgress}%` }}
+                            style={{ width: `${averageProgress}%` }}
                           ></div>
                         );
                       })()}
@@ -280,9 +309,21 @@ function Lessons() {
                     <span className="text-sm text-gray-600 font-medium">
                       {(() => {
                         const progress = categoryProgress[key];
-                        if (!progress) return '0%';
-                        const progressValues = Object.values(progress).map(p => p.progressPercent || 0);
-                        return Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length) + '%';
+                        const categoryTotals = { html: 3, css: 3, javascript: 3, php: 3, bootstrap: 3, tailwind: 3 };
+                        const totalVideos = categoryTotals[key] || 3;
+                        let averageProgress = 0;
+                        
+                        if (progress) {
+                          // Calculate sum of all tracked lesson progress
+                          const lessonArray = Object.values(progress);
+                          const totalProgress = lessonArray.reduce((sum, lesson) => sum + (lesson.progressPercent || 0), 0);
+                          
+                          // Divide by TOTAL videos in category, not just tracked ones
+                          // Untracked videos count as 0%
+                          averageProgress = Math.round(totalProgress / totalVideos);
+                        }
+                        
+                        return `${averageProgress}%`;
                       })()}
                     </span>
                   </div>

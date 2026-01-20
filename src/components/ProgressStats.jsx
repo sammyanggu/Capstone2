@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getCompletionStats, getLessonStats } from '../utils/progressTracker';
+import { db } from '../firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const ProgressStats = ({ userId }) => {
   const [exerciseStats, setExerciseStats] = useState(null);
@@ -26,19 +28,51 @@ const ProgressStats = ({ userId }) => {
 
     if (userId) {
       fetchStats();
+      
+      // Set up real-time listener for user progress in Firebase
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const unsubscribe = onSnapshot(userDocRef, (doc) => {
+          if (doc.exists()) {
+            // Refresh stats whenever user document changes
+            fetchStats();
+          }
+        }, (error) => {
+          console.error('Error setting up real-time listener:', error);
+        });
+        
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error setting up Firebase listener:', error);
+      }
     }
+  }, [userId]);
 
-    // Listen for progress updates so we can refresh stats automatically
+  // Also listen for custom progress-updated events for immediate UI updates
+  useEffect(() => {
     const handler = (e) => {
       try {
         const detail = e?.detail || {};
         if (!detail || !detail.userId) {
-          // If no userId provided, just refresh
-          fetchStats();
           return;
         }
         if (detail.userId === userId) {
-          fetchStats();
+          // Small delay to ensure Firebase has been updated
+          setTimeout(() => {
+            const fetchStats = async () => {
+              try {
+                const [exercises, lessons] = await Promise.all([
+                  getCompletionStats(userId),
+                  getLessonStats(userId)
+                ]);
+                setExerciseStats(exercises);
+                setLessonStats(lessons);
+              } catch (error) {
+                console.error('Error updating stats:', error);
+              }
+            };
+            fetchStats();
+          }, 500);
         }
       } catch (err) {
         console.error('Error handling progress-updated event:', err);
@@ -46,10 +80,7 @@ const ProgressStats = ({ userId }) => {
     };
 
     window.addEventListener('progress-updated', handler);
-
-    return () => {
-      window.removeEventListener('progress-updated', handler);
-    };
+    return () => window.removeEventListener('progress-updated', handler);
   }, [userId]);
 
   if (loading) {

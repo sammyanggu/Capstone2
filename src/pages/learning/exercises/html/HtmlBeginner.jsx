@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
 import CodeFeedback from '../../../../components/CodeFeedback';
+import WrongAnswerModal from '../../../../components/WrongAnswerModal';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -396,6 +397,12 @@ export default function HtmlBeginner() {
                                             <p>Wrong Answer! Try again.</p>
                                         </div>
                                     )}
+                                    
+                                    <WrongAnswerModal 
+                                        isOpen={showError} 
+                                        onClose={() => setShowError(false)}
+                                        message="Incorrect! Please try again."
+                                    />
                                     
                                     {exerciseStatus[currentExercise] && (
                                         <div className="mt-4 bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded">

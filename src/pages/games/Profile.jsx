@@ -66,8 +66,8 @@ function GameProfile() {
           setQuizProgressData(progressData);
 
           const distribution = [
-            { name: '80-90', value: 35, fill: '#8b5cf6' },
-            { name: '90-100', value: 65, fill: '#ec4899' }
+            { name: '80-90', value: 35, fill: '#8b5cf6', quizCount: 7 },
+            { name: '90-100', value: 65, fill: '#ec4899', quizCount: 13 }
           ];
           setScoreDistribution(distribution);
         }
@@ -205,21 +205,25 @@ function GameProfile() {
             <div className="space-y-6">
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-purple-500/30">
+                <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-purple-500/30 group cursor-help" title="Total number of quizzes you have completed">
                   <p className="text-purple-400 text-xs sm:text-sm mb-1 sm:mb-2">Quizzes Completed</p>
                   <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizzesCompleted}</p>
+                  <p className="text-xs text-slate-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Total quizzes attempted</p>
                 </div>
-                <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-pink-500/30">
+                <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-pink-500/30 group cursor-help" title="Your average or last quiz score out of 100">
                   <p className="text-pink-400 text-xs sm:text-sm mb-1 sm:mb-2">Quiz Score</p>
                   <p className="text-2xl sm:text-3xl font-bold text-white">{profile.quizScore}</p>
+                  <p className="text-xs text-slate-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Score out of 100</p>
                 </div>
-                <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-blue-500/30">
+                <div className="bg-gradient-to-br from-blue-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-blue-500/30 group cursor-help" title="Your position on the leaderboard based on quiz performance">
                   <p className="text-blue-400 text-xs sm:text-sm mb-1 sm:mb-2">Your Rank</p>
                   <p className="text-2xl sm:text-3xl font-bold text-white">#{profile.rank || '-'}</p>
+                  <p className="text-xs text-slate-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Leaderboard position</p>
                 </div>
-                <div className="bg-gradient-to-br from-orange-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-orange-500/30">
+                <div className="bg-gradient-to-br from-orange-900/40 to-slate-900 rounded-lg p-3 sm:p-4 md:p-6 border border-orange-500/30 group cursor-help" title="Special achievements earned from quizzes and challenges">
                   <p className="text-orange-400 text-xs sm:text-sm mb-1 sm:mb-2">Achievements</p>
                   <p className="text-2xl sm:text-3xl font-bold text-white">{profile.achievements}</p>
+                  <p className="text-xs text-slate-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Badges unlocked</p>
                 </div>
               </div>
 
@@ -227,25 +231,35 @@ function GameProfile() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Quiz Progress Chart */}
                 <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-purple-500/30">
-                  <h3 className="text-lg font-bold text-white mb-4">📊 Quiz Progress</h3>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold text-white mb-2">📊 Quiz Progress</h3>
+                    <p className="text-sm text-slate-300">Your quiz scores over time - Shows how you're improving across attempts</p>
+                  </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={quizProgressData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#404854" />
-                      <XAxis stroke="#9ca3af" />
-                      <YAxis stroke="#9ca3af" />
+                      <XAxis stroke="#9ca3af" label={{ value: 'Quiz Number', position: 'insideBottomRight', offset: -5, fill: '#9ca3af' }} />
+                      <YAxis stroke="#9ca3af" label={{ value: 'Score', angle: -90, position: 'insideLeft', fill: '#9ca3af' }} />
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
                         labelStyle={{ color: '#fff' }}
+                        formatter={(value) => [`${value} points`, 'Score']}
                       />
                       <Legend />
-                      <Line type="monotone" dataKey="score" stroke="#a78bfa" strokeWidth={2} name="Score" />
+                      <Line type="monotone" dataKey="score" stroke="#a78bfa" strokeWidth={2} name="Score" dot={{ fill: '#a78bfa', r: 4 }} />
                     </LineChart>
                   </ResponsiveContainer>
+                  <div className="mt-3 text-xs text-slate-400">
+                    💡 Tip: Your score progress helps you track improvement. Higher scores mean better mastery!
+                  </div>
                 </div>
 
                 {/* Score Distribution Chart */}
                 <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-pink-500/30">
-                  <h3 className="text-lg font-bold text-white mb-4">📈 Score Distribution</h3>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold text-white mb-2">📈 Score Distribution</h3>
+                    <p className="text-sm text-slate-300">Breakdown of how many quizzes you scored in each range</p>
+                  </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
@@ -253,7 +267,7 @@ function GameProfile() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}%`}
+                        label={({ name, value }) => `${name}: ${value}%`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
@@ -265,9 +279,20 @@ function GameProfile() {
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
                         labelStyle={{ color: '#fff' }}
+                        formatter={(value) => [`${value}%`, 'Percentage']}
                       />
                     </PieChart>
                   </ResponsiveContainer>
+                  <div className="mt-3 text-xs text-slate-400">
+                    <div className="space-y-1">
+                      {scoreDistribution.map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.fill }}></div>
+                          <span>{item.name}: {item.quizCount} quiz{item.quizCount !== 1 ? 'zes' : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
