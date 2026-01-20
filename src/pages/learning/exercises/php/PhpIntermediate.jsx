@@ -447,23 +447,21 @@ echo "File operations example";
                     </div>
                 </div>
 
-                {showCongrats && (
-                    <>
-                        <Confetti duration={3000} />
-                        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 pointer-events-none" />
-                        <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
-                            <div className="text-center">
-                                <h1 className="text-6xl font-bold text-emerald-600 mb-4">🎉 Congratulations! 🎉</h1>
-                                <p className="text-3xl text-white">You've completed this exercise!</p>
-                                {currentExercise < exercises.length - 1 && (
-                                    <p className="text-xl text-white mt-4">Moving to next exercise...</p>
-                                )}
-                            </div>
+            {showCongrats && (
+                <>
+                    <Confetti duration={3000} />
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 pointer-events-none" />
+                    <div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
+                        <div className="text-center px-4">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-emerald-600 mb-2 sm:mb-4">🎉 Congratulations! 🎉</h1>
+                            <p className="text-lg sm:text-2xl md:text-3xl text-white">You've completed this exercise!</p>
+                            {currentExercise < exercises.length - 1 && (
+                                <p className="text-sm sm:text-base md:text-lg text-white mt-2 sm:mt-4">Moving to next exercise...</p>
+                            )}
                         </div>
-                    </>
-                )}
-
-                {/* Exercise Locked Modal */}
+                    </div>
+                </>
+            )}                {/* Exercise Locked Modal */}
                 {lockedExerciseIndex !== null && (
                     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-orange-500 max-w-sm">

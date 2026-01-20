@@ -61,7 +61,7 @@ const EXERCISE_RULES = {
   }
 };
 
-export function generateSmartFeedback(code, language, exerciseId, level, task) {
+export function generateSmartFeedback(code, language, exerciseId, level, task, correctAnswer = '') {
   const trimmedCode = code.trim();
 
   // 1. CODE IS EMPTY
@@ -86,8 +86,8 @@ export function generateSmartFeedback(code, language, exerciseId, level, task) {
     };
   }
 
-  // 3. ANALYZE CODE STATE
-  const codeAnalysis = analyzeCode(trimmedCode, language, exerciseId, level, task);
+  // 3. ANALYZE CODE STATE (pass correctAnswer for better typo detection)
+  const codeAnalysis = analyzeCode(trimmedCode, language, exerciseId, level, task, correctAnswer);
 
   // 4. GENERATE CONDITIONAL FEEDBACK
   if (codeAnalysis.isCorrect) {
@@ -133,7 +133,7 @@ export function generateSmartFeedback(code, language, exerciseId, level, task) {
     return {
       type: 'syntax',
       feedback: [
-        `⚠️ Spelling/Typo Error: ${codeAnalysis.typoError}`,
+        `⚠️ Spelling Error: ${codeAnalysis.typoError}`,
         langSpecificTypo || '✨ Fix the typo and your code will work!'
       ].filter(Boolean).join('\n\n'),
       shouldShow: true
@@ -178,21 +178,21 @@ export function generateSmartFeedback(code, language, exerciseId, level, task) {
 /**
  * Analyze code and return detailed analysis
  */
-function analyzeCode(code, language, exerciseId, level, task) {
+function analyzeCode(code, language, exerciseId, level, task, correctAnswer = '') {
   const codeLower = code.toLowerCase();
   const codeWords = code.split(/\s+/);
 
   // Language-specific analysis
   if (language === 'python') {
-    return analyzePythonCode(code, codeLower, exerciseId, level, task);
-  } else if (language === 'html') {
-    return analyzeHtmlCode(code, codeLower, exerciseId, level, task);
+    return analyzePythonCode(code, codeLower, exerciseId, level, task, correctAnswer);
+  } else if (language === 'html' || language === 'bootstrap') {
+    return analyzeHtmlCode(code, codeLower, exerciseId, level, task, correctAnswer);
   } else if (language === 'css' || language === 'tailwind') {
-    return analyzeCssCode(code, codeLower, exerciseId, level, task);
+    return analyzeCssCode(code, codeLower, exerciseId, level, task, correctAnswer);
   } else if (language === 'javascript') {
-    return analyzeJavaScriptCode(code, codeLower, exerciseId, level, task);
+    return analyzeJavaScriptCode(code, codeLower, exerciseId, level, task, correctAnswer);
   } else if (language === 'php') {
-    return analyzePhpCode(code, codeLower, exerciseId, level, task);
+    return analyzePhpCode(code, codeLower, exerciseId, level, task, correctAnswer);
   }
 
   return {
@@ -366,7 +366,7 @@ function extractTaskRequirements(task, language, code) {
 /**
  * Python Code Analysis - Enhanced with Typo Detection
  */
-function analyzePythonCode(code, codeLower, exerciseId, level, task) {
+function analyzePythonCode(code, codeLower, exerciseId, level, task, correctAnswer = '') {
   const analysis = {
     isCorrect: false,
     isIncomplete: false,
@@ -454,7 +454,7 @@ function analyzePythonCode(code, codeLower, exerciseId, level, task) {
 /**
  * HTML Code Analysis - Enhanced with Typo Detection & Task-Aware Suggestions
  */
-function analyzeHtmlCode(code, codeLower, exerciseId, level, task) {
+function analyzeHtmlCode(code, codeLower, exerciseId, level, task, correctAnswer = '') {
   const analysis = {
     isCorrect: false,
     isIncomplete: false,
@@ -469,7 +469,25 @@ function analyzeHtmlCode(code, codeLower, exerciseId, level, task) {
 
   const taskLower = task.toLowerCase();
 
-  // Check for common typos in HTML attributes and content FIRST
+  // CHECK FOR SYNTAX ERRORS FIRST (spaces in tags, malformed tags)
+  const syntaxErrors = checkHtmlSyntaxErrors(code);
+  if (syntaxErrors.found) {
+    analysis.hasSyntaxError = true;
+    analysis.syntaxError = syntaxErrors.message;
+    return analysis;
+  }
+
+  // CHECK FOR TYPOS BASED ON CORRECT ANSWER
+  if (correctAnswer) {
+    const typoFromCorrect = detectTyposFromCorrectAnswer(code, correctAnswer);
+    if (typoFromCorrect.found) {
+      analysis.hasTypoError = true;
+      analysis.typoError = typoFromCorrect.message;
+      return analysis;
+    }
+  }
+
+  // Check for common typos in HTML attributes and content
   const commonHtmlTypos = {
     'webbsite': 'website',
     'webssite': 'website',
@@ -528,6 +546,150 @@ function analyzeHtmlCode(code, codeLower, exerciseId, level, task) {
   }
 
   return analysis;
+}
+
+/**
+ * Detect typos by comparing against the correct answer
+ * Extract key content words and check if they match
+ */
+function detectTyposFromCorrectAnswer(code, correctAnswer) {
+  if (!correctAnswer) return { found: false };
+
+  // Extract all text content from code and correct answer (ignore tags)
+  const extractTextContent = (str) => {
+    return str.replace(/<[^>]*>/g, '').toLowerCase().trim();
+  };
+
+  const codeText = extractTextContent(code);
+  const correctText = extractTextContent(correctAnswer);
+
+  // If texts match exactly, no typo
+  if (codeText === correctText) {
+    return { found: false };
+  }
+
+  // Split into words and find differences
+  const codeWords = codeText.split(/\s+/).filter(w => w);
+  const correctWords = correctText.split(/\s+/).filter(w => w);
+
+  // Check if any words from code don't match correct words (close match with typos)
+  for (const codeWord of codeWords) {
+    for (const correctWord of correctWords) {
+      // If words are similar but not exact (possible typo)
+      if (codeWord !== correctWord && isSimilarWord(codeWord, correctWord)) {
+        return {
+          found: true,
+          message: `Did you mean "${correctWord}" instead of "${codeWord}"?`
+        };
+      }
+    }
+  }
+
+  // Check for missing words
+  const missingWords = correctWords.filter(word => !codeWords.includes(word));
+  if (missingWords.length > 0 && missingWords.length <= 2) {
+    return {
+      found: true,
+      message: `You're missing the word: "${missingWords[0]}"`
+    };
+  }
+
+  return { found: false };
+}
+
+/**
+ * Check if two words are similar (within 2 character differences)
+ */
+function isSimilarWord(word1, word2) {
+  if (word1 === word2) return false;
+  if (Math.abs(word1.length - word2.length) > 2) return false;
+
+  let differences = 0;
+  const maxLen = Math.max(word1.length, word2.length);
+
+  for (let i = 0; i < maxLen; i++) {
+    if ((word1[i] || '') !== (word2[i] || '')) {
+      differences++;
+    }
+  }
+
+  return differences <= 2;
+}
+
+/**
+ * Check for strict HTML syntax errors like spaces in tags
+ */
+function checkHtmlSyntaxErrors(code) {
+  // Check for spaces before tag name or closing bracket: < div>, <p >, <div />, etc.
+  const spacedTagRegex = /<\s+\w+|<\/\s+\w+|<\w+\s*>/g;
+  const spaceMatches = code.match(/<\s+\w+/g) || [];
+  if (spaceMatches.length > 0) {
+    return {
+      found: true,
+      message: `⚠️ HTML Syntax Error: Remove spaces after '<'. For example, use <p> instead of "< p>" or "<p >".\n✨ Tags must be written without spaces between the angle bracket and tag name.`
+    };
+  }
+
+  // Check for spaces in closing tags: </ div>, </ p>
+  const closeSpaceMatches = code.match(/<\/\s+\w+/g) || [];
+  if (closeSpaceMatches.length > 0) {
+    return {
+      found: true,
+      message: `⚠️ HTML Syntax Error: Remove spaces in closing tags. For example, use </p> instead of "</ p>".\n✨ Closing tags must be written without spaces.`
+    };
+  }
+
+  // Check for spaces before closing bracket in attributes or tag: <div class = "container">
+  const attrSpaceRegex = /\s+\s+=/g;
+  if (code.match(attrSpaceRegex)) {
+    return {
+      found: true,
+      message: `⚠️ HTML Syntax Error: Remove extra spaces in attributes. Use <div class="container"> instead of "< div class = 'container'>".\n✨ Attributes should not have spaces around the equals sign.`
+    };
+  }
+
+  // Check for invalid tag names (common misspellings like <divv>, <pp>, etc.)
+  const commonMisspelledTags = {
+    '<divv>': '<div>',
+    '<diiv>': '<div>',
+    '<pp>': '<p>',
+    '<ppp>': '<p>',
+    '<hh>': '<h1>',
+    '<hhh>': '<h1>',
+    '<headerr>': '<header>',
+    '<footerr>': '<footer>',
+    '<sectino>': '<section>',
+    '<articel>': '<article>',
+    '<navv>': '<nav>',
+    '<asidee>': '<aside>',
+    '<maiiin>': '<main>',
+    '<formm>': '<form>',
+    '<tabble>': '<table>',
+    '<ttr>': '<tr>',
+    '<td>': '<td>', // Already correct
+    '<thh>': '<th>'
+  };
+
+  for (const [misspelled, correct] of Object.entries(commonMisspelledTags)) {
+    if (code.includes(misspelled)) {
+      return {
+        found: true,
+        message: `⚠️ HTML Spelling Error: Did you mean "${correct}" instead of "${misspelled}"?\n✨ Check your tag spelling carefully.`
+      };
+    }
+  }
+
+  // Check for quotes consistency (mixing " and ')
+  const singleQuoteAttrs = code.match(/\s+\w+='[^']*'/g) || [];
+  const doubleQuoteAttrs = code.match(/\s+\w+="[^"]*"/g) || [];
+  if (singleQuoteAttrs.length > 0 && doubleQuoteAttrs.length > 0) {
+    return {
+      found: true,
+      message: `⚠️ HTML Syntax Error: Mix single (') and double (") quotes inconsistently in attributes.\n✨ Use either all single quotes or all double quotes throughout your code.`
+    };
+  }
+
+  return { found: false };
 }
 
 /**
@@ -618,9 +780,67 @@ function getHintForTag(tag) {
 }
 
 /**
+ * Check for strict CSS syntax errors
+ */
+function checkCssSyntaxErrors(code) {
+  // Check for missing colons in property declarations
+  const propWithoutColon = code.match(/(\w+)[\s]*(?!:)[\s]*[a-zA-Z0-9#\-]/g);
+  const lines = code.split('\n');
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Skip empty lines, comments, and selectors
+    if (!line || line.startsWith('/*') || line.startsWith('*') || line.startsWith('//') || line.includes('{') || line.includes('}')) {
+      continue;
+    }
+    
+    // Check if line looks like a property (has value) but missing colon
+    if (line && !line.includes(':') && !line.includes(';') && line.match(/[\w\-]+\s+[\w\-#0-9]/)) {
+      return {
+        found: true,
+        message: `⚠️ CSS Syntax Error: Missing colon (:) in property declaration.\n✨ CSS properties need a colon like: "color: blue;" or "padding: 10px;"`
+      };
+    }
+    
+    // Check for missing semicolon at end of property (but allow last property before closing brace)
+    if (line.includes(':') && !line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}')) {
+      const nextLine = i + 1 < lines.length ? lines[i + 1].trim() : '';
+      if (!nextLine.startsWith('}') && nextLine) {
+        return {
+          found: true,
+          message: `⚠️ CSS Syntax Error: Missing semicolon (;) at end of property.\n✨ Each CSS property declaration must end with a semicolon: "color: blue;"`
+        };
+      }
+    }
+  }
+
+  // Check for unmatched braces
+  const openBraces = (code.match(/{/g) || []).length;
+  const closeBraces = (code.match(/}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    return {
+      found: true,
+      message: `⚠️ CSS Syntax Error: Mismatched curly braces { }.\n✨ Make sure every opening brace has a closing brace.`
+    };
+  }
+
+  // Check for common spacing errors in property values (e.g., "10 px" instead of "10px")
+  const spacedUnitMatch = code.match(/[\d]\s+(px|em|rem|%|pt|cm|mm)/gi);
+  if (spacedUnitMatch) {
+    return {
+      found: true,
+      message: `⚠️ CSS Syntax Error: Space between number and unit detected.\n✨ Use "10px" instead of "10 px" - no space between value and unit.`
+    };
+  }
+
+  return { found: false };
+}
+
+/**
  * CSS Code Analysis - Enhanced with Task-Aware Detection
  */
-function analyzeCssCode(code, codeLower, exerciseId, level, task) {
+function analyzeCssCode(code, codeLower, exerciseId, level, task, correctAnswer = '') {
   const analysis = {
     isCorrect: false,
     isIncomplete: false,
@@ -634,6 +854,24 @@ function analyzeCssCode(code, codeLower, exerciseId, level, task) {
   };
 
   const taskLower = task.toLowerCase();
+
+  // CHECK FOR SYNTAX ERRORS FIRST (missing colons, semicolons, braces)
+  const cssSyntaxErrors = checkCssSyntaxErrors(code);
+  if (cssSyntaxErrors.found) {
+    analysis.hasSyntaxError = true;
+    analysis.syntaxError = cssSyntaxErrors.message;
+    return analysis;
+  }
+
+  // CHECK FOR TYPOS BASED ON CORRECT ANSWER
+  if (correctAnswer) {
+    const typoFromCorrect = detectTyposFromCorrectAnswer(code, correctAnswer);
+    if (typoFromCorrect.found) {
+      analysis.hasTypoError = true;
+      analysis.typoError = typoFromCorrect.message;
+      return analysis;
+    }
+  }
 
   // Check for common CSS typos
   const commonCssTypos = {
@@ -743,7 +981,7 @@ function detectMissingCssProperties(code, codeLower, taskLower) {
 /**
  * JavaScript Code Analysis - Enhanced with Task-Aware Detection
  */
-function analyzeJavaScriptCode(code, codeLower, exerciseId, level, task) {
+function analyzeJavaScriptCode(code, codeLower, exerciseId, level, task, correctAnswer = '') {
   const analysis = {
     isCorrect: false,
     isIncomplete: false,
@@ -907,7 +1145,7 @@ function getMissingJsHint(element) {
 /**
  * PHP Code Analysis - Enhanced with Task-Aware Detection
  */
-function analyzePhpCode(code, codeLower, exerciseId, level, task) {
+function analyzePhpCode(code, codeLower, exerciseId, level, task, correctAnswer = '') {
   const analysis = {
     isCorrect: false,
     isIncomplete: false,

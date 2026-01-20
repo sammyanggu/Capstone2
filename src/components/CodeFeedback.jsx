@@ -2,13 +2,46 @@
 import { generateSmartFeedback } from '../services/smartAIFeedback';
 import { saveAIFeedback } from '../utils/aiFeedbackTracker';
 
-export default function CodeFeedback({ code = '', language = 'php', task = '', exerciseId = '', level = 'beginner' }) {
+export default function CodeFeedback({ code = '', language = 'php', task = '', exerciseId = '', level = 'beginner', correctAnswer = '' }) {
   const [feedback, setFeedback] = React.useState('');
+  const [displayedFeedback, setDisplayedFeedback] = React.useState('');
   const [feedbackType, setFeedbackType] = React.useState('');
   const [generating, setGenerating] = React.useState(false);
   const [error, setError] = React.useState('');
   const debounceRef = React.useRef(null);
   const lastRequestRef = React.useRef('');
+  const typingRef = React.useRef(null);
+
+  // Typing effect - display feedback character by character
+  React.useEffect(() => {
+    if (!feedback) {
+      setDisplayedFeedback('');
+      return;
+    }
+
+    // Clear existing typing animation
+    if (typingRef.current) {
+      clearInterval(typingRef.current);
+    }
+
+    let currentIndex = 0;
+    const typingSpeed = 15; // milliseconds per character
+
+    typingRef.current = setInterval(() => {
+      if (currentIndex < feedback.length) {
+        setDisplayedFeedback(feedback.substring(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingRef.current);
+      }
+    }, typingSpeed);
+
+    return () => {
+      if (typingRef.current) {
+        clearInterval(typingRef.current);
+      }
+    };
+  }, [feedback]);
 
   // Auto-trigger smart AI feedback with debounce
   React.useEffect(() => {
@@ -23,9 +56,16 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
       return; // Same as last request, skip
     }
 
+    // Show "generating" immediately when code changes
+    if (code.trim()) {
+      setGenerating(true);
+      setFeedback('');
+      setDisplayedFeedback('');
+    }
+
     // Set debounce for 1 second (faster for real-time feedback)
     debounceRef.current = setTimeout(() => {
-      triggerSmartFeedback(code, language, exerciseId, level, task);
+      triggerSmartFeedback(code, language, exerciseId, level, task, correctAnswer);
     }, 1000);
 
     return () => {
@@ -33,20 +73,17 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
         clearTimeout(debounceRef.current);
       }
     };
-  }, [code, language, task, level, exerciseId]);
+  }, [code, language, task, level, exerciseId, correctAnswer]);
 
-  function triggerSmartFeedback(src, lang, exId, difficulty, taskDesc) {
-    setGenerating(true);
-    setError('');
-    lastRequestRef.current = `${src}|${lang}|${taskDesc}`;
-
+  function triggerSmartFeedback(src, lang, exId, difficulty, taskDesc, correctAns = '') {
     try {
       // Generate smart conditional feedback
-      const feedbackResult = generateSmartFeedback(src, lang, exId, difficulty, taskDesc);
+      const feedbackResult = generateSmartFeedback(src, lang, exId, difficulty, taskDesc, correctAns);
       
       setFeedback(feedbackResult.feedback);
       setFeedbackType(feedbackResult.type);
       setGenerating(false);
+      setError('');
 
       // Save to Firebase if feedback is meaningful (non-blocking)
       if (exId && feedbackResult.feedback && feedbackResult.shouldShow) {
@@ -58,6 +95,7 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
       console.error('AI Feedback Error:', err);
       setError(`Error: ${err.message}`);
       setFeedback('');
+      setDisplayedFeedback('');
       setGenerating(false);
     }
   }
@@ -93,12 +131,11 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
             <div className="text-slate-400 italic text-xs">
               Start typing to get AI feedback on your code.
             </div>
-          ) : feedback && !generating ? (
+          ) : displayedFeedback || generating ? (
             <div className="leading-relaxed whitespace-pre-wrap">
-              {feedback}
+              {displayedFeedback}
+              {generating && displayedFeedback && <span className="animate-pulse">▌</span>}
             </div>
-          ) : generating && !feedback ? (
-            <div className="text-slate-400 text-xs">Generating feedback...</div>
           ) : null}
         </div>
       </div>
