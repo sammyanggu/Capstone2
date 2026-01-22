@@ -8,11 +8,10 @@ import { getUserExerciseProgress, getUserLessonProgress } from '../utils/progres
 
 const sections = [
   { key: "progress", label: "Progress" },
-  { key: "settings", label: "Settings" },
 ];
 
 function Profile() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [active, setActive] = useState("progress");
   const [user, setUser] = useState(null);
   const [achievements, setAchievements] = useState([]);
@@ -21,11 +20,6 @@ function Profile() {
   const [notifications, setNotifications] = useState([]);
   const [debugExerciseProgress, setDebugExerciseProgress] = useState(null);
   const [debugLessonProgress, setDebugLessonProgress] = useState(null);
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    achievementNotifications: true,
-    courseUpdates: false,
-  });
 
   const borderColors = [
     { name: "Emerald", value: "emerald", hex: "#047857" },
@@ -35,42 +29,6 @@ function Profile() {
     { name: "Red", value: "red", hex: "#b91c1c" },
     { name: "Pink", value: "pink", hex: "#be185d" },
   ];
-
-  const toggleNotificationSetting = async (setting) => {
-    const newSettings = {
-      ...notificationSettings,
-      [setting]: !notificationSettings[setting]
-    };
-    setNotificationSettings(newSettings);
-    
-    if (user) {
-      try {
-        const settingsRef = ref(db, `users/${user.uid}/settings/notifications/${setting}`);
-        await set(settingsRef, newSettings[setting]);
-      } catch (error) {
-        console.error("Error updating notification settings:", error);
-        // Revert the state if update fails
-        setNotificationSettings(notificationSettings);
-      }
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      try {
-        // Delete user data from database
-        const userRef = ref(db, `users/${user.uid}`);
-        await set(userRef, null);
-        
-        // Delete Firebase auth user
-        await user.delete();
-        toast.success('Account deleted successfully');
-      } catch (error) {
-        console.error("Error deleting account:", error);
-        toast.error('Failed to delete account. Please try again later.');
-      }
-    }
-  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -217,96 +175,6 @@ function Profile() {
                   onDebugExerciseProgress={setDebugExerciseProgress}
                   onDebugLessonProgress={setDebugLessonProgress}
                 />
-              </div>
-            )}
-
-            {/* Settings */}
-            {active === "settings" && (
-              <div className="flex flex-col gap-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-emerald-400 mb-4">
-                  Settings
-                </h2>
-
-                {/* Theme Settings */}
-                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <h3 className="text-lg font-semibold text-white mb-4">Theme</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Dark Mode</span>
-                    <button
-                      onClick={toggleTheme}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        theme === "dark" ? "bg-emerald-600" : "bg-slate-600"
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          theme === "dark" ? "translate-x-6" : "translate-x-1"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Notifications Settings */}
-                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <h3 className="text-lg font-semibold text-white mb-4">Notifications</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300">Email Notifications</span>
-                      <button
-                        onClick={() => toggleNotificationSetting('emailNotifications')}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          notificationSettings.emailNotifications ? "bg-emerald-600" : "bg-slate-600"
-                        }`}
-                      >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          notificationSettings.emailNotifications ? "translate-x-6" : "translate-x-1"
-                        }`} />
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300">Achievement Notifications</span>
-                      <button
-                        onClick={() => toggleNotificationSetting('achievementNotifications')}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          notificationSettings.achievementNotifications ? "bg-emerald-600" : "bg-slate-600"
-                        }`}
-                      >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          notificationSettings.achievementNotifications ? "translate-x-6" : "translate-x-1"
-                        }`} />
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300">Course Updates</span>
-                      <button
-                        onClick={() => toggleNotificationSetting('courseUpdates')}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          notificationSettings.courseUpdates ? "bg-emerald-600" : "bg-slate-600"
-                        }`}
-                      >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          notificationSettings.courseUpdates ? "translate-x-6" : "translate-x-1"
-                        }`} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Account Settings */}
-                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                  <h3 className="text-lg font-semibold text-white mb-4">Account</h3>
-                  <div className="space-y-3">
-                    <p className="text-slate-300"><span className="font-semibold">Email:</span> {user?.email}</p>
-                    <p className="text-slate-300"><span className="font-semibold">Account Type:</span> Student</p>
-                    <button
-                      onClick={handleDeleteAccount}
-                      className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 

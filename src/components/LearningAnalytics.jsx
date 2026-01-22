@@ -21,55 +21,72 @@ export default function LearningAnalytics({ userId }) {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           
-          // Calculate statistics
-          const exercises = userData.exerciseProgress || {};
-          const lessons = userData.lessonProgress || {};
+          // Get exercise data from the correct progress path
+          const exerciseProgressRef = ref(db, `users/${userId}/progress/exercises`);
+          const exerciseSnapshot = await get(exerciseProgressRef);
+          const exercises = exerciseSnapshot.exists() ? exerciseSnapshot.val() : {};
+          
+          // Get lesson data from the correct progress path
+          const lessonProgressRef = ref(db, `users/${userId}/progress/lessons`);
+          const lessonSnapshot = await get(lessonProgressRef);
+          const lessons = lessonSnapshot.exists() ? lessonSnapshot.val() : {};
           
           let completedExercises = 0;
           let totalExercises = 0;
           let languageStats = {};
           
           // Process exercise data
-          Object.entries(exercises).forEach(([key, exercise]) => {
-            totalExercises++;
-            if (exercise.isCompleted) {
-              completedExercises++;
-            }
-            
-            // Extract language from key (e.g., "html-beginner-0" -> "html")
-            const language = key.split('-')[0];
-            if (!languageStats[language]) {
-              languageStats[language] = { completed: 0, total: 0 };
-            }
-            languageStats[language].total++;
-            if (exercise.isCompleted) {
-              languageStats[language].completed++;
+          Object.entries(exercises).forEach(([language, levels]) => {
+            if (typeof levels === 'object') {
+              Object.entries(levels).forEach(([level, exercise]) => {
+                if (typeof exercise === 'object') {
+                  totalExercises++;
+                  if (exercise.isCompleted) {
+                    completedExercises++;
+                  }
+                  
+                  // Track by language
+                  if (!languageStats[language]) {
+                    languageStats[language] = { completed: 0, total: 0 };
+                  }
+                  languageStats[language].total++;
+                  if (exercise.isCompleted) {
+                    languageStats[language].completed++;
+                  }
+                }
+              });
             }
           });
           
           // Process lesson data
           let completedLessons = 0;
           let totalLessons = 0;
-          Object.values(lessons).forEach((lesson) => {
-            totalLessons++;
-            if (lesson.isCompleted) {
-              completedLessons++;
+          Object.values(lessons).forEach((lessonCategory) => {
+            if (typeof lessonCategory === 'object') {
+              Object.values(lessonCategory).forEach((lesson) => {
+                if (typeof lesson === 'object') {
+                  totalLessons++;
+                  if (lesson.isCompleted || lesson.completed) {
+                    completedLessons++;
+                  }
+                }
+              });
             }
           });
           
           setStats({
             completedExercises,
-            totalExercises,
+            totalExercises: totalExercises || 1,
             completedLessons,
-            totalLessons,
+            totalLessons: totalLessons || 1,
             languages: Object.entries(languageStats).map(([name, data]) => ({
               name: name.charAt(0).toUpperCase() + name.slice(1),
               completed: data.completed,
               total: data.total,
               percentage: Math.round((data.completed / data.total) * 100)
             })),
-            exerciseCompletionRate: Math.round((completedExercises / totalExercises) * 100) || 0,
-            lessonCompletionRate: Math.round((completedLessons / totalLessons) * 100) || 0,
+            exerciseCompletionRate: Math.round((completedExercises / (totalExercises || 1)) * 100) || 0,
+            lessonCompletionRate: Math.round((completedLessons / (totalLessons || 1)) * 100) || 0,
             totalPoints: userData.totalPoints || 0,
             currentRank: userData.currentRank || 1
           });
@@ -84,6 +101,101 @@ export default function LearningAnalytics({ userId }) {
     if (userId) {
       fetchAnalytics();
     }
+  }, [userId]);
+
+  // Listen for progress updates
+  useEffect(() => {
+    const handler = () => {
+      if (userId) {
+        // Refresh analytics when progress is updated
+        const fetchAnalytics = async () => {
+          try {
+            const userRef = ref(db, `users/${userId}`);
+            const snapshot = await get(userRef);
+            
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              
+              // Get exercise data from the correct progress path
+              const exerciseProgressRef = ref(db, `users/${userId}/progress/exercises`);
+              const exerciseSnapshot = await get(exerciseProgressRef);
+              const exercises = exerciseSnapshot.exists() ? exerciseSnapshot.val() : {};
+              
+              // Get lesson data from the correct progress path
+              const lessonProgressRef = ref(db, `users/${userId}/progress/lessons`);
+              const lessonSnapshot = await get(lessonProgressRef);
+              const lessons = lessonSnapshot.exists() ? lessonSnapshot.val() : {};
+              
+              let completedExercises = 0;
+              let totalExercises = 0;
+              let languageStats = {};
+              
+              // Process exercise data
+              Object.entries(exercises).forEach(([language, levels]) => {
+                if (typeof levels === 'object') {
+                  Object.entries(levels).forEach(([level, exercise]) => {
+                    if (typeof exercise === 'object') {
+                      totalExercises++;
+                      if (exercise.isCompleted) {
+                        completedExercises++;
+                      }
+                      
+                      // Track by language
+                      if (!languageStats[language]) {
+                        languageStats[language] = { completed: 0, total: 0 };
+                      }
+                      languageStats[language].total++;
+                      if (exercise.isCompleted) {
+                        languageStats[language].completed++;
+                      }
+                    }
+                  });
+                }
+              });
+              
+              // Process lesson data
+              let completedLessons = 0;
+              let totalLessons = 0;
+              Object.values(lessons).forEach((lessonCategory) => {
+                if (typeof lessonCategory === 'object') {
+                  Object.values(lessonCategory).forEach((lesson) => {
+                    if (typeof lesson === 'object') {
+                      totalLessons++;
+                      if (lesson.isCompleted || lesson.completed) {
+                        completedLessons++;
+                      }
+                    }
+                  });
+                }
+              });
+              
+              setStats({
+                completedExercises,
+                totalExercises: totalExercises || 1,
+                completedLessons,
+                totalLessons: totalLessons || 1,
+                languages: Object.entries(languageStats).map(([name, data]) => ({
+                  name: name.charAt(0).toUpperCase() + name.slice(1),
+                  completed: data.completed,
+                  total: data.total,
+                  percentage: Math.round((data.completed / data.total) * 100)
+                })),
+                exerciseCompletionRate: Math.round((completedExercises / (totalExercises || 1)) * 100) || 0,
+                lessonCompletionRate: Math.round((completedLessons / (totalLessons || 1)) * 100) || 0,
+                totalPoints: userData.totalPoints || 0,
+                currentRank: userData.currentRank || 1
+              });
+            }
+          } catch (error) {
+            console.error('Error updating learning analytics:', error);
+          }
+        };
+        fetchAnalytics();
+      }
+    };
+
+    window.addEventListener('progress-updated', handler);
+    return () => window.removeEventListener('progress-updated', handler);
   }, [userId]);
 
   if (loading) {

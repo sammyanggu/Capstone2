@@ -24,7 +24,6 @@ function GameProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const [quizProgressData, setQuizProgressData] = useState([]);
-  const [scoreDistribution, setScoreDistribution] = useState([]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -56,20 +55,60 @@ function GameProfile() {
             bio: data.bio || ''
           });
 
-          // Generate analytics data
-          const progressData = [
-            { name: 'Week 1', quizzes: 2, score: 85 },
-            { name: 'Week 2', quizzes: 3, score: 90 },
-            { name: 'Week 3', quizzes: 2, score: 88 },
-            { name: 'Week 4', quizzes: 4, score: 92 }
-          ];
-          setQuizProgressData(progressData);
-
-          const distribution = [
-            { name: '80-90', value: 35, fill: '#8b5cf6', quizCount: 7 },
-            { name: '90-100', value: 65, fill: '#ec4899', quizCount: 13 }
-          ];
-          setScoreDistribution(distribution);
+          // Generate analytics data from quiz progress
+          const quizProgressRef = ref(db, `users/${currentUser.uid}/progress/quizzes`);
+          const quizProgressSnapshot = await get(quizProgressRef);
+          
+          let quizzes = [];
+          if (quizProgressSnapshot.exists()) {
+            const quizzesData = quizProgressSnapshot.val();
+            console.log('📊 Quiz Progress Data:', quizzesData);
+            
+            // Collect all quiz attempts with their timestamps
+            const allAttempts = [];
+            Object.entries(quizzesData).forEach(([category, attempts]) => {
+              console.log(`📊 Category "${category}":`, attempts);
+              
+              // attempts is now an object with timestamps as keys
+              if (typeof attempts === 'object' && attempts !== null) {
+                Object.entries(attempts).forEach(([timestamp, attemptData]) => {
+                  allAttempts.push({
+                    timestamp: parseInt(timestamp),
+                    category,
+                    attemptData
+                  });
+                });
+              }
+            });
+            
+            // Sort by timestamp ascending (oldest first)
+            allAttempts.sort((a, b) => a.timestamp - b.timestamp);
+            
+            // Convert to chart data with sequential quiz numbers
+            quizzes = allAttempts.map((attempt, index) => ({
+              name: `Quiz ${index + 1}`,
+              category: attempt.category.replace(/-/g, ' ').toUpperCase(),
+              score: attempt.attemptData.percentage || attempt.attemptData.score || 0,
+              timestamp: attempt.timestamp
+            }));
+            
+            console.log('📈 Transformed quiz data for chart:', quizzes);
+            console.log('📈 Total quiz attempts:', quizzes.length);
+          } else {
+            console.log('⚠️ No quizzes found in Firebase at path:', `users/${currentUser.uid}/progress/quizzes`);
+          }
+          
+          // If no quizzes, show mock data
+          if (quizzes.length === 0) {
+            quizzes = [
+              { name: 'Quiz 1', score: 85 },
+              { name: 'Quiz 2', score: 90 },
+              { name: 'Quiz 3', score: 88 },
+              { name: 'Quiz 4', score: 92 }
+            ];
+          }
+          
+          setQuizProgressData(quizzes);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -79,6 +118,81 @@ function GameProfile() {
 
     fetchProfile();
   }, [currentUser, navigate]);
+
+  // Listen for progress updates to refresh quiz data in real-time
+  useEffect(() => {
+    const handleProgressUpdate = () => {
+      if (currentUser) {
+        const fetchQuizProgress = async () => {
+          try {
+            const quizProgressRef = ref(db, `users/${currentUser.uid}/progress/quizzes`);
+            const quizProgressSnapshot = await get(quizProgressRef);
+            
+            let quizzes = [];
+            if (quizProgressSnapshot.exists()) {
+              const quizzesData = quizProgressSnapshot.val();
+              console.log('📊 [Real-time] Quiz Progress Data:', quizzesData);
+              
+              // Collect all quiz attempts with their timestamps
+              const allAttempts = [];
+              Object.entries(quizzesData).forEach(([category, attempts]) => {
+                console.log(`📊 [Real-time] Category "${category}":`, attempts);
+                
+                // attempts is now an object with timestamps as keys
+                if (typeof attempts === 'object' && attempts !== null) {
+                  Object.entries(attempts).forEach(([timestamp, attemptData]) => {
+                    allAttempts.push({
+                      timestamp: parseInt(timestamp),
+                      category,
+                      attemptData
+                    });
+                  });
+                }
+              });
+              
+              // Sort by timestamp ascending (oldest first)
+              allAttempts.sort((a, b) => a.timestamp - b.timestamp);
+              
+              // Convert to chart data with sequential quiz numbers
+              quizzes = allAttempts.map((attempt, index) => ({
+                name: `Quiz ${index + 1}`,
+                category: attempt.category.replace(/-/g, ' ').toUpperCase(),
+                score: attempt.attemptData.percentage || attempt.attemptData.score || 0,
+                timestamp: attempt.timestamp
+              }));
+              
+              console.log('📈 [Real-time] Transformed quiz data for chart:', quizzes);
+              console.log('📈 [Real-time] Total quiz attempts:', quizzes.length);
+            }
+            
+            setQuizProgressData(quizzes);
+
+            // Also update the main profile stats
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            const userSnapshot = await get(userRef);
+            if (userSnapshot.exists()) {
+              const data = userSnapshot.val();
+              const userRank = await calculateUserRank(currentUser.uid);
+              
+              setProfile(prev => ({
+                ...prev,
+                quizzesCompleted: data.quizzesCompleted || prev.quizzesCompleted,
+                quizScore: data.quizScore || prev.quizScore,
+                rank: userRank
+              }));
+            }
+          } catch (error) {
+            console.error('Error updating quiz progress:', error);
+          }
+        };
+        
+        fetchQuizProgress();
+      }
+    };
+
+    window.addEventListener('progress-updated', handleProgressUpdate);
+    return () => window.removeEventListener('progress-updated', handleProgressUpdate);
+  }, [currentUser]);
 
   const handleSaveProfile = async () => {
     try {
@@ -228,14 +342,14 @@ function GameProfile() {
               </div>
 
               {/* Analytics Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Quiz Progress Chart */}
+              <div className="grid grid-cols-1 gap-6">
+                {/* Quiz Progress Chart - Full Width */}
                 <div className="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-purple-500/30">
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-white mb-2">📊 Quiz Progress</h3>
                     <p className="text-sm text-slate-300">Your quiz scores over time - Shows how you're improving across attempts</p>
                   </div>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={quizProgressData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#404854" />
                       <XAxis stroke="#9ca3af" label={{ value: 'Quiz Number', position: 'insideBottomRight', offset: -5, fill: '#9ca3af' }} />
@@ -243,7 +357,20 @@ function GameProfile() {
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
                         labelStyle={{ color: '#fff' }}
-                        formatter={(value) => [`${value} points`, 'Score']}
+                        formatter={(value) => [`${value}%`, 'Score']}
+                        content={({ active, payload }) => {
+                          if (active && payload && payload[0]) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-slate-900 border border-slate-700 p-2 rounded text-sm">
+                                <p className="text-white font-semibold">{data.name}</p>
+                                <p className="text-purple-400">{data.category}</p>
+                                <p className="text-green-400">{data.score}%</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
                       />
                       <Legend />
                       <Line type="monotone" dataKey="score" stroke="#a78bfa" strokeWidth={2} name="Score" dot={{ fill: '#a78bfa', r: 4 }} />
@@ -253,53 +380,10 @@ function GameProfile() {
                     💡 Tip: Your score progress helps you track improvement. Higher scores mean better mastery!
                   </div>
                 </div>
-
-                {/* Score Distribution Chart */}
-                <div className="bg-gradient-to-br from-pink-900/40 to-slate-900 rounded-lg p-4 sm:p-6 border border-pink-500/30">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold text-white mb-2">📈 Score Distribution</h3>
-                    <p className="text-sm text-slate-300">Breakdown of how many quizzes you scored in each range</p>
-                  </div>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={scoreDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name}: ${value}%`}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {scoreDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
-                        labelStyle={{ color: '#fff' }}
-                        formatter={(value) => [`${value}%`, 'Percentage']}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="mt-3 text-xs text-slate-400">
-                    <div className="space-y-1">
-                      {scoreDistribution.map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.fill }}></div>
-                          <span>{item.name}: {item.quizCount} quiz{item.quizCount !== 1 ? 'zes' : ''}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           )}
         </div>
-
-        {/* Back Button */}
         <button
           onClick={() => navigate('/games')}
           className="px-4 sm:px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors"

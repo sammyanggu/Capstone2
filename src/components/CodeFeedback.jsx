@@ -1,6 +1,5 @@
 ﻿import React from 'react';
 import { generateSmartFeedback } from '../services/smartAIFeedback';
-import { saveAIFeedback } from '../utils/aiFeedbackTracker';
 
 export default function CodeFeedback({ code = '', language = 'php', task = '', exerciseId = '', level = 'beginner', correctAnswer = '' }) {
   const [feedback, setFeedback] = React.useState('');
@@ -63,10 +62,10 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
       setDisplayedFeedback('');
     }
 
-    // Set debounce for 1 second (faster for real-time feedback)
+    // Set debounce for 2 seconds (wait longer to avoid rate limiting)
     debounceRef.current = setTimeout(() => {
       triggerSmartFeedback(code, language, exerciseId, level, task, correctAnswer);
-    }, 1000);
+    }, 2000);
 
     return () => {
       if (debounceRef.current) {
@@ -77,22 +76,21 @@ export default function CodeFeedback({ code = '', language = 'php', task = '', e
 
   function triggerSmartFeedback(src, lang, exId, difficulty, taskDesc, correctAns = '') {
     try {
-      // Generate smart conditional feedback
-      const feedbackResult = generateSmartFeedback(src, lang, exId, difficulty, taskDesc, correctAns);
-      
-      setFeedback(feedbackResult.feedback);
-      setFeedbackType(feedbackResult.type);
-      setGenerating(false);
-      setError('');
-
-      // Save to Firebase if feedback is meaningful (non-blocking)
-      if (exId && feedbackResult.feedback && feedbackResult.shouldShow) {
-        saveAIFeedback(exId, src, feedbackResult.feedback, lang).catch(err => {
-          console.error('Error saving feedback:', err);
+      // Generate smart conditional feedback (now async)
+      generateSmartFeedback(src, lang, exId, difficulty, taskDesc, correctAns)
+        .then(feedbackResult => {
+          setFeedback(feedbackResult.feedback);
+          setFeedbackType(feedbackResult.type);
+          setGenerating(false);
+          setError('');
+        })
+        .catch(err => {
+          setError(`Error generating feedback`);
+          setFeedback('');
+          setDisplayedFeedback('');
+          setGenerating(false);
         });
-      }
     } catch (err) {
-      console.error('AI Feedback Error:', err);
       setError(`Error: ${err.message}`);
       setFeedback('');
       setDisplayedFeedback('');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import Confetti from '../../../../components/Confetti';
 import { useAuth } from '../../../../AuthContext';
 import { saveCurrentExerciseIndex, getCurrentExerciseIndex, saveExerciseProgress, getExerciseProgress } from '../../../../utils/progressTracker';
@@ -35,17 +35,17 @@ export default function CssIntermediate() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded CSS intermediate exercise statuses:', newStatus);
+
                     
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'css', 'intermediate');
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
-                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+
                     } else {
                         setCurrentExercise(0);
                     }
                 } catch (err) {
-                    console.error('Error loading CSS intermediate exercise index:', err);
+
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -62,7 +62,7 @@ export default function CssIntermediate() {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'css', 'intermediate', currentExercise);
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -495,9 +495,9 @@ export default function CssIntermediate() {
                     try {
                         const levelKey = `intermediate-${currentExercise}`;
                         await saveExerciseProgress(currentUser.uid, 'css', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved CSS exercise ${levelKey} completion`);
+
                     } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+
                     }
                 }
                 
@@ -509,9 +509,9 @@ export default function CssIntermediate() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'css', 'intermediate', nextIndex);
-                            console.log(`✅ Saved CSS intermediate index: ${nextIndex}`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 }
@@ -653,14 +653,27 @@ export default function CssIntermediate() {
 
                             {/* AI Feedback */}
                             <div className="mt-4">
-                                <CodeFeedback 
-                                    code={userCode} 
-                                    language="css" 
-                                    exerciseId={currentExercise}
-                                    level="intermediate"
-                                    task={exercises[currentExercise].task}
-                                    correctAnswer={exercises[currentExercise].solution}
-                                />
+                                {/* Hardcoded Feedback Logic */}
+                                <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                    <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                    {userCode.trim() === '' ? (
+                                        <p className="text-gray-500 text-sm">Type your CSS code to get feedback.</p>
+                                    ) : (
+                                        (() => {
+                                            const codeHasSelector = userCode.includes('body') || userCode.includes('.container');
+                                            const codeHasColor = userCode.includes('color:') || userCode.includes('background-color:');
+                                            if (codeHasSelector && codeHasColor) {
+                                                return <p className="text-green-700 text-sm">Great! Your CSS includes a selector and a color property.</p>;
+                                            } else if (!codeHasSelector && !codeHasColor) {
+                                                return <p className="text-red-700 text-sm">Your code is missing both a selector (e.g., <code>body</code> or <code>.container</code>) and a color property (e.g., <code>color:</code> or <code>background-color:</code>).</p>;
+                                            } else if (!codeHasSelector) {
+                                                return <p className="text-red-700 text-sm">Your code is missing a CSS selector (e.g., <code>body</code> or <code>.container</code>).</p>;
+                                            } else {
+                                                return <p className="text-red-700 text-sm">Your code is missing a color property (e.g., <code>color:</code> or <code>background-color:</code>).</p>;
+                                            }
+                                        })()
+                                    )}
+                                </div>
                             </div>
 
                             {/* Submit and Solution Buttons */}
@@ -701,3 +714,5 @@ export default function CssIntermediate() {
         </div>
     );
 }
+
+

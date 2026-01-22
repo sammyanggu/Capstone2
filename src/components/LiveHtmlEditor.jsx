@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 
 export default function LiveHtmlEditor({ initialCode = '', onChange, solution }) {
   const [code, setCode] = useState(initialCode);
@@ -8,19 +9,26 @@ export default function LiveHtmlEditor({ initialCode = '', onChange, solution })
     setCode(initialCode);
   }, [initialCode]);
 
+  // Debounced onChange handler (2s delay)
+  const debouncedOnChange = useMemo(() => {
+    return debounce((newCode) => {
+      try {
+        if (onChange) {
+          onChange(newCode);
+        }
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      }
+    }, 2000);
+  }, [onChange]);
+
   const handleCodeChange = (event) => {
     const newCode = event.target.value;
     setCode(newCode);
-    try {
-      // Debug: log that the editor is emitting change events
-      console.log('LiveHtmlEditor onChange ->', newCode.substring(0, 200));
-      if (onChange) {
-        onChange(newCode);
-      }
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-    }
+    // Debug: log that the editor is emitting change events
+    console.log('LiveHtmlEditor debouncedOnChange ->', newCode.substring(0, 200));
+    debouncedOnChange(newCode);
   };
 
   return (

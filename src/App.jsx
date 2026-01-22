@@ -52,10 +52,14 @@ import LessonDetail from './pages/learning/lessons/LessonDetail'
 import Leaderboard from './pages/games/Leaderboard'
 import Quiz from './pages/games/Quiz'
 import GamesHub from './pages/games/GamesHub'
+import GameSelection from './pages/games/GameSelection'
 import LearningHub from './pages/games/LearningHub'
 import Achievements from './pages/games/Achievements'
 import Badges from './pages/games/Badges'
 import GameProfile from './pages/games/Profile'
+import FourPicsOneWord from './pages/games/FourPicsOneWord'
+import WordPuzzle from './pages/games/wordpuzzle'
+import CrosswordPuzzle from './pages/games/CrosswordPuzzle'
 // Import React hooks
 import { useEffect, useState } from 'react'
 
@@ -156,7 +160,7 @@ function AppContent() {
         {/* Games Hub - Gateway to all game features */}
         <Route path="/games" element={
           <PrivateRoute user={currentUser}>
-            <GamesHub />
+            <GameSelection />
           </PrivateRoute>
         } />
         {/* Lessons route, protected */}
@@ -271,31 +275,51 @@ function AppContent() {
         {/* Public User Profile page */}
         <Route path="/user/:userId" element={<PublicUserProfile />} />
 
-        {/* Analytics page, protected */}
-        <Route path="/analytics" element={
+        {/* Quiz page, protected */}
+        <Route path="/games/quiz" element={
           <PrivateRoute user={currentUser}>
-            <Analytics />
+            <Quiz />
           </PrivateRoute>
         } />
 
-        {/* User Discovery/Search page, protected */}
-        <Route path="/discover" element={
+        {/* Four Pics One Word game, protected */}
+        <Route path="/games/fourpicsoneword" element={
           <PrivateRoute user={currentUser}>
-            <UserSearch />
+            <FourPicsOneWord />
           </PrivateRoute>
         } />
 
-        {/* Settings page, protected */}
-        <Route path="/profile/settings" element={
+        {/* Word Puzzle game, protected */}
+        <Route path="/games/wordpuzzle" element={
           <PrivateRoute user={currentUser}>
-            <Settings />
+            <WordPuzzle />
           </PrivateRoute>
         } />
 
-        {/* Notifications page, protected */}
-        <Route path="/notifications" element={
+        {/* Crossword Puzzle game, protected */}
+        <Route path="/games/crossword" element={
           <PrivateRoute user={currentUser}>
-            <Notifications />
+            <CrosswordPuzzle />
+          </PrivateRoute>
+        } />
+
+        {/* Achievements page, protected */}
+        <Route path="/games/achievements" element={
+          <PrivateRoute user={currentUser}>
+            <Achievements />
+          </PrivateRoute>
+        } />
+        {/* Badges page, protected */}
+        <Route path="/games/badges" element={
+          <PrivateRoute user={currentUser}>
+            <Badges />
+          </PrivateRoute>
+        } />
+
+        {/* Game Profile page, protected */}
+        <Route path="/games/profile" element={
+          <PrivateRoute user={currentUser}>
+            <GameProfile />
           </PrivateRoute>
         } />
 

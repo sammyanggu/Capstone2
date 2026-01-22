@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -336,16 +336,16 @@ class FileHandler {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded PHP advanced exercise statuses:', newStatus);
+
 
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'php', 'advanced');
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
-                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+
                     }
                     isInitialLoadRef.current = false;
                 } catch (err) {
-                    console.error('Error loading PHP advanced exercise index:', err);
+
                     isInitialLoadRef.current = false;
                 }
             } else {
@@ -365,7 +365,7 @@ class FileHandler {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'php', 'advanced', currentExercise);
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -399,9 +399,9 @@ class FileHandler {
                 try {
                     const levelKey = `advanced-${currentExercise}`;
                     await saveExerciseProgress(currentUser.uid, 'php', levelKey, code, true, 10);
-                    console.log(`✅ Saved PHP advanced exercise ${levelKey} completion`);
+
                 } catch (err) {
-                    console.error('Error saving exercise completion:', err);
+
                 }
             }
             
@@ -413,9 +413,9 @@ class FileHandler {
                 if (currentUser?.uid) {
                     try {
                         await saveCurrentExerciseIndex(currentUser.uid, 'php', 'advanced', nextIndex);
-                        console.log(`✅ Saved PHP advanced index: ${nextIndex}`);
+
                     } catch (err) {
-                        console.error('Error saving new index:', err);
+
                     }
                 }
             } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
@@ -496,25 +496,47 @@ class FileHandler {
                             />
                         </div>
                         <div className="lg:col-span-1">
-                            <CodeFeedback 
-                                code={code}
-                                language="php"
-                                task={exercises[currentExercise]?.task}
-                                exerciseId={`php-advanced-${currentExercise}`}
-                                level="advanced"
-                            />
+                            {/* Hardcoded Feedback Logic - Dark background */}
+                            <div className="bg-slate-900 border border-slate-700 rounded p-4">
+                                <h4 className="font-bold mb-2 text-emerald-400">Feedback</h4>
+                                {code.trim() === '' ? (
+                                    <p className="text-gray-400 text-sm">Type your PHP code to get feedback.</p>
+                                ) : (
+                                    (() => {
+                                        // Improved feedback: check for PHP open tag, class/function/variable, and echo/return
+                                        const hasPhpTag = code.trim().startsWith('<?php');
+                                        const hasClass = /class\s+\w+/i.test(code);
+                                        const hasFunction = /function\s+\w+/i.test(code);
+                                        const hasVariable = /\$\w+/i.test(code);
+                                        const hasEchoOrReturn = /(echo|return)\s+/i.test(code);
+
+                                        if (!hasPhpTag) {
+                                            return <p className="text-red-400 text-sm">Your code must start with <code>&lt;?php</code>.</p>;
+                                        }
+                                        if (hasClass || hasFunction || hasVariable) {
+                                            if (hasEchoOrReturn || hasFunction) {
+                                                return <p className="text-green-400 text-sm">Great! Your code has the required PHP structure and logic.</p>;
+                                            } else {
+                                                return <p className="text-red-400 text-sm">Add an <code>echo</code> or <code>return</code> statement to display output.</p>;
+                                            }
+                                        } else {
+                                            return <p className="text-red-400 text-sm">Add a class, function, or variable as required by the task.</p>;
+                                        }
+                                    })()
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="mt-4 flex gap-4">
                         <button
                             onClick={handleSubmitCode}
-                            className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                            className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
                         >
                             Submit
                         </button>
                         <button 
-                            className="px-4 py-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded text-sm font-medium flex items-center gap-2 border border-emerald-600 bg-white"
+                            className="px-4 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded text-sm font-medium flex items-center gap-2 border border-emerald-600 bg-white"
                             onClick={() => document.getElementById('solution-advanced').classList.toggle('hidden')}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -523,6 +545,32 @@ class FileHandler {
                             Show Solution
                         </button>
                     </div>
+                    {/* Responsive Modal for Wrong Answer */}
+                    {code.trim() !== '' && ((() => {
+                        // Use the same improved logic for modal
+                        const hasPhpTag = code.trim().startsWith('<?php');
+                        const hasClass = /class\s+\w+/i.test(code);
+                        const hasFunction = /function\s+\w+/i.test(code);
+                        const hasVariable = /\$\w+/i.test(code);
+                        const hasEchoOrReturn = /(echo|return)\s+/i.test(code);
+                        if (!hasPhpTag || !(hasClass || hasFunction || hasVariable) || !(hasEchoOrReturn || hasFunction)) {
+                            return (
+                                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
+                                    <div className="bg-white rounded-lg shadow-xl border border-red-500 max-w-xs w-full p-6 text-center">
+                                        <h3 className="text-2xl font-bold text-red-600 mb-2">Wrong Answer</h3>
+                                        <p className="text-gray-700 mb-4">Try again!</p>
+                                        <button
+                                            onClick={() => setCode('')}
+                                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })())}
 
                     {/* Solution Box */}
                     <div id="solution-advanced" className="hidden mt-4 bg-white dark:bg-gray-700 rounded p-4 border border-gray-300 dark:border-gray-600">
@@ -569,3 +617,5 @@ class FileHandler {
 };
 
 export default PhpAdvanced;
+
+

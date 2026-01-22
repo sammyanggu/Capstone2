@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import PythonCodeExecutor from '../../../../components/PythonCodeExecutor';
 import { toast } from 'react-toastify';
 
@@ -35,16 +35,16 @@ export default function PythonAdvanced() {
             }
           }
           setExerciseStatus(newStatus);
-          console.log('Loaded Python advanced exercise statuses:', newStatus);
+
 
           const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'python', 'advanced');
           if (savedIndex !== null && savedIndex !== undefined) {
             setCurrentExercise(savedIndex);
-            console.log(`✅ Resumed from exercise ${savedIndex}`);
+
           }
           isInitialLoadRef.current = false;
         } catch (err) {
-          console.error('Error loading Python advanced exercise index:', err);
+
           isInitialLoadRef.current = false;
         }
       } else {
@@ -64,7 +64,7 @@ export default function PythonAdvanced() {
         try {
           await saveCurrentExerciseIndex(currentUser.uid, 'python', 'advanced', currentExercise);
         } catch (err) {
-          console.error('Error saving current exercise index:', err);
+
         }
       }
     };
@@ -192,9 +192,9 @@ export default function PythonAdvanced() {
           try {
             const levelKey = `advanced-${currentExercise}`;
             await saveExerciseProgress(currentUser.uid, 'python', levelKey, userCode, true, 10);
-            console.log(`✅ Saved Python exercise ${levelKey} completion`);
+
           } catch (err) {
-            console.error('Error saving exercise completion:', err);
+
           }
         }
 
@@ -206,9 +206,9 @@ export default function PythonAdvanced() {
           if (currentUser?.uid) {
             try {
               await saveCurrentExerciseIndex(currentUser.uid, 'python', 'advanced', nextIndex);
-              console.log(`✅ Saved Python advanced index: ${nextIndex}`);
+
             } catch (err) {
-              console.error('Error saving new index:', err);
+
             }
           }
         } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
@@ -360,13 +360,27 @@ export default function PythonAdvanced() {
 
                     {/* Right Column: AI Feedback */}
                     <div className="lg:col-span-1">
-                      <CodeFeedback 
-                        code={userCode} 
-                        language="python" 
-                        task={currentExerciseData.task}
-                        exerciseId={currentExercise}
-                        level="advanced"
-                      />
+                      {/* Hardcoded Feedback Logic */}
+                      <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                        <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                        {userCode.trim() === '' ? (
+                          <p className="text-gray-500 text-sm">Type your Python code to get feedback.</p>
+                        ) : (
+                          (() => {
+                            const codeHasVar = userCode.includes('=') && !userCode.trim().startsWith('#');
+                            const codeHasPrint = userCode.includes('print(');
+                            if (codeHasVar && codeHasPrint) {
+                              return <p className="text-green-700 text-sm">Great! Your code includes a variable assignment and a print statement as required.</p>;
+                            } else if (!codeHasVar && !codeHasPrint) {
+                              return <p className="text-red-700 text-sm">Your code is missing both a variable assignment (e.g., <code>x = 5</code>) and a print statement (<code>print(...)</code>).</p>;
+                            } else if (!codeHasVar) {
+                              return <p className="text-red-700 text-sm">Your code is missing a variable assignment (e.g., <code>x = 5</code>).</p>;
+                            } else {
+                              return <p className="text-red-700 text-sm">Your code is missing a print statement (<code>print(...)</code>).</p>;
+                            }
+                          })()
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -439,3 +453,5 @@ export default function PythonAdvanced() {
     </div>
   );
 }
+
+

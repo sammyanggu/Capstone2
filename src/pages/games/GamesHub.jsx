@@ -116,7 +116,7 @@ function GamesHub() {
   }
 
   return (
-    <div className={`relative w-full min-h-screen overflow-hidden ${theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-gray-50 text-slate-900'}`}>
+    <div className={`relative w-full min-h-screen overflow-hidden bg-slate-900 text-white`}>
       {/* Gradient background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-transparent rounded-full blur-3xl animate-pulse" style={{
@@ -170,20 +170,39 @@ function GamesHub() {
 
           {/* Main Game Options */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-            {/* Quiz Card */}
+            {/* 4 Pics 1 Word Card */}
             <div
-              onClick={() => navigate('/games/quiz')}
+              onClick={() => navigate('/games/fourpicsoneword')}
               className={`group cursor-pointer ${theme === 'dark' ? 'bg-gradient-to-br from-purple-900/40 to-slate-900 border border-purple-500/30 hover:border-purple-500 hover:from-purple-900/60' : 'bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-300 hover:border-purple-500 hover:from-purple-200'} rounded-xl p-4 sm:p-6 md:p-8 transition-all duration-300 transform hover:scale-105 shadow-2xl`}
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-purple-900'}`}>📝 Quizzes</h2>
-                <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">📚</div>
+                <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-purple-900'}`}>�️ 4 Pics 1 Word</h2>
+                <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">�️</div>
               </div>
               <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-purple-800'} mb-4 sm:mb-6 text-sm sm:text-base`}>
-                Test your knowledge and earn points.
+                Guess the word that connects all 4 images!
               </p>
               <div className="flex items-center justify-between">
                 <button className={`px-4 py-2 ${theme === 'dark' ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white' : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white'} font-semibold text-sm rounded-lg transition-all transform hover:translate-x-1`}>
+                  Play →
+                </button>
+              </div>
+            </div>
+
+            {/* Word Puzzle Card */}
+            <div
+              onClick={() => navigate('/games/wordpuzzle')}
+              className={`group cursor-pointer ${theme === 'dark' ? 'bg-gradient-to-br from-green-900/40 to-slate-900 border border-green-500/30 hover:border-green-500 hover:from-green-900/60' : 'bg-gradient-to-br from-green-100 to-green-50 border border-green-300 hover:border-green-500 hover:from-green-200'} rounded-xl p-4 sm:p-6 md:p-8 transition-all duration-300 transform hover:scale-105 shadow-2xl`}
+            >
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-green-900'}`}>🔤 Word Puzzle</h2>
+                <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">🧩</div>
+              </div>
+              <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-green-800'} mb-4 sm:mb-6 text-sm sm:text-base`}>
+                Unscramble the word or solve the puzzle!
+              </p>
+              <div className="flex items-center justify-between">
+                <button className={`px-4 py-2 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'} font-semibold text-sm rounded-lg transition-all transform hover:translate-x-1`}>
                   Play →
                 </button>
               </div>

@@ -14,24 +14,22 @@ export default defineConfig({
     historyApiFallback: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true
+        target: 'http://localhost:5174',
+        changeOrigin: true,
+        rewrite: (path) => path
       }
     }
   },
   base: '/',
-  // --- DAGDAG NA SETTINGS MULA DITO ---
   build: {
-  // Pinapababa ang load sa memory sa pamamagitan ng pag-disable ng features na hindi kailangan sa dev build
-  minify: 'esbuild', // Mas mabilis at mas tipid sa RAM kaysa terser
-  cssCodeSplit: true,
-  rollupOptions: {
-    output: {
-      // Pinaghihiwalay ang malalaking chunks
-      manualChunks: (id) => {
-        if (id.includes('node_modules')) return 'vendor';
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) return 'vendor';
+        }
       }
     }
   }
-}
 })

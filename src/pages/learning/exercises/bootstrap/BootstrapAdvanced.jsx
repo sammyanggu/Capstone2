@@ -33,7 +33,7 @@ export default function BootstrapAdvanced() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded Bootstrap advanced exercise statuses:', newStatus);
+
                     
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'bootstrap', 'advanced');
                     if (savedIndex !== null && savedIndex !== undefined) {
@@ -42,7 +42,7 @@ export default function BootstrapAdvanced() {
                         setCurrentExercise(0);
                     }
                 } catch (err) {
-                    console.error('Error loading Bootstrap advanced exercise index:', err);
+
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -57,7 +57,7 @@ export default function BootstrapAdvanced() {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'bootstrap', 'advanced', currentExercise);
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -408,9 +408,9 @@ export default function BootstrapAdvanced() {
                     try {
                         const levelKey = `advanced-${currentExercise}`;
                         await saveExerciseProgress(currentUser.uid, 'bootstrap', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved Bootstrap exercise ${levelKey} completion`);
+
                     } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+
                     }
                 }
                 
@@ -422,9 +422,9 @@ export default function BootstrapAdvanced() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'bootstrap', 'advanced', nextIndex);
-                            console.log(`✅ Saved Bootstrap advanced index: ${nextIndex}`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 }
@@ -544,13 +544,22 @@ export default function BootstrapAdvanced() {
                                     />
                                 </div>
                                 <div className="lg:col-span-1">
-                                    <CodeFeedback 
-                                        code={userCode}
-                                        language="html"
-                                        task={exercises[currentExercise].task}
-                                        exerciseId={`bootstrap-advanced-${currentExercise}`}
-                                        level="advanced"
-                                    />
+                                    {/* Hardcoded Feedback Logic */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                        <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                        {userCode.trim() === '' ? (
+                                            <p className="text-gray-500 text-sm">Type your code to get feedback.</p>
+                                        ) : (
+                                            (() => {
+                                                const hasBootstrapClass = userCode.includes('class="container"') || userCode.includes('className="container"') || userCode.includes('btn') || userCode.includes('row');
+                                                if (hasBootstrapClass) {
+                                                    return <p className="text-green-700 text-sm">Good job! Your code uses Bootstrap classes.</p>;
+                                                } else {
+                                                    return <p className="text-red-700 text-sm">Add Bootstrap classes like <code>container</code>, <code>btn</code>, or <code>row</code> to your HTML elements.</p>;
+                                                }
+                                            })()
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -591,3 +600,5 @@ export default function BootstrapAdvanced() {
         </div>
     );
 }
+
+

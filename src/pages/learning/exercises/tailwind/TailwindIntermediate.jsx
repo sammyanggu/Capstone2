@@ -33,7 +33,7 @@ export default function TailwindIntermediate() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded Tailwind intermediate exercise statuses:', newStatus);
+
                     
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate');
                     if (savedIndex !== null && savedIndex !== undefined) {
@@ -42,7 +42,7 @@ export default function TailwindIntermediate() {
                         setCurrentExercise(0);
                     }
                 } catch (err) {
-                    console.error('Error loading Tailwind intermediate exercise index:', err);
+
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -57,7 +57,7 @@ export default function TailwindIntermediate() {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate', currentExercise);
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -314,9 +314,9 @@ export default function TailwindIntermediate() {
                     try {
                         const levelKey = `intermediate-${currentExercise}`;
                         await saveExerciseProgress(currentUser.uid, 'tailwind', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved Tailwind intermediate exercise completion`);
+
                     } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+
                     }
                 }
                 
@@ -328,9 +328,9 @@ export default function TailwindIntermediate() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'intermediate', nextIndex);
-                            console.log(`✅ Saved Tailwind intermediate index: ${nextIndex}`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 }
@@ -450,13 +450,22 @@ export default function TailwindIntermediate() {
                                     />
                                 </div>
                                 <div className="lg:col-span-1">
-                                    <CodeFeedback 
-                                        code={userCode}
-                                        language="html"
-                                        task={exercises[currentExercise].task}
-                                        exerciseId={`tailwind-intermediate-${currentExercise}`}
-                                        level="intermediate"
-                                    />
+                                    {/* Hardcoded Feedback Logic */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                        <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                        {userCode.trim() === '' ? (
+                                            <p className="text-gray-500 text-sm">Type your code to get feedback.</p>
+                                        ) : (
+                                            (() => {
+                                                const hasTailwindClass = userCode.includes('class="') && (userCode.includes('bg-') || userCode.includes('text-') || userCode.includes('p-') || userCode.includes('m-'));
+                                                if (hasTailwindClass) {
+                                                    return <p className="text-green-700 text-sm">Great! Your code uses Tailwind CSS utility classes.</p>;
+                                                } else {
+                                                    return <p className="text-red-700 text-sm">Add Tailwind utility classes like <code>bg-*</code>, <code>text-*</code>, <code>p-*</code>, or <code>m-*</code> to your HTML elements.</p>;
+                                                }
+                                            })()
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -497,3 +506,5 @@ export default function TailwindIntermediate() {
         </div>
     );
 }
+
+

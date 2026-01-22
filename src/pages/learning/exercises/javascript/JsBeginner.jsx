@@ -1,6 +1,6 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
@@ -41,19 +41,19 @@ export default function JsBeginner() {
             }
           }
           setExerciseStatus(newStatus);
-          console.log('Loaded JavaScript beginner exercise statuses:', newStatus);
+
 
           // Load current exercise index
           const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner');
           if (savedIndex !== null && savedIndex !== undefined) {
             setCurrentExercise(savedIndex);
-            console.log(`✅ Resumed from exercise ${savedIndex}`);
+
           } else {
             setCurrentExercise(0);
           }
           isInitialLoadRef.current = false;
         } catch (error) {
-          console.error('Error loading JavaScript beginner progress:', error);
+
           isInitialLoadRef.current = false;
         }
       } else {
@@ -72,7 +72,7 @@ export default function JsBeginner() {
         try {
           await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner', currentExercise);
         } catch (err) {
-          console.error('Error saving current exercise index:', err);
+
         }
       }
     };
@@ -101,15 +101,15 @@ export default function JsBeginner() {
       saveExerciseProgress(currentUser.uid, 'javascript', levelKey, code, false, 0)
         .then((success) => {
           if (success) {
-            console.log('JS progress saved successfully');
+
           } else {
-            console.error('Failed to save JS progress');
+
             toast.error('Failed to save progress');
           }
           setIsSaving(false);
         })
         .catch((error) => {
-          console.error('Error saving JS progress:', error);
+
           toast.error('Error saving progress');
           setIsSaving(false);
         });
@@ -178,9 +178,9 @@ export default function JsBeginner() {
           try {
             const levelKey = `beginner-${currentExercise}`;
             await saveExerciseProgress(currentUser.uid, 'javascript', levelKey, userCode, true, 10);
-            console.log(`✅ Saved JavaScript exercise ${levelKey} completion`);
+
           } catch (err) {
-            console.error('Error saving exercise completion:', err);
+
           }
         }
         
@@ -192,9 +192,9 @@ export default function JsBeginner() {
           if (currentUser?.uid) {
             try {
               await saveCurrentExerciseIndex(currentUser.uid, 'javascript', 'beginner', nextIndex);
-              console.log(`✅ Saved JavaScript beginner index: ${nextIndex}`);
+
             } catch (err) {
-              console.error('Error saving new index:', err);
+
             }
           }
         } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
@@ -569,13 +569,28 @@ export default function JsBeginner() {
                 />
               </div>
               <div className="lg:col-span-1">
-                <CodeFeedback 
-                  code={userCode}
-                  language="javascript"
-                  task={exercises[currentExercise].task}
-                  exerciseId={`javascript-beginner-${currentExercise}`}
-                  level="beginner"
-                />
+                {/* Hardcoded Feedback Logic */}
+                <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                  <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                  {userCode.trim() === '' ? (
+                    <p className="text-gray-500 text-sm">Type your JavaScript code to get feedback.</p>
+                  ) : (
+                    (() => {
+                      // Example feedback logic for a variable and a function
+                      const codeHasVar = userCode.includes('let ') || userCode.includes('const ') || userCode.includes('var ');
+                      const codeHasFunction = userCode.includes('function') || userCode.includes('=>');
+                      if (codeHasVar && codeHasFunction) {
+                        return <p className="text-green-700 text-sm">Great! Your code includes both a variable and a function as required.</p>;
+                      } else if (!codeHasVar && !codeHasFunction) {
+                        return <p className="text-red-700 text-sm">Your code is missing both a variable declaration (<code>let</code>, <code>const</code>, or <code>var</code>) and a function.</p>;
+                      } else if (!codeHasVar) {
+                        return <p className="text-red-700 text-sm">Your code is missing a variable declaration (<code>let</code>, <code>const</code>, or <code>var</code>).</p>;
+                      } else {
+                        return <p className="text-red-700 text-sm">Your code is missing a function definition.</p>;
+                      }
+                    })()
+                  )}
+                </div>
               </div>
             </div>
 
@@ -618,3 +633,5 @@ export default function JsBeginner() {
     </div>
   );
 }
+
+

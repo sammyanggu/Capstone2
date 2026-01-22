@@ -36,22 +36,20 @@ export default function HtmlIntermediate() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log(`✅ [HtmlIntermediate] Loaded completion status from Firebase:`, newStatus);
-                    
+
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate');
-                    console.log(`🔍 [HtmlIntermediate] Firebase returned savedIndex: ${savedIndex} (type: ${typeof savedIndex})`);
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
-                        console.log(`✅ [HtmlIntermediate] Set currentExercise to Firebase value: ${savedIndex}`);
+
                     } else {
                         setCurrentExercise(0);
-                        console.log(`✅ [HtmlIntermediate] No saved index found, defaulting to 0`);
+
                     }
                 } catch (err) {
-                    console.error('Error loading HTML intermediate exercise index:', err);
+
                 } finally {
                     isInitialLoadRef.current = false;
-                    console.log(`✅ [HtmlIntermediate] Completed initial load`);
+
                 }
             }
         };
@@ -65,14 +63,14 @@ export default function HtmlIntermediate() {
             // Always save after initial load is complete
             if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
-                    console.log(`💾 [HtmlIntermediate] About to save exercise index: ${currentExercise}`);
+
                     await saveCurrentExerciseIndex(currentUser.uid, 'html', 'intermediate', currentExercise);
-                    console.log(`✅ [HtmlIntermediate] Successfully saved exercise index: ${currentExercise}`);
+
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             } else if (isInitialLoadRef.current) {
-                console.log(`⏭️ [HtmlIntermediate] Save skipped - initial load in progress`);
+
             }
         };
 
@@ -549,6 +547,7 @@ export default function HtmlIntermediate() {
                                         task={exercises[currentExercise].task}
                                         exerciseId={`html-intermediate-${currentExercise}`}
                                         level="intermediate"
+                                        correctAnswer={exercises[currentExercise].solution}
                                     />
                                 </div>
                             </div>
@@ -591,3 +590,5 @@ export default function HtmlIntermediate() {
         </div>
     );
 }
+
+

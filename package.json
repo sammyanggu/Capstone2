@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"node dev-server.js\" \"vite\"",
+    "dev:frontend": "vite",
+    "dev:api": "node dev-server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -17,6 +19,8 @@
     "@monaco-editor/react": "^4.7.0",
     "firebase": "^11.9.0",
     "firebase-admin": "^13.6.0",
+    "lodash.debounce": "^4.0.8",
+    "openai": "^6.16.0",
     "playwright": "^1.57.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

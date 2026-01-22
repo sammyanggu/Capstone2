@@ -18,3 +18,5 @@ export default function CssExercise() {
             return <Navigate to="/exercises" replace />;
     }
 }
+
+

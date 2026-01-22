@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getCompletionStats, getLessonStats } from '../utils/progressTracker';
 import { db } from '../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { ref, onValue } from 'firebase/database';
 
 const ProgressStats = ({ userId }) => {
   const [exerciseStats, setExerciseStats] = useState(null);
@@ -29,12 +29,12 @@ const ProgressStats = ({ userId }) => {
     if (userId) {
       fetchStats();
       
-      // Set up real-time listener for user progress in Firebase
+      // Set up real-time listener for user progress in Firebase Realtime Database
       try {
-        const userDocRef = doc(db, 'users', userId);
-        const unsubscribe = onSnapshot(userDocRef, (doc) => {
-          if (doc.exists()) {
-            // Refresh stats whenever user document changes
+        const userProgressRef = ref(db, `users/${userId}/progress`);
+        const unsubscribe = onValue(userProgressRef, (snapshot) => {
+          if (snapshot.exists()) {
+            // Refresh stats whenever progress changes
             fetchStats();
           }
         }, (error) => {
@@ -242,45 +242,7 @@ const ProgressStats = ({ userId }) => {
         <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
           <h3 className="text-lg font-semibold text-emerald-400 mb-4">Lessons by Category</h3>
           
-          {/* Pie Chart for Lesson Distribution */}
-          <div className="mb-8 bg-slate-700/50 rounded-lg p-4 border border-slate-600">
-            <h4 className="text-slate-300 font-semibold mb-4">Lesson Completion Distribution</h4>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={Object.entries(lessonStats.byCategory).map(([category, stats]) => ({
-                    name: {
-                      html: 'HTML',
-                      css: 'CSS',
-                      javascript: 'JavaScript',
-                      php: 'PHP',
-                      bootstrap: 'Bootstrap',
-                      tailwind: 'Tailwind'
-                    }[category] || category,
-                    value: stats.completed,
-                    total: stats.total
-                  }))}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value, total }) => `${name}: ${value}/${total}`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {['#10b981', '#3b82f6', '#fbbf24', '#a855f7', '#6366f1', '#06b6d4'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
-                  formatter={(value) => [value, 'Completed']}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Category Grid */}
+          {/* Category Grid - Replaced broken pie chart with working cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(lessonStats.byCategory).map(([category, stats]) => {
               const displayLabel = {
@@ -292,21 +254,23 @@ const ProgressStats = ({ userId }) => {
                 tailwind: 'Tailwind'
               }[category] || category;
 
+              const percentage = Math.round((stats.completed / stats.total) * 100);
+
               return (
                 <div key={category} className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="font-semibold text-slate-200">{displayLabel}</h4>
-                      <p className="text-sm text-slate-400">{stats.completed}/{stats.total} completed</p>
+                      <p className="text-sm text-slate-400">{stats.completed}/{stats.total} lessons</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-emerald-400">{Math.round(stats.averageProgress)}%</p>
+                      <p className="text-lg font-bold text-emerald-400">{percentage}%</p>
                     </div>
                   </div>
                   <div className="w-full bg-slate-600 rounded-full h-2">
                     <div
-                      className={`bg-gradient-to-r ${categoryColors[category]} h-2 rounded-full transition-all`}
-                      style={{ width: `${stats.averageProgress}%` }}
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full transition-all"
+                      style={{ width: `${percentage}%` }}
                     ></div>
                   </div>
                 </div>

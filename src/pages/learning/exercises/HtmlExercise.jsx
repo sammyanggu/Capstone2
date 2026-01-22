@@ -13,7 +13,7 @@ function HtmlExercise() {
   const saveTimeoutRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false);
   const [lockedExerciseIndex, setLockedExerciseIndex] = useState(null);
-  
+
   // Exercise content for different levels
   const exercises = {
     beginner: {
@@ -25,7 +25,7 @@ function HtmlExercise() {
 </head>
 <body>
   <!-- Add your code here -->
-  
+
 </body>
 </html>`,
       solution: `<!DOCTYPE html>
@@ -52,7 +52,7 @@ function HtmlExercise() {
 </head>
 <body>
   <!-- Create your form here -->
-  
+
 </body>
 </html>`,
       solution: `<!DOCTYPE html>
@@ -83,7 +83,7 @@ function HtmlExercise() {
 </head>
 <body>
   <!-- Create a semantic structure -->
-  
+
 </body>
 </html>`,
       solution: `<!DOCTYPE html>
@@ -127,20 +127,20 @@ function HtmlExercise() {
   // Load saved progress when component mounts
   useEffect(() => {
     const loadProgress = async () => {
-      console.log('HtmlExercise - currentUser:', currentUser?.uid, 'level:', level);
+
       if (currentUser?.uid && level) {
         try {
           const progress = await getExerciseProgress(currentUser.uid, 'html', level);
-          console.log('✓ Loaded HTML progress:', progress);
+
           if (progress && progress.code) {
-            console.log('Setting code from saved progress');
+
             setUserCode(progress.code);
           } else {
-            console.log('No saved progress, using initial code');
+
             setUserCode(exercise.initialCode);
           }
         } catch (error) {
-          console.error('✗ Error loading HTML progress:', error);
+
           setUserCode(exercise.initialCode);
         }
       }
@@ -155,7 +155,7 @@ function HtmlExercise() {
         clearTimeout(saveTimeoutRef.current);
         // Try to immediately save the latest code if user is signed in
         if (currentUser && userCode != null) {
-          console.log('Flushing autosave before unmount for user:', currentUser.uid);
+
           saveExerciseProgress(currentUser.uid, 'html', level, userCode, false, 0)
             .then((success) => {
               if (success) console.log('Autosave flush: saved successfully on unmount');
@@ -170,63 +170,62 @@ function HtmlExercise() {
   // Handle code change and save to database with debouncing
   const handleCodeChange = (newCode) => {
     setUserCode(newCode);
-    
+
     // Clear existing timeout
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-    
+
     // Set new timeout for auto-save (debounce for 1 second)
     saveTimeoutRef.current = setTimeout(() => {
       if (currentUser) {
-        console.log('Saving progress for user:', currentUser.uid);
+
         setIsSaving(true);
         saveExerciseProgress(currentUser.uid, 'html', level, newCode, false, 0)
           .then((success) => {
             if (success) {
-              console.log('✓ Progress saved successfully');
+
             } else {
-              console.error('✗ Failed to save progress');
+
               toast.error('Failed to save progress');
             }
             setIsSaving(false);
           })
           .catch((error) => {
-            console.error('✗ Error saving progress:', error);
+
             toast.error('Error saving progress');
             setIsSaving(false);
           });
       } else {
-        console.warn('No user logged in, cannot save progress');
+
       }
     }, 1000);
   };
 
   // Handle exercise submission
   const handleSubmit = async (code) => {
-    console.log('🔵 handleSubmit called with code length:', code?.length, 'currentUser:', currentUser?.uid);
-    
+
     if (!currentUser) {
-      console.warn('❌ No user logged in');
+
       toast.error('Please sign in to submit');
       return;
     }
 
     if (!code || code.trim().length === 0) {
-      console.warn('⚠️ Code is empty');
+
       toast.error('Please write some code before submitting');
       return;
     }
 
     try {
-      console.log('💾 Submitting HTML exercise...');
+
       // Save final code and mark as completed
       await saveExerciseProgress(currentUser.uid, 'html', level, code, true, 10);
       await completeExercise(currentUser.uid, 'html', level, 10);
-      console.log('✅ Exercise submitted successfully');
+
       toast.success('Exercise completed! 🎉');
     } catch (error) {
-      console.error('❌ Error submitting exercise:', error);
+
       toast.error('Error submitting exercise');
     }
   };
@@ -239,7 +238,7 @@ function HtmlExercise() {
           // Save that the user is on this exercise type/level (index 0 for single-exercise pages)
           await saveCurrentExerciseIndex(currentUser.uid, 'html', level, 0);
         } catch (err) {
-          console.warn('Could not save exercise index:', err);
+
         }
       }
     };
@@ -271,7 +270,6 @@ function HtmlExercise() {
       <div className="mt-4">
         <button
           onClick={() => {
-            console.log('🔴 Submit Code button clicked, userCode state:', userCode?.substring(0, 100));
             handleSubmit(userCode);
           }}
           className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition-colors cursor-pointer text-sm font-medium"
@@ -281,6 +279,8 @@ function HtmlExercise() {
       </div>
     </div>
   );
-}
+};
 
 export default HtmlExercise;
+
+

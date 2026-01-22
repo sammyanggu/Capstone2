@@ -19,8 +19,11 @@ export default function GamingAnalytics({ userId }) {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           
-          // Get quiz data
-          const quizzes = userData.quizProgress || {};
+          // Get quiz data from the correct progress path
+          const quizProgressRef = ref(db, `users/${userId}/progress/quizzes`);
+          const quizSnapshot = await get(quizProgressRef);
+          const quizzes = quizSnapshot.exists() ? quizSnapshot.val() : {};
+          
           let totalQuizzes = 0;
           let quizzesCompleted = 0;
           let totalScore = 0;
@@ -30,7 +33,7 @@ export default function GamingAnalytics({ userId }) {
           
           Object.entries(quizzes).forEach(([key, quiz]) => {
             totalQuizzes++;
-            if (quiz.isCompleted) {
+            if (quiz.completedAt) {
               quizzesCompleted++;
             }
             
@@ -38,7 +41,7 @@ export default function GamingAnalytics({ userId }) {
             const difficulty = key.includes('beginner') ? 'beginner' : 
                              key.includes('intermediate') ? 'intermediate' : 'advanced';
             
-            if (quiz.isCompleted) {
+            if (quiz.completedAt) {
               difficultyStats[difficulty]++;
             }
             
@@ -66,11 +69,11 @@ export default function GamingAnalytics({ userId }) {
           
           setStats({
             quizzesCompleted,
-            totalQuizzes,
+            totalQuizzes: totalQuizzes || 1,
             totalScore,
-            averageScore: totalQuizzes > 0 ? Math.round(totalScore / quizzesCompleted) : 0,
+            averageScore: quizzesCompleted > 0 ? Math.round(totalScore / quizzesCompleted) : 0,
             correctAnswers,
-            totalQuestions,
+            totalQuestions: totalQuestions || 1,
             accuracy: totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0,
             achievements: achievementsCount,
             badges: badgesCount,
@@ -92,6 +95,97 @@ export default function GamingAnalytics({ userId }) {
     if (userId) {
       fetchAnalytics();
     }
+  }, [userId]);
+
+  // Listen for progress updates
+  useEffect(() => {
+    const handler = () => {
+      if (userId) {
+        // Refresh analytics when progress is updated
+        const fetchAnalytics = async () => {
+          try {
+            const userRef = ref(db, `users/${userId}`);
+            const snapshot = await get(userRef);
+            
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              
+              // Get quiz data from the correct progress path
+              const quizProgressRef = ref(db, `users/${userId}/progress/quizzes`);
+              const quizSnapshot = await get(quizProgressRef);
+              const quizzes = quizSnapshot.exists() ? quizSnapshot.val() : {};
+              
+              let totalQuizzes = 0;
+              let quizzesCompleted = 0;
+              let totalScore = 0;
+              let correctAnswers = 0;
+              let totalQuestions = 0;
+              let difficultyStats = { beginner: 0, intermediate: 0, advanced: 0 };
+              
+              Object.entries(quizzes).forEach(([key, quiz]) => {
+                totalQuizzes++;
+                if (quiz.completedAt) {
+                  quizzesCompleted++;
+                }
+                
+                // Extract difficulty from key
+                const difficulty = key.includes('beginner') ? 'beginner' : 
+                                 key.includes('intermediate') ? 'intermediate' : 'advanced';
+                
+                if (quiz.completedAt) {
+                  difficultyStats[difficulty]++;
+                }
+                
+                totalScore += quiz.score || 0;
+                correctAnswers += quiz.correctAnswers || 0;
+                totalQuestions += quiz.totalQuestions || 0;
+              });
+              
+              const achievements = userData.achievements || {};
+              const achievementsCount = Object.keys(achievements).length;
+              const badges = userData.badges || {};
+              const badgesCount = Object.keys(badges).length;
+              
+              // Get leaderboard position (if available)
+              const leaderboardRef = ref(db, 'leaderboard');
+              const leaderboardSnapshot = await get(leaderboardRef);
+              let rank = 0;
+              
+              if (leaderboardSnapshot.exists()) {
+                const leaderboardData = leaderboardSnapshot.val();
+                const sortedUsers = Object.entries(leaderboardData)
+                  .sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+                rank = sortedUsers.findIndex(([uid]) => uid === userId) + 1 || 0;
+              }
+              
+              setStats({
+                quizzesCompleted,
+                totalQuizzes: totalQuizzes || 1,
+                totalScore,
+                averageScore: quizzesCompleted > 0 ? Math.round(totalScore / quizzesCompleted) : 0,
+                correctAnswers,
+                totalQuestions: totalQuestions || 1,
+                accuracy: totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0,
+                achievements: achievementsCount,
+                badges: badgesCount,
+                rank,
+                difficultyBreakdown: [
+                  { name: 'Beginner', completed: difficultyStats.beginner },
+                  { name: 'Intermediate', completed: difficultyStats.intermediate },
+                  { name: 'Advanced', completed: difficultyStats.advanced }
+                ]
+              });
+            }
+          } catch (error) {
+            console.error('Error updating gaming analytics:', error);
+          }
+        };
+        fetchAnalytics();
+      }
+    };
+
+    window.addEventListener('progress-updated', handler);
+    return () => window.removeEventListener('progress-updated', handler);
   }, [userId]);
 
   if (loading) {

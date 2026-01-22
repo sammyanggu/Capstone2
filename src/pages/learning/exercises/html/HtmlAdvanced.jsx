@@ -38,13 +38,11 @@ export default function HtmlAdvanced() {
 
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'advanced');
                     if (savedIndex !== null && savedIndex !== undefined) {
-                        setCurrentExercise(savedIndex);
-                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+                        setCurrentExercise(savedIndex);
                     } else {
                         setCurrentExercise(0);
                     }
-                } catch (err) {
-                    console.error('Error loading HTML advanced exercise index:', err);
+                } catch (err) {
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -60,8 +58,7 @@ export default function HtmlAdvanced() {
             if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'html', 'advanced', currentExercise);
-                } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+                } catch (err) {
                 }
             }
         };
@@ -671,10 +668,8 @@ export default function HtmlAdvanced() {
                 if (currentUser?.uid) {
                     try {
                         const levelKey = `advanced-${currentExercise}`;
-                        await saveExerciseProgress(currentUser.uid, 'html', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved exercise completion: ${levelKey}`);
-                    } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+                        await saveExerciseProgress(currentUser.uid, 'html', levelKey, userCode, true, 10);
+                    } catch (err) {
                     }
                 }
                 
@@ -685,10 +680,8 @@ export default function HtmlAdvanced() {
                     // Save the new index to Firebase
                     if (currentUser?.uid) {
                         try {
-                            await saveCurrentExerciseIndex(currentUser.uid, 'html', 'advanced', nextIndex);
-                            console.log(`✅ Saved new index to Firebase: ${nextIndex}`);
-                        } catch (err) {
-                            console.error('Error saving new index:', err);
+                            await saveCurrentExerciseIndex(currentUser.uid, 'html', 'advanced', nextIndex);
+                        } catch (err) {
                         }
                     }
                 }
@@ -825,6 +818,7 @@ export default function HtmlAdvanced() {
                                         task={exercises[currentExercise].task}
                                         exerciseId={`html-advanced-${currentExercise}`}
                                         level="advanced"
+                                        correctAnswer={exercises[currentExercise].solution}
                                     />
                                 </div>
                             </div>
@@ -867,3 +861,5 @@ export default function HtmlAdvanced() {
         </div>
     );
 }
+
+

@@ -33,7 +33,7 @@ export default function TailwindAdvanced() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded Tailwind advanced exercise statuses:', newStatus);
+
                     
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'tailwind', 'advanced');
                     if (savedIndex !== null && savedIndex !== undefined) {
@@ -42,7 +42,7 @@ export default function TailwindAdvanced() {
                         setCurrentExercise(0);
                     }
                 } catch (err) {
-                    console.error('Error loading Tailwind advanced exercise index:', err);
+
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -57,7 +57,7 @@ export default function TailwindAdvanced() {
                 try {
                     await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'advanced', currentExercise);
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -359,9 +359,9 @@ export default function TailwindAdvanced() {
                     try {
                         const levelKey = `advanced-${currentExercise}`;
                         await saveExerciseProgress(currentUser.uid, 'tailwind', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved Tailwind advanced exercise completion`);
+
                     } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+
                     }
                 }
                 
@@ -373,9 +373,9 @@ export default function TailwindAdvanced() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'tailwind', 'advanced', nextIndex);
-                            console.log(`✅ Saved Tailwind advanced index: ${nextIndex}`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 }
@@ -495,13 +495,22 @@ export default function TailwindAdvanced() {
                                     />
                                 </div>
                                 <div className="lg:col-span-1">
-                                    <CodeFeedback 
-                                        code={userCode}
-                                        language="html"
-                                        task={exercises[currentExercise].task}
-                                        exerciseId={`tailwind-advanced-${currentExercise}`}
-                                        level="advanced"
-                                    />
+                                    {/* Hardcoded Feedback Logic */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                        <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                        {userCode.trim() === '' ? (
+                                            <p className="text-gray-500 text-sm">Type your code to get feedback.</p>
+                                        ) : (
+                                            (() => {
+                                                const hasTailwindClass = userCode.includes('class="') && (userCode.includes('bg-') || userCode.includes('text-') || userCode.includes('p-') || userCode.includes('m-'));
+                                                if (hasTailwindClass) {
+                                                    return <p className="text-green-700 text-sm">Great! Your code uses Tailwind CSS utility classes.</p>;
+                                                } else {
+                                                    return <p className="text-red-700 text-sm">Add Tailwind utility classes like <code>bg-*</code>, <code>text-*</code>, <code>p-*</code>, or <code>m-*</code> to your HTML elements.</p>;
+                                                }
+                                            })()
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -542,3 +551,5 @@ export default function TailwindAdvanced() {
         </div>
     );
 }
+
+

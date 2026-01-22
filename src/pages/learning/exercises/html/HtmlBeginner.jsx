@@ -48,21 +48,21 @@ export default function HtmlBeginner() {
 
                 // Load the current exercise index
                 const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'html', 'beginner');
-                console.log(`📖 Firebase returned savedIndex: ${savedIndex}`);
+
                 if (savedIndex !== null && savedIndex !== undefined) {
                     setCurrentExercise(savedIndex);
-                    console.log(`✅ Resumed from exercise ${savedIndex}`);
+
                 } else {
                     // If no saved index, find first uncompleted exercise
                     const firstIncomplete = Object.keys(newStatus).findIndex(key => !newStatus[key]);
                     if (firstIncomplete >= 0) {
-                        console.log(`📖 No saved index, starting from first incomplete: ${firstIncomplete}`);
+
                         setCurrentExercise(firstIncomplete);
                     }
                 }
                 isInitialLoadRef.current = false;
             } catch (err) {
-                console.error('Error loading HTML beginner progress from Firebase:', err);
+
                 isInitialLoadRef.current = false;
             }
         };
@@ -76,11 +76,11 @@ export default function HtmlBeginner() {
         const saveIndex = async () => {
             if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
-                    console.log(`💾 Saving exercise index ${currentExercise} to Firebase`);
+
                     await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', currentExercise);
-                    console.log(`✅ Saved exercise index ${currentExercise}`);
+
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -183,7 +183,7 @@ export default function HtmlBeginner() {
                         if (ok) console.log('Saved MCQ completion to Firebase for', levelKey);
                         else console.warn('Failed to save MCQ completion to Firebase for', levelKey);
                     } catch (err) {
-                        console.error('Error saving MCQ completion to Firebase:', err);
+
                     }
                 }
 
@@ -194,9 +194,9 @@ export default function HtmlBeginner() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'html', 'beginner', nextIndex);
-                            console.log(`✅ Saved new index ${nextIndex} to Firebase`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 }
@@ -237,11 +237,11 @@ export default function HtmlBeginner() {
                             10
                         );
                         if (ok) {
-                            console.log('Saved code completion for', levelKey);
+
                             toast.success('Progress saved! 🎉');
                         }
                     } catch (err) {
-                        console.error('Error saving:', err);
+
                         toast.error('Error saving progress');
                     }
                 }
@@ -260,7 +260,7 @@ export default function HtmlBeginner() {
                                 nextIndex
                             );
                         } catch (err) {
-                            console.error('Error saving index:', err);
+
                         }
                     }
                 }
@@ -468,14 +468,27 @@ export default function HtmlBeginner() {
                                         />
                                     </div>
                                     <div className="lg:col-span-1">
-                                        <CodeFeedback 
-                                            code={userCode}
-                                            language="html"
-                                            task={exercises[currentExercise].task}
-                                            exerciseId={`html-beginner-${currentExercise}`}
-                                            level="beginner"
-                                            correctAnswer={exercises[currentExercise].solution}
-                                        />
+                                        {/* Hardcoded Feedback Logic */}
+                                        <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                            <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                            {userCode.trim() === '' ? (
+                                                <p className="text-gray-500 text-sm">Type your code to get feedback.</p>
+                                            ) : (
+                                                (() => {
+                                                    const codeContainsH1 = userCode.includes('<h1>') || userCode.includes('<H1>');
+                                                    const codeContainsParagraph = userCode.includes('<p>') || userCode.includes('<P>');
+                                                    if (codeContainsH1 && codeContainsParagraph) {
+                                                        return <p className="text-green-700 text-sm">Great job! Your code includes both a heading and a paragraph as required.</p>;
+                                                    } else if (!codeContainsH1 && !codeContainsParagraph) {
+                                                        return <p className="text-red-700 text-sm">Your code is missing both the <code>&lt;h1&gt;</code> heading and the <code>&lt;p&gt;</code> paragraph. Add both to complete the task.</p>;
+                                                    } else if (!codeContainsH1) {
+                                                        return <p className="text-red-700 text-sm">Your code is missing the <code>&lt;h1&gt;</code> heading. Add it for the main title.</p>;
+                                                    } else {
+                                                        return <p className="text-red-700 text-sm">Your code is missing the <code>&lt;p&gt;</code> paragraph. Add it for the description.</p>;
+                                                    }
+                                                })()
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -512,3 +525,5 @@ export default function HtmlBeginner() {
         </div>
     );
 }
+
+

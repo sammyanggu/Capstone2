@@ -156,7 +156,7 @@ function LearningHub() {
   }
 
   return (
-    <div className={`w-full min-h-screen ${theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-gray-50 text-slate-900'}`}>
+    <div className={`w-full min-h-screen bg-white text-slate-900`}>
       {/* Content */}
       <div className="w-full pt-28 pb-12 px-4 sm:px-6 md:px-8">
         <div className="max-w-4xl mx-auto">

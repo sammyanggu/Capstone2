@@ -222,18 +222,29 @@ export const getCompletionStats = async (userId) => {
     let totalPoints = 0;
     const byType = {};
 
-    // Iterate through all exercise types
-    Object.keys(allProgress).forEach(type => {
+    // Iterate through all exercise types (html, css, javascript, etc.)
+    Object.entries(allProgress).forEach(([type, levelData]) => {
+      if (!levelData || typeof levelData !== 'object') return;
+
       byType[type] = { completed: 0, total: 0 };
 
-      Object.values(allProgress[type]).forEach(levelData => {
-        byType[type].total++;
-        if (levelData.isCompleted) {
-          totalCompleted++;
-          byType[type].completed++;
-          totalPoints += levelData.points || 0;
+      // Iterate through difficulty levels (beginner, intermediate, advanced)
+      Object.entries(levelData).forEach(([level, exerciseData]) => {
+        if (exerciseData && typeof exerciseData === 'object') {
+          byType[type].total++;
+          if (exerciseData.isCompleted) {
+            totalCompleted++;
+            byType[type].completed++;
+            totalPoints += exerciseData.points || 0;
+          }
         }
       });
+    });
+
+    console.log('📊 Exercise Stats:', {
+      totalCompleted,
+      totalPoints,
+      byType
     });
 
     return {
@@ -284,7 +295,14 @@ export const saveLessonProgress = async (
       completedAt: isCompleted ? Date.now() : null
     };
 
+    console.log(`📝 Saving lesson progress:`, {
+      path: `users/${userId}/progress/lessons/${category}/${lessonTitle}`,
+      data: progressData
+    });
+
     await set(progressRef, progressData);
+    console.log(`✅ Lesson progress saved successfully`);
+    
     // Dispatch a global event so UI can react (e.g., refresh stats)
     try {
       if (typeof window !== 'undefined' && window.dispatchEvent) {
@@ -426,6 +444,7 @@ export const getLessonStats = async (userId) => {
     const snapshot = await get(progressRef);
 
     if (!snapshot.exists()) {
+      console.log('⚠️ No lesson progress data found in Firebase');
       return {
         totalLessons: 0,
         completedLessons: 0,
@@ -435,25 +454,59 @@ export const getLessonStats = async (userId) => {
     }
 
     const allProgress = snapshot.val();
+    console.log('📂 Raw lesson progress from Firebase:', allProgress);
+    
     let totalLessons = 0;
     let completedLessons = 0;
     const byCategory = {};
 
-    Object.keys(allProgress).forEach(category => {
+    // Iterate through each category
+    Object.entries(allProgress).forEach(([category, categoryData]) => {
+      console.log(`🔍 Processing category "${category}":`, categoryData);
+      
+      if (!categoryData || typeof categoryData !== 'object') {
+        console.log(`⚠️ Category "${category}" has invalid data type`);
+        return;
+      }
+
       byCategory[category] = {
         completed: 0,
         total: 0,
-        averageProgress: 0
+        averageProgress: 0,
+        lessons: []  // Track individual lessons
       };
 
-      const lessons = allProgress[category];
-      Object.values(lessons).forEach(lessonData => {
-        totalLessons++;
-        byCategory[category].total++;
+      // Iterate through lessons in this category
+      Object.entries(categoryData).forEach(([lessonKey, lessonData]) => {
+        console.log(`  📝 Lesson "${lessonKey}":`, lessonData);
+        
+        // lessonData is the lesson object with isCompleted, progressPercent, etc.
+        if (lessonData && typeof lessonData === 'object') {
+          totalLessons++;
+          byCategory[category].total++;
+          
+          // Store lesson details
+          byCategory[category].lessons.push({
+            key: lessonKey,
+            title: lessonData.lessonTitle || lessonKey,
+            progress: lessonData.progressPercent || 0,
+            completed: lessonData.isCompleted || lessonData.completedAt ? true : false
+          });
 
-        if (lessonData.isCompleted) {
-          completedLessons++;
-          byCategory[category].completed++;
+          // Check if lesson is completed
+          // A lesson is considered complete if:
+          // 1. isCompleted flag is true, OR
+          // 2. completedAt timestamp exists, OR
+          // 3. progressPercent is 100% (fully watched)
+          const isLessonComplete = lessonData.isCompleted || lessonData.completedAt || (lessonData.progressPercent === 100);
+          
+          if (isLessonComplete) {
+            completedLessons++;
+            byCategory[category].completed++;
+            console.log(`  ✅ Lesson "${lessonKey}" is completed (isCompleted: ${lessonData.isCompleted}, completedAt: ${lessonData.completedAt}, progress: ${lessonData.progressPercent}%)`);
+          } else {
+            console.log(`  ⏳ Lesson "${lessonKey}" is in progress (progress: ${lessonData.progressPercent}%)`);
+          }
         }
       });
 
@@ -462,10 +515,19 @@ export const getLessonStats = async (userId) => {
         byCategory[category].total > 0 
           ? Math.round((byCategory[category].completed / byCategory[category].total) * 100)
           : 0;
+          
+      console.log(`📊 ${category} stats:`, byCategory[category]);
     });
 
-    // Calculate overall progress based on percentage of lessons completed (not average of progress)
+    // Calculate overall progress based on percentage of lessons completed
     const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+    console.log('📊 Final Lesson Stats:', {
+      totalLessons,
+      completedLessons,
+      averageProgress: overallProgress,
+      byCategory
+    });
 
     return {
       totalLessons,
@@ -474,7 +536,7 @@ export const getLessonStats = async (userId) => {
       byCategory
     };
   } catch (error) {
-    console.error('Error getting lesson stats:', error);
+    console.error('❌ Error getting lesson stats:', error);
     return null;
   }
 };
@@ -615,9 +677,10 @@ export const saveQuizProgress = async (
   }
 
   try {
+    const timestamp = Date.now();
     const progressRef = ref(
       db,
-      `users/${userId}/progress/quizzes/${quizCategory}`
+      `users/${userId}/progress/quizzes/${quizCategory}/${timestamp}`
     );
 
     const progressData = {
@@ -626,10 +689,14 @@ export const saveQuizProgress = async (
       totalQuestions,
       correctAnswers,
       percentage: Math.round((correctAnswers / totalQuestions) * 100),
-      completedAt: Date.now()
+      completedAt: timestamp
     };
 
+    console.log(`📝 Saving quiz progress to: users/${userId}/progress/quizzes/${quizCategory}/${timestamp}`, progressData);
+    
     await set(progressRef, progressData);
+    
+    console.log(`✅ Quiz progress saved successfully for ${quizCategory}`);
 
     // Update user's total quiz score and track category-specific best scores
     await updateQuizScore(userId, score, quizCategory);
@@ -795,4 +862,5 @@ export const updateAllUserRanks = async () => {
     return false;
   }
 };
+
 

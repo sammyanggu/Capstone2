@@ -251,3 +251,4 @@ export function getFormattedLanguageTips(language = 'javascript') {
   ];
   return parts.join('\n');
 }
+

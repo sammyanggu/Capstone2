@@ -231,7 +231,7 @@ const Leaderboard = () => {
                             </div>
                             <div className="min-w-0">
                               <p className="font-medium text-gray-800 truncate text-xs md:text-base">{user.name}</p>
-                              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                              {/* <p className="text-xs text-gray-500 truncate">{user.email}</p> */}
                             </div>
                           </div>
                         </td>
@@ -277,7 +277,7 @@ const Leaderboard = () => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-gray-800 text-xs sm:text-sm truncate">{user.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                          {/* <p className="text-xs text-gray-500 truncate">{user.email}</p> */}
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">

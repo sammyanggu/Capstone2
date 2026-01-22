@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../../AuthContext';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
 import Confetti from '../../../../components/Confetti';
 import { toast } from 'react-toastify';
@@ -41,19 +41,19 @@ export default function CssBeginner() {
                         }
                     }
                     setExerciseStatus(newStatus);
-                    console.log('Loaded CSS exercise statuses:', newStatus);
+
                     
                     // Load current exercise index
                     const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'css', 'beginner');
                     if (savedIndex !== null && savedIndex !== undefined) {
                         setCurrentExercise(savedIndex);
-                        console.log(`✅ Resumed from exercise ${savedIndex}`);
+
                     } else {
                         // If no saved index, start from first uncompleted exercise
                         setCurrentExercise(0);
                     }
                 } catch (error) {
-                    console.error('Error loading CSS progress:', error);
+
                 } finally {
                     isInitialLoadRef.current = false;
                 }
@@ -69,11 +69,11 @@ export default function CssBeginner() {
         const saveIndex = async () => {
             if (currentUser?.uid && !isInitialLoadRef.current) {
                 try {
-                    console.log(`💾 Saving exercise index ${currentExercise} to Firebase`);
+
                     await saveCurrentExerciseIndex(currentUser.uid, 'css', 'beginner', currentExercise);
-                    console.log(`✅ Saved exercise index ${currentExercise}`);
+
                 } catch (err) {
-                    console.error('Error saving current exercise index:', err);
+
                 }
             }
         };
@@ -101,15 +101,15 @@ export default function CssBeginner() {
             saveExerciseProgress(currentUser.uid, 'css', levelKey, code, false, 0)
                 .then((success) => {
                     if (success) {
-                        console.log('CSS progress saved successfully');
+
                     } else {
-                        console.error('Failed to save CSS progress');
+
                         toast.error('Failed to save progress');
                     }
                     setIsSaving(false);
                 })
                 .catch((error) => {
-                    console.error('Error saving CSS progress:', error);
+
                     toast.error('Error saving progress');
                     setIsSaving(false);
                 });
@@ -335,9 +335,9 @@ export default function CssBeginner() {
                     try {
                         const levelKey = `beginner-${currentExercise}`;
                         await saveExerciseProgress(currentUser.uid, 'css', levelKey, userCode, true, 10);
-                        console.log(`✅ Saved CSS exercise ${levelKey} completion`);
+
                     } catch (err) {
-                        console.error('Error saving exercise completion:', err);
+
                     }
                 }
                 
@@ -349,9 +349,9 @@ export default function CssBeginner() {
                     if (currentUser?.uid) {
                         try {
                             await saveCurrentExerciseIndex(currentUser.uid, 'css', 'beginner', nextIndex);
-                            console.log(`✅ Saved CSS beginner index: ${nextIndex}`);
+
                         } catch (err) {
-                            console.error('Error saving new index:', err);
+
                         }
                     }
                 } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
@@ -502,16 +502,29 @@ export default function CssBeginner() {
                                 </div>
                             </div>
 
-                            {/* AI Feedback */}
+                            {/* Hardcoded Feedback Logic */}
                             <div className="mt-4">
-                                <CodeFeedback 
-                                    code={userCode} 
-                                    language="css" 
-                                    exerciseId={currentExercise}
-                                    level="beginner"
-                                    task={exercises[currentExercise].task}
-                                    correctAnswer={exercises[currentExercise].solution}
-                                />
+                                <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                                    <h4 className="font-bold mb-2 text-emerald-700">Feedback</h4>
+                                    {userCode.trim() === '' ? (
+                                        <p className="text-gray-500 text-sm">Type your CSS code to get feedback.</p>
+                                    ) : (
+                                        (() => {
+                                            // Example feedback logic for a CSS selector and property
+                                            const codeHasSelector = userCode.includes('body') || userCode.includes('.container');
+                                            const codeHasColor = userCode.includes('color:') || userCode.includes('background-color:');
+                                            if (codeHasSelector && codeHasColor) {
+                                                return <p className="text-green-700 text-sm">Great! Your CSS includes a selector and a color property.</p>;
+                                            } else if (!codeHasSelector && !codeHasColor) {
+                                                return <p className="text-red-700 text-sm">Your code is missing both a selector (e.g., <code>body</code> or <code>.container</code>) and a color property (e.g., <code>color:</code> or <code>background-color:</code>).</p>;
+                                            } else if (!codeHasSelector) {
+                                                return <p className="text-red-700 text-sm">Your code is missing a CSS selector (e.g., <code>body</code> or <code>.container</code>).</p>;
+                                            } else {
+                                                return <p className="text-red-700 text-sm">Your code is missing a color property (e.g., <code>color:</code> or <code>background-color:</code>).</p>;
+                                            }
+                                        })()
+                                    )}
+                                </div>
                             </div>
 
                             {/* Submit and Solution Buttons */}
@@ -552,3 +565,5 @@ export default function CssBeginner() {
         </div>
     );
 }
+
+

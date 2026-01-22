@@ -555,19 +555,28 @@ export default function LessonDetail() {
   const markLessonComplete = async (videoId, videoTitle) => {
     if (user) {
       try {
+        console.log(`🎬 Marking lesson as complete: ${videoTitle} in category: ${category}`);
         const ok = await saveLessonProgress(user.uid, category, videoTitle, 100, true);
         if (!ok) {
-          console.warn('Failed to save lesson completion for', videoTitle);
+          console.warn('❌ Failed to save lesson completion for', videoTitle);
           toast.error('Could not save lesson progress.');
         } else {
+          console.log(`✅ Successfully marked ${videoTitle} as complete`);
           setWatchProgress(prev => ({
             ...prev,
             [videoId]: 100
           }));
           toast.success('Lesson completed! 🎉');
+          
+          // Dispatch progress update event so profile updates in real-time
+          if (typeof window !== 'undefined' && window.dispatchEvent) {
+            window.dispatchEvent(new CustomEvent('progress-updated', { 
+              detail: { userId: user.uid, type: 'lesson', category, videoTitle } 
+            }));
+          }
         }
       } catch (err) {
-        console.error('Error saving lesson completion:', err);
+        console.error('❌ Error saving lesson completion:', err);
         toast.error('Error saving lesson progress');
       }
     } else {

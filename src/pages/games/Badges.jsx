@@ -148,7 +148,7 @@ function Badges() {
   }
 
   return (
-    <div className={`relative w-full min-h-screen overflow-hidden ${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-50'} pt-20`}>
+    <div className={`relative w-full min-h-screen overflow-hidden bg-slate-900 pt-20`}>
       {/* Gradient background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-transparent rounded-full blur-3xl animate-pulse" style={{

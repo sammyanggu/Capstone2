@@ -36,7 +36,7 @@ function GameNav() {
                             <>
                                 {/* Desktop Navigation - Games Only */}
                                 <div className="hidden lg:flex items-center gap-8">
-                                    <Link to="/games/quiz" className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap">Quiz</Link>
+                                    <Link to="/games" className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap">Play</Link>
                                     <Link to="/games/leaderboard" className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap">Leaderboard</Link>
                                     <Link to="/games/achievements" className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap">Achievements</Link>
                                     <Link to="/games/badges" className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors whitespace-nowrap">Badges</Link>
@@ -51,12 +51,12 @@ function GameNav() {
                                 {/* Mobile Navigation Icons with Labels */}
                                 <div className="lg:hidden flex items-center gap-2 overflow-x-auto">
                                     <button 
-                                        onClick={() => navigate('/games/quiz')}
+                                        onClick={() => navigate('/games')}
                                         className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap text-sm group"
-                                        title="Quiz"
+                                        title="Play"
                                     >
-                                        <div className="text-cyan-400 text-lg flex items-center justify-center flex-shrink-0">📝</div>
-                                        <span className="hidden sm:inline text-cyan-400 group-hover:text-cyan-300">Quiz</span>
+                                        <div className="text-cyan-400 text-lg flex items-center justify-center flex-shrink-0">🎮</div>
+                                        <span className="hidden sm:inline text-cyan-400 group-hover:text-cyan-300">Play</span>
                                     </button>
                                     <button 
                                         onClick={() => navigate('/games/leaderboard')}

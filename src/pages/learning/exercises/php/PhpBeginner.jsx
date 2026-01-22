@@ -1,6 +1,6 @@
 import React from 'react';
 import LiveHtmlEditor from '../../../../components/LiveHtmlEditor';
-import CodeFeedback from '../../../../components/CodeFeedback';
+// import CodeFeedback from '../../../../components/CodeFeedback';
 import '../exercises.css';
 import { useAuth } from '../../../../AuthContext';
 import { saveExerciseProgress, getExerciseProgress, completeExercise, saveCurrentExerciseIndex, getCurrentExerciseIndex } from '../../../../utils/progressTracker';
@@ -35,16 +35,16 @@ export default function PhpBeginner() {
             }
           }
           setExerciseStatus(newStatus);
-          console.log('Loaded PHP beginner exercise statuses:', newStatus);
+
 
           const savedIndex = await getCurrentExerciseIndex(currentUser.uid, 'php', 'beginner');
           if (savedIndex !== null && savedIndex !== undefined) {
             setCurrentExercise(savedIndex);
-            console.log(`✅ Resumed from exercise ${savedIndex}`);
+
           }
           isInitialLoadRef.current = false;
         } catch (err) {
-          console.error('Error loading PHP beginner exercise index:', err);
+
           isInitialLoadRef.current = false;
         }
       } else {
@@ -64,7 +64,7 @@ export default function PhpBeginner() {
         try {
           await saveCurrentExerciseIndex(currentUser.uid, 'php', 'beginner', currentExercise);
         } catch (err) {
-          console.error('Error saving current exercise index:', err);
+
         }
       }
     };
@@ -217,9 +217,9 @@ for ($i = 1; $i <= 5; $i++) {
           try {
             const levelKey = `beginner-${currentExercise}`;
             await saveExerciseProgress(currentUser.uid, 'php', levelKey, userCode, true, 10);
-            console.log(`✅ Saved PHP exercise ${levelKey} completion`);
+
           } catch (err) {
-            console.error('Error saving exercise completion:', err);
+
           }
         }
         
@@ -231,9 +231,9 @@ for ($i = 1; $i <= 5; $i++) {
           if (currentUser?.uid) {
             try {
               await saveCurrentExerciseIndex(currentUser.uid, 'php', 'beginner', nextIndex);
-              console.log(`✅ Saved PHP beginner index: ${nextIndex}`);
+
             } catch (err) {
-              console.error('Error saving new index:', err);
+
             }
           }
         } else if (currentExercise === exercises.length - 1 && currentUser?.uid) {
@@ -337,13 +337,111 @@ for ($i = 1; $i <= 5; $i++) {
               />
             </div>
             <div className="lg:col-span-1">
-              <CodeFeedback 
-                code={userCode}
-                language="php"
-                task={exercises[currentExercise].task}
-                exerciseId={`php-beginner-${currentExercise}`}
-                level="beginner"
-              />
+              {/* Hardcoded Feedback Logic - Dark background */}
+              <div className="bg-slate-900 border border-slate-700 rounded p-4">
+                <h4 className="font-bold mb-2 text-emerald-400">Feedback</h4>
+                {userCode.trim() === '' ? (
+                  <p className="text-gray-400 text-sm">Type your PHP code to get feedback.</p>
+                ) : (
+                  (() => {
+                    // Per-exercise feedback logic
+                    const code = userCode.trim();
+                    if (currentExercise === 0) {
+                      // Basic Output: just needs echo statement
+                      if (!code.startsWith('<?php')) {
+                        return <p className="text-red-400 text-sm">Your code must start with <code>&lt;?php</code>.</p>;
+                      }
+                      if (/echo\s+(["']).+?\1\s*;?/i.test(code)) {
+                        return <p className="text-green-400 text-sm">Great! Your code prints a greeting using echo.</p>;
+                      }
+                      if (!code.includes('echo')) {
+                        return <p className="text-red-400 text-sm">Your code is missing an <code>echo</code> statement.</p>;
+                      }
+                      return <p className="text-red-400 text-sm">Check your syntax for the echo statement.</p>;
+                    }
+                    if (currentExercise === 1) {
+                      // Variables: needs $name, $age, and echo
+                      const hasName = /\$name\s*=\s*['"]/i.test(code);
+                      const hasAge = /\$age\s*=\s*\d+/i.test(code);
+                      const hasEcho = /echo\s+/i.test(code);
+                      if (hasName && hasAge && hasEcho) {
+                        return <p className="text-green-400 text-sm">Great! You created variables and used echo.</p>;
+                      }
+                      if (!hasName && !hasAge) {
+                        return <p className="text-red-400 text-sm">Add <code>$name</code> and <code>$age</code> variables.</p>;
+                      }
+                      if (!hasName) {
+                        return <p className="text-red-400 text-sm">Add a <code>$name</code> variable.</p>;
+                      }
+                      if (!hasAge) {
+                        return <p className="text-red-400 text-sm">Add an <code>$age</code> variable.</p>;
+                      }
+                      if (!hasEcho) {
+                        return <p className="text-red-400 text-sm">Add an <code>echo</code> statement to print your message.</p>;
+                      }
+                      return <p className="text-red-400 text-sm">Check your variable and echo syntax.</p>;
+                    }
+                    if (currentExercise === 2) {
+                      // Math Operations: needs +, -, *, / and echo
+                      const hasSum = /\+/.test(code);
+                      const hasDiff = /-/.test(code);
+                      const hasProd = /\*/.test(code);
+                      const hasQuot = /\//.test(code);
+                      const hasEcho = /echo\s+/i.test(code);
+                      if (hasSum && hasDiff && hasProd && hasQuot && hasEcho) {
+                        return <p className="text-green-400 text-sm">Great! You performed all math operations and used echo.</p>;
+                      }
+                      if (!hasEcho) {
+                        return <p className="text-red-400 text-sm">Add <code>echo</code> statements to display your results.</p>;
+                      }
+                      return <p className="text-red-400 text-sm">Make sure to use +, -, *, / for all operations.</p>;
+                    }
+                    if (currentExercise === 3) {
+                      // Conditionals: needs if, elseif, else, echo
+                      const hasIf = /if\s*\(/i.test(code);
+                      const hasElseIf = /elseif\s*\(/i.test(code);
+                      const hasElse = /else\s*\{/i.test(code);
+                      const hasEcho = /echo\s+/i.test(code);
+                      if (hasIf && hasElseIf && hasElse && hasEcho) {
+                        return <p className="text-green-400 text-sm">Great! You used if, elseif, else, and echo.</p>;
+                      }
+                      if (!hasIf) {
+                        return <p className="text-red-400 text-sm">Add an <code>if</code> statement.</p>;
+                      }
+                      if (!hasElseIf) {
+                        return <p className="text-red-400 text-sm">Add an <code>elseif</code> statement.</p>;
+                      }
+                      if (!hasElse) {
+                        return <p className="text-red-400 text-sm">Add an <code>else</code> statement.</p>;
+                      }
+                      if (!hasEcho) {
+                        return <p className="text-red-400 text-sm">Add <code>echo</code> statements to print the grade.</p>;
+                      }
+                      return <p className="text-red-400 text-sm">Check your if-else syntax.</p>;
+                    }
+                    if (currentExercise === 4) {
+                      // Loops: needs for, $i, echo
+                      const hasFor = /for\s*\(/i.test(code);
+                      const hasI = /\$i/.test(code);
+                      const hasEcho = /echo\s+/i.test(code);
+                      if (hasFor && hasI && hasEcho) {
+                        return <p className="text-green-400 text-sm">Great! You used a for loop and echo to print numbers.</p>;
+                      }
+                      if (!hasFor) {
+                        return <p className="text-red-400 text-sm">Add a <code>for</code> loop.</p>;
+                      }
+                      if (!hasI) {
+                        return <p className="text-red-400 text-sm">Use a variable like <code>$i</code> as your loop counter.</p>;
+                      }
+                      if (!hasEcho) {
+                        return <p className="text-red-400 text-sm">Add <code>echo</code> statements to print numbers.</p>;
+                      }
+                      return <p className="text-red-400 text-sm">Check your for loop and echo syntax.</p>;
+                    }
+                    return <p className="text-red-400 text-sm">Check your code for required statements.</p>;
+                  })()
+                )}
+              </div>
             </div>
           </div>
 
@@ -365,9 +463,19 @@ for ($i = 1; $i <= 5; $i++) {
           </button>
         </div>
 
+        {/* Responsive Modal for Wrong Answer */}
         {showError && (
-          <div className="mt-2 p-2 bg-red-900/50 text-red-200 rounded text-sm">
-            Not quite right. Try again!
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
+            <div className="bg-white rounded-lg shadow-xl border border-red-500 max-w-xs w-full p-6 text-center">
+              <h3 className="text-2xl font-bold text-red-600 mb-2">Wrong Answer</h3>
+              <p className="text-gray-700 mb-4">Try again!</p>
+              <button
+                onClick={() => setShowError(false)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
 
@@ -415,3 +523,5 @@ for ($i = 1; $i <= 5; $i++) {
       </div>
     </div>
   </div>)};
+
+

@@ -114,6 +114,7 @@ function Nav() {
                                         <Link to="/docs" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">📚 Docs</Link>
                                         <Link to="/exercises" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">💪 Exercises</Link>
                                         <Link to="/lessons" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors whitespace-nowrap">🎓 Lessons</Link>
+                                        <Link to="/games" className="text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors whitespace-nowrap">🎮 Play</Link>
                                     </div>
                                 </div>
                                 
@@ -144,6 +145,15 @@ function Nav() {
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    </button>
+                                    <button 
+                                        onClick={() => navigate('/games')}
+                                        className="p-2 hover:bg-slate-800 rounded-lg text-cyan-400 hover:text-cyan-300 transition-colors"
+                                        title="Play"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-6.518-3.759A1 1 0 007 8.118v7.764a1 1 0 001.234.97l6.518-1.757A1 1 0 0016 14.882V9.118a1 1 0 00-1.248-.95z" />
                                         </svg>
                                     </button>
                                 </div>

@@ -18,3 +18,5 @@ export default function JavascriptExercise() {
       return <Navigate to="/exercises" replace />;
   }
 }
+
+
