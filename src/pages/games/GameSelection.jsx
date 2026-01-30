@@ -16,12 +16,12 @@ export default function GameSelection() {
           <span className="text-gray-400 mt-2 text-sm">Test your knowledge with multiple choice questions.</span>
         </button>
         <button
-          onClick={() => navigate('/games/wordpuzzle')}
+          onClick={() => navigate('/games/crossword/hard')}
           className="bg-slate-800 rounded-xl shadow-lg p-8 flex flex-col items-center hover:scale-105 transition-transform border-2 border-purple-700 hover:border-purple-400"
         >
           <span className="text-5xl mb-4">🧩</span>
-          <span className="text-xl font-semibold text-purple-300">Word Puzzle</span>
-          <span className="text-gray-400 mt-2 text-sm">Solve crossword or word puzzles.</span>
+          <span className="text-xl font-semibold text-purple-300">Crossword</span>
+          <span className="text-gray-400 mt-2 text-sm">Solve coding crossword puzzles with difficulty levels.</span>
         </button>
         <button
           onClick={() => navigate('/games/fourpicsoneword')}

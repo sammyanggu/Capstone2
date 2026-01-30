@@ -58,8 +58,7 @@ import Achievements from './pages/games/Achievements'
 import Badges from './pages/games/Badges'
 import GameProfile from './pages/games/Profile'
 import FourPicsOneWord from './pages/games/FourPicsOneWord'
-import WordPuzzle from './pages/games/wordpuzzle'
-import CrosswordPuzzle from './pages/games/CrosswordPuzzle'
+import BeginnerCrossword from './pages/games/crossword/BeginnerCrossword'
 // Import React hooks
 import { useEffect, useState } from 'react'
 
@@ -289,17 +288,24 @@ function AppContent() {
           </PrivateRoute>
         } />
 
-        {/* Word Puzzle game, protected */}
-        <Route path="/games/wordpuzzle" element={
+        {/* Beginner Crossword game, protected */}
+        <Route path="/games/crossword/beginner" element={
           <PrivateRoute user={currentUser}>
-            <WordPuzzle />
+            <BeginnerCrossword />
           </PrivateRoute>
         } />
 
-        {/* Crossword Puzzle game, protected */}
-        <Route path="/games/crossword" element={
+        {/* Hard Crossword game, protected */}
+        <Route path="/games/crossword/hard" element={
           <PrivateRoute user={currentUser}>
-            <CrosswordPuzzle />
+            <BeginnerCrossword difficulty="hard" />
+          </PrivateRoute>
+        } />
+
+        {/* Easy Crossword game, protected */}
+        <Route path="/games/crossword/easy" element={
+          <PrivateRoute user={currentUser}>
+            <BeginnerCrossword difficulty="easy" />
           </PrivateRoute>
         } />
 

@@ -11,6 +11,7 @@ function GamesHub() {
   const { theme } = useTheme();
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showCrosswordDifficultyModal, setShowCrosswordDifficultyModal] = useState(false);
   const [stats, setStats] = useState({
     totalQuizzes: 0,
     totalScore: 0,
@@ -189,20 +190,25 @@ function GamesHub() {
               </div>
             </div>
 
-            {/* Word Puzzle Card */}
+            {/* Beginner Crossword Card */}
             <div
-              onClick={() => navigate('/games/wordpuzzle')}
-              className={`group cursor-pointer ${theme === 'dark' ? 'bg-gradient-to-br from-green-900/40 to-slate-900 border border-green-500/30 hover:border-green-500 hover:from-green-900/60' : 'bg-gradient-to-br from-green-100 to-green-50 border border-green-300 hover:border-green-500 hover:from-green-200'} rounded-xl p-4 sm:p-6 md:p-8 transition-all duration-300 transform hover:scale-105 shadow-2xl`}
+              onClick={() => setShowCrosswordDifficultyModal(true)}
+              className={`group cursor-pointer ${theme === 'dark' ? 'bg-gradient-to-br from-cyan-900/40 to-slate-900 border border-cyan-500/30 hover:border-cyan-500 hover:from-cyan-900/60' : 'bg-gradient-to-br from-cyan-100 to-cyan-50 border border-cyan-300 hover:border-cyan-500 hover:from-cyan-200'} rounded-xl p-4 sm:p-6 md:p-8 transition-all duration-300 transform hover:scale-105 shadow-2xl`}
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-green-900'}`}>🔤 Word Puzzle</h2>
-                <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">🧩</div>
+                <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-cyan-900'}`}>🧩 Crossword</h2>
+                <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">✏️</div>
               </div>
-              <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-green-800'} mb-4 sm:mb-6 text-sm sm:text-base`}>
-                Unscramble the word or solve the puzzle!
+              <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-cyan-800'} mb-4 sm:mb-6 text-sm sm:text-base`}>
+                Solve coding crossword puzzles!
               </p>
               <div className="flex items-center justify-between">
-                <button className={`px-4 py-2 ${theme === 'dark' ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'} font-semibold text-sm rounded-lg transition-all transform hover:translate-x-1`}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCrosswordDifficultyModal(true);
+                  }}
+                  className={`px-4 py-2 ${theme === 'dark' ? 'bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white' : 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white'} font-semibold text-sm rounded-lg transition-all transform hover:translate-x-1`}>
                   Play →
                 </button>
               </div>
@@ -310,6 +316,64 @@ function GamesHub() {
           </div>
         </div>
       </div>
+
+      {/* Crossword Difficulty Modal */}
+      {showCrosswordDifficultyModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className={`${theme === 'dark' ? 'bg-slate-800 border-2 border-cyan-500/50' : 'bg-white border-2 border-cyan-400'} rounded-xl p-8 max-w-md w-full shadow-2xl transform transition-all`}>
+            <div className="text-center mb-8">
+              <h2 className={`text-3xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>🧩 Crossword Puzzle</h2>
+              <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Choose a difficulty level:</p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Hard Difficulty */}
+              <button
+                onClick={() => {
+                  navigate('/games/crossword/hard');
+                  setShowCrosswordDifficultyModal(false);
+                }}
+                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all transform hover:scale-105 ${
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
+                }`}
+              >
+                🔥 Hard
+                <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-red-100' : 'text-red-100'}`}>Challenging puzzles for advanced learners</p>
+              </button>
+
+              {/* Easy Difficulty */}
+              <button
+                onClick={() => {
+                  navigate('/games/crossword/easy');
+                  setShowCrosswordDifficultyModal(false);
+                }}
+                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all transform hover:scale-105 ${
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white'
+                    : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white'
+                }`}
+              >
+                ✨ Easy
+                <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-emerald-100' : 'text-emerald-100'}`}>Perfect for beginners and practice</p>
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowCrosswordDifficultyModal(false)}
+              className={`w-full mt-6 py-2 px-4 rounded-lg font-semibold transition-all ${
+                theme === 'dark'
+                  ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+              }`}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes floatGlow {
