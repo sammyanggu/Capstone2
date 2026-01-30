@@ -11,9 +11,11 @@ const hardCrosswordData = {
       { isBlank: true },
       { isBlank: true },
       { isBlank: true },
+      { isBlank: true },
     ],
     [
-      { letter: 'Y', number: 2, isStartOfWord: true },
+      { letter: 'P', number: 2, isStartOfWord: true },
+      { letter: 'Y' },
       { letter: 'T' },
       { letter: 'H' },
       { letter: 'O' },
@@ -50,7 +52,8 @@ const hardCrosswordData = {
       { letter: 'N' },
       { letter: 'T' },
       { isBlank: true },
-      { letter: 'U', number: 7, isStartOfWord: true },
+      { letter: 'F', number: 7, isStartOfWord: true },
+      { letter: 'U' },
       { letter: 'N' },
       { letter: 'C' },
       { letter: 'T' },
@@ -68,6 +71,7 @@ const hardCrosswordData = {
       { isBlank: true },
       { isBlank: true },
       { isBlank: true },
+      { isBlank: true },
     ],
     [
       { letter: 'B', number: 9, isStartOfWord: true },
@@ -77,6 +81,7 @@ const hardCrosswordData = {
       { letter: 'E' },
       { letter: 'A' },
       { letter: 'N' },
+      { isBlank: true },
       { isBlank: true },
       { isBlank: true },
     ],
@@ -208,6 +213,21 @@ function BeginnerCrossword({ difficulty = 'hard' }) {
   const [showAnswers, setShowAnswers] = useState(false);
   const [completed, setCompleted] = useState(false);
 
+  // Helper function to get the first letter for a cell (always visible for starting cells)
+  const getFirstLetter = (row, col) => {
+    const cell = puzzleData.grid[row][col];
+    if (!cell.number) return ''; // Not a starting cell
+    
+    // Get the first letter of the answer for this cell number
+    const answerNumber = cell.number;
+    const answer = puzzleData.answers[answerNumber];
+    
+    if (answer && answer.length > 0) {
+      return answer[0];
+    }
+    return '';
+  };
+
   const handleCellChange = (row, col, value) => {
     const cellId = getCellId(row, col);
     const letter = value.toUpperCase().slice(0, 1);
@@ -313,13 +333,15 @@ function BeginnerCrossword({ difficulty = 'hard' }) {
                             id={cellId}
                             type="text"
                             maxLength="1"
-                            value={userAnswer || (showAnswers ? cell.letter : '')}
+                            value={userAnswer || (showAnswers ? cell.letter : getFirstLetter(rowIdx, colIdx))}
                             onChange={(e) => handleCellChange(rowIdx, colIdx, e.target.value)}
                             onFocus={() => setSelectedCell(cellId)}
                             className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 text-center font-bold text-sm sm:text-base md:text-lg border-2 uppercase
                               ${selectedCell === cellId ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'}
                               ${isCorrect ? 'bg-emerald-100 border-emerald-500' : ''}
                               ${isWrong ? 'bg-red-100 border-red-500' : ''}
+                              ${showAnswers && !userAnswer ? 'text-gray-900 font-bold' : ''}
+                              ${!userAnswer && getFirstLetter(rowIdx, colIdx) ? 'text-gray-500' : ''}
                               focus:outline-none focus:ring-2 focus:ring-blue-500
                             `}
                           />
@@ -331,22 +353,6 @@ function BeginnerCrossword({ difficulty = 'hard' }) {
                     })}
                   </div>
                 ))}
-              </div>
-
-              {/* Legend */}
-              <div className="mt-8 flex gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-white border-2 border-gray-300"></div>
-                  <span>Empty</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-emerald-100 border-2 border-emerald-500"></div>
-                  <span>Correct</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-red-100 border-2 border-red-500"></div>
-                  <span>Incorrect</span>
-                </div>
               </div>
             </div>
           </div>
